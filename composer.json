@@ -1,0 +1,46 @@
+{
+  "name": "Maestro3",
+  "description": "Maestro Framework v.3.0",
+  "license": "GPL-3.0",
+  "require": {
+    "psr/log": "1.0.0",
+    "phpmailer/phpmailer": "~5.2",
+    "zendframework/zend-session": "2.2.*",
+    "zendframework/zend-config": "2.2.*",
+    "zendframework/zend-validator": "2.2.*",
+    "zendframework/zend-captcha": "2.2.*",
+    "easybook/geshi": "1.0.*",
+    "beberlei/assert": "dev-master",
+    "php-di/php-di": "5.2.*",
+    "latte/latte": "2.4.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "files": [
+      "core/classes/functions.php"
+    ],
+    "psr-4": {
+      "database\\": "core/classes/database"
+    },
+    "classmap": [
+      "core/classes/manager.php",
+      "core/classes/interfaces",
+      "core/classes/database",
+      "core/classes/services",
+      "core/classes/mvc",
+      "core/classes/persistence",
+      "core/classes/extensions",
+      "core/classes/security",
+      "core/classes/types",
+      "core/classes/ui",
+      "core/classes/utils"
+    ]
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "Manager::postAutoloadDump"
+    ]
+  }
+}

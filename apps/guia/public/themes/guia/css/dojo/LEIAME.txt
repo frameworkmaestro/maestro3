@@ -1,0 +1,22 @@
+===
+Esta pasta contém os arquivos do Dojo relacionado a temas e que podem ser customizados para um tema do Maestro.
+Os arquivos são copiados da distribuição original do Dojo. 
+Os arquivos .less são usados para construir o arquivo dojo.css.
+
+: pasta grid
+dojo-release-1.9.1-src\dojox\grid\resources\Grid.css -> Grid.css
+dojo-release-1.9.1-src\dojox\grid\resources\claroGrid.css -> claroGrid.css 
+dojo-release-1.9.1-src\dojox\grid\resources\images -> images
+
+: pasta icons
+dojo-release-1.9.1-src\dijit\icons -> icons
+
+: pasta themes
+dojo-release-1.9.1-src\dijit\themes\dijit.css -> dijit.css
+dojo-release-1.9.1-src\dijit\themes\dijit_rtl.css -> dijit_rtl.css
+dojo-release-1.9.1-src\dijit\themes\claro -> claro
+
+
+Alterar o arquivo dojo\themes\claro\compile.js na linha
+
+less = require("C:/less/lib/less");	// less processor

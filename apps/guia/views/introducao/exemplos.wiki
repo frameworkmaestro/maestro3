@@ -1,0 +1,7 @@
+<text xml:space="preserve">
+= Exemplos =
+O Maestro é distribuído com uma aplicação chamada '''Exemplos''', que apresenta as principais possibilidades do framework.
+Você pode acessar a aplicação neste servidor através do link abaixo:
+
+Aplicação Exemplos: [http://maestro.org.br/index.php/exemplos/main http://maestro.org.br/index.php/exemplos/main external]
+</text>
