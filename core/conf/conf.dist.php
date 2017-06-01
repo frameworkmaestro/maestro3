@@ -16,35 +16,37 @@
  * 02110-1301, USA.
  */
 
-return array(
+return [
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-    'name' => 'Maestro Application',
+    'name' => 'Framework Maestro3',
     // preloading 'log' component
-    'preload' => array('log'),
-    // autoloading model and component classes
-    'import' => array(
-        'models.*'
-    ),
-    'theme' => array(
+    'preload' => [
+        'log'
+    ],
+    'theme' => [
         'name' => 'default',
         'template' => 'index'
-    ),
-    'options' => array(
+    ],
+    'options' => [
         'startup' => 'guia',
         'dbsession' => false,
-        'authmd5' => true,
         'debug' => true,
         'charset' => 'UTF-8',
         'timezone' => "America/Sao_Paulo",
+        'separatorDate' => '/',
         'formatDate' => 'd/m/Y',
         'formatTimestamp' => 'd/m/Y H:i:s',
+        'csv' => ';',
         'mode' => 'DEV',
-        'painter' => 'html',
+        'painter' => 'dojo',
         'dispatch' => 'index.php',
+        'varPath' => Manager::getHome() . '/core/var/tmp',
+        'javaPath' => '/opt/java',
+        'javaBridge' => 'http://localhost:8080/JavaBridge/java/Java.inc',
         'language' => 'pt_br',
-        'locale' => array("pt_BR", "ptb")
-    ),
-    'mad' => array(
+        'locale' => array("pt_BR.utf8", "ptb") // no linux verificar os locales instalados com "locale -a"
+    ],
+    'mad' => [
         'module' => "common",
         'access' => "acesso",
         'group' => "grupo",
@@ -52,42 +54,49 @@ return array(
         'session' => "sessao",
         'transaction' => "transacao",
         'user' => "usuario"
-    ),
-    'login' => array(
+    ],
+    'login' => [
         'module' => "",
         'class' => "MAuthDbMd5",
         'check' => false,
         'shared' => true,
         'auto' => false
-    ),
-    'session' => array(
+    ],
+    'session' => [
         'handler' => "file",
         'timeout' => "30",
         'exception' => false,
         'check' => true
-    ),
-    'logs' => array(
+    ],
+    'logs' => [
         'level' => 2,
         'handler' => "socket",
         'peer' => '127.0.0.1',
         'strict' => '127.0.0.1',
         'port' => 0,
-    ),
-    'cache' => array(
+    ],
+    'cache' => [
         'type' => "php", // php, java, apc, memcache
-        'memcache' => array(
+        'memcache' => [
             'host' => "127.0.0.1",
             'port' => "11211",
             'default.ttl' => 0
-        ),
-        'apc' => array(
+        ],
+        'apc' => [
             'default.ttl' => 0
-        )
-    ),
-    'extensions' => array(
-    ),
-    'db' => array(
-        'manager' => array(
+        ]
+    ],
+    'mailer' => [
+        'smtpServer' => 'localhost',
+        'smtpFrom' => 'maestro@maestro.org',
+        'smtpFromName' => 'Framework Maestro',
+        'smtpAuthUser' => '',
+        'smtpAuthPass' => '',
+    ],
+    'extensions' => [
+    ],
+    'db' => [
+        'manager' => [
             'driver' => 'pdo_pgsql',
             'host' => 'localhost',
             'dbname' => 'exemplos',
@@ -97,6 +106,6 @@ return array(
             'formatDateWhere' => 'YYYY/MM/DD',
             'formatTime' => 'HH24:MI:SS',
             'configurationClass' => 'Doctrine\DBAL\Configuration',
-        ),
-    ),
-);
+        ],
+    ],
+];
