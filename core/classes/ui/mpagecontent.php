@@ -19,7 +19,7 @@
 /**
  * This holds a set of controls for page content.
  */
-class MPageContent {
+class MPageContent extends MComponent {
 
     protected $controls;
     protected $inner;
