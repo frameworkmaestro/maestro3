@@ -37,7 +37,7 @@ class MDatabase implements \IDataBase {
         'oracle8' => 'database\platforms\oci8\platform',
         'pdo_sqlsrv' => '\database\platforms\pdosqlsrv\platform',
         'sqlsrv' => '\database\platforms\sqlsrv\platform',
-        'sqlite3' => '\database\platforms\sqlite\platform',
+        'sqlite3' => '\database\platforms\sqlite3\platform',
     );
     private $config;       // identifies db configuration in conf.php
     private $params;
