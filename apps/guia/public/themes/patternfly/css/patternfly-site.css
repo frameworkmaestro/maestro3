@@ -120,9 +120,11 @@ body {
     max-height: 364px
 }
 
+/*
 #content, .download {
     position: relative
 }
+*/
 
 .download-description {
     margin-left: 116px
@@ -272,7 +274,6 @@ footer {
     line-height: 15px;
     padding-bottom: 28px;
     padding-top: 28px;
-    position: absolute;
     width: calc(100% - 40px)
 }
 
@@ -295,16 +296,6 @@ footer {
 
 footer a, footer a:focus, footer a:hover {
     color: #3bb1dc
-}
-
-footer #logo-redhat {
-    background: url(../img/redhat.svg) no-repeat;
-    display: none;
-    float: left;
-    height: 34px;
-    margin: -3px 30px 0 0;
-    text-indent: -9999px;
-    width: 106px
 }
 
 @media (min-width: 1200px) {
@@ -384,6 +375,14 @@ h1, h2, h3 {
 
 h1.card-pf-title, h2.card-pf-title, h3.card-pf-title {
     line-height: 1.1
+}
+
+.container-fluid {
+    height:90%
+}
+
+#content {
+    height:100%;
 }
 
 header + .container-fluid {
@@ -974,7 +973,7 @@ html.home-container {
 }
 
 .navbar-sidebar {
-    background: url(../img/grid-sidebar.png) 50% 100% no-repeat #292e33;
+    background-color: #292e33;
     border: 0;
     border-radius: 0;
     bottom: 0;
@@ -1595,5 +1594,3 @@ strong, th {
         padding-bottom: 0
     }
 }
-
-/*# sourceMappingURL=patternfly-site.min.css.map */
