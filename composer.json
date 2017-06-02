@@ -9,7 +9,6 @@
     "zendframework/zend-config": "2.2.*",
     "zendframework/zend-validator": "2.2.*",
     "zendframework/zend-captcha": "2.2.*",
-    "easybook/geshi": "1.0.*",
     "beberlei/assert": "dev-master",
     "php-di/php-di": "5.2.*",
     "latte/latte": "2.4.*"

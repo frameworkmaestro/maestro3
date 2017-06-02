@@ -118,7 +118,7 @@ class MWiki {
         if (substr(strtoupper($href),0,4) == 'HTTP') {
             $text = empty($matches[2]) ? $matches[1] : $matches[2];
             $target = $matches[3] ?: '';
-            return '<a class="mLink" href="' . $href . '" target="' . $target . '" >' . $text . '</a>';
+            return '<a class="mWikiLink" href="' . $href . '" target="' . $target . '" >' . $text . '</a>';
         } else {
             return '['.$href.']';
         }    
@@ -129,11 +129,13 @@ class MWiki {
         $text = empty($matches[2]) ? $matches[1] : $matches[2];
         $target = $matches[3];
         if (substr($action, 0, 1) == '#') {
-            $link = '<a class="mLink" href="' . $action. '">' . $text . '</a>';
+            $link = "<a class=\"mWikiLink\" href=\"{$action}\">{$text}</a>";
         } else {
-            $mlink = new MLink('', '', $action, $text, $target);
-            $link = $mlink->generate();
-        }    
+            //$mlink = new MLink('', '', $action, $text, $target);
+            //$link = $mlink->generate();
+            $target = ($target ? "target=\"{$target}\"" : "");
+            $link = "<a class=\"mWikiLink\" href=\"{$action}\" {$target}>{$text}</a>";
+        }
         return $link;
     }
 
@@ -146,7 +148,7 @@ class MWiki {
         if ($escaped == "true")
             $code = htmlspecialchars_decode($code);
 
-        $syntax = new MSyntax('', $code, $language);
+        //$syntax = new MSyntax('', $code, $language);
 //        $geshi->enable_keyword_links(false);
         //START LINE HIGHLIGHT SUPPORT
         $highlight = array();
@@ -167,6 +169,11 @@ class MWiki {
         }
         //END LINE HIGHLIGHT SUPPORT
 
+        $linenums = ($line ? ' linenums' : '');
+        $output = "\n<div class=\"prettyprint{$linenums}\">";
+        $output .= $code;
+        $output .= "</div>";
+        /*
         $output = "\n<div class=\"geshi\">";
         if ($line) {
             $output .= "<table><tr><td class=\"line_numbers\">";
@@ -180,6 +187,7 @@ class MWiki {
             $output .= "</div>";
         }
         $output .= "</div>";
+        */
         return $output;
     }
 
@@ -320,5 +328,3 @@ class MWiki {
     }
 
 }
-
-?>
