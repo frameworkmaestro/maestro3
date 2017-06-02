@@ -496,7 +496,27 @@ class MPage extends MComponent {
 
     public function generateContent() {
         $this->content->generateInner();
-        $html = MBasePainter::generateToString($this->content->getInner());
+        $html = $this->generateToString($this->content->getInner());
+        return $html;
+    }
+
+    public function generateToString($element, $separator = '')
+    {
+        $html = '';
+        if (is_array($element)) {
+            foreach ($element as $e) {
+                $html .= $this->generateToString($e, $separator);
+            }
+        } elseif (is_object($element)) {
+            if (method_exists($element, 'generate')) {
+                $html = $element->generate() . $separator;
+            } else {
+                $html = "MPage:GenerateToString Error: Method Generate not defined to " . get_class($element);
+            }
+        } else {
+            $html = (string)$element;
+        }
+
         return $html;
     }
 
