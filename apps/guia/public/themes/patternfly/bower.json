@@ -1,0 +1,20 @@
+{
+  "name": "patternfly",
+  "authors": [
+    "Ely Edison Matos <ely.matos@gmail.com>"
+  ],
+  "description": "PatternFly Test",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "patternfly": "^3.25.0"
+  }
+}

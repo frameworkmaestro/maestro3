@@ -1,0 +1,52 @@
+{{define row}}
+<div class="mFormRow">
+    <div class="mFormColumn">
+        <label for={{$id}} class="mFormLabel">{{$label}}</label>
+    </div>
+    <div class="mFormColumn">
+        {{include #$control, id => $id, name => $id }}
+    </div>
+</div>
+{{/define}}
+
+{{define textfield}}
+<input id="{{$id}}" name="{{$name}}" />
+{{/define}}
+
+<div name="{{$idForm}}_dialog" id="{{$idForm}}_dialog" title="XMI ScriptDDD Wizard">
+    <form style="width:100%;" name="{{$idForm}}" id="{{$idForm}}" method="POST">
+        <div class='mFormContainer'>
+            {{block container}}{{/block}}
+        </div>
+    </form>
+    <div id="{{$idForm}}_buttons">
+        <button name="btnLogin" class="mFormButton maction" id="btnLogin" type="button" data-manager="action:'@mfn\/auth\/login\/authenticate|formLogin'">
+            xxxLogin
+        </button>
+    </div>
+</div>
+
+<div class="mScripts">
+{{var $idFormDialog = '#' . $idForm . '_dialog' }}
+{{var $idFormScripts = $idForm . '_scripts' }}
+<script id={{$idFormScripts}} type="text/javascript">
+    manager.onLoad[{{$idFormScripts}}] = function () {
+            {{block onLoad}}{{/block}}
+            $({{$idFormScripts}}).dialog({closed: false});
+            $({{$idFormScripts}}).dialog('resize', {width: 'auto', height: 'auto'});
+            $({{$idFormScripts}}).dialog({
+                buttons: '#f{{$idForm}}_buttons', border: true, modal: true, doSize: true, onClose: function () {
+                    $($idFormDialog).dialog('destroy', true);
+                }
+            });
+        });
+    };
+
+    manager.onSubmit[{{$idFormScripts}}] = function () {
+        {{block onSubmit}}{{/block}}
+        return result;
+    };
+
+    //-->
+</script>
+</div>

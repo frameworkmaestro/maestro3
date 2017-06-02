@@ -1,27 +1,24 @@
 <?php
 
-return array(
+return [
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
     'name' => 'Guia',
-    'instituicao' => 'Framework Maestro',
-    'import' => array(
-        'models.*'
-    ),
-    'theme' => array(
-        'name' => 'guia',
+    'theme' => [
+        'name' => 'patternfly',
         'template' => 'index'
-    ),
-    'ui' => array(
-        'inlineFormAction' => true
-    ),
-    'login' => array(
+    ],
+    'options' => [
+        'templateEngine' => 'latte',
+        'pageTitle' => 'Maestro - Guia do Usuário'
+    ],
+    'login' => [
         'module' => "",
         'class' => "MAuthDbMd5",
         'check' => false
-    ),
-    'db' => array(
+    ],
+    'db' => [
         /* Postgres 
-        'exemplos' => array(
+        'exemplos' => [
             'driver' => 'pdo_pgsql',
             'host' => 'localhost',
             'dbname' => 'exemplos',
@@ -30,14 +27,14 @@ return array(
             'formatDate' => 'DD/MM/YYYY',
             'formatTime' => 'HH24:MI:SS',
             'configurationClass' => 'Doctrine\DBAL\Configuration',
-        ), */
+        ], */
         /* SQLite  */
-        'exemplos' => array(
+        'exemplos' => [
             'driver' => 'sqlite3',
             'path' => Manager::getAppPath('models/sql/exemplos.db'),
             'formatDate' => '%d/%m/%Y',
             'formatTime' => '%H:%M:%S',
             'configurationClass' => 'Doctrine\DBAL\Configuration',
-        ),
-    ),
-);
+        ],
+    ]
+];

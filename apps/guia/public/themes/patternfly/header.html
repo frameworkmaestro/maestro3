@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html lang="en-us" class="ie9 layout-pf layout-pf-fixed"><![endif]-->
+<!--[if gt IE 9]><!-->
+<html>
+<!--<![endif]-->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="Generator" content="Maestro; http://maestro.org.br">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>{{$manager->getOptions('pageTitle')}}</title>
+        <meta name="description" content="Maestro PatternFly">
+
+        <!-- Carrega o icone da aplicação -->
+        <link rel="shortcut icon" type="image/x-icon" href="{{$manager->getThemeURL()}}favicon.ico" />
+        
+        <!-- Carrega estilos específicos da aplicação -->
+        <link rel="stylesheet" type="text/css" href="{{$manager->getStaticURL($manager->getApp(), 'css/style.css')}}">
+        
+        <!-- Carrega o tema e suas dependências -->
+        {{var $includes = file_get_contents($manager->getThemePath()."/assets.ink")}}
+        {{var $lines = explode(PHP_EOL,$includes)}}
+        {{foreach $lines as $line}}
+            {{var $line = trim($line)}}
+            {{if $line && $line[0] != ';'}}
+                {{if strpos($line, ".js", strlen($line) - strlen(".js")) !== FALSE}}
+        <script type="text/javascript" src="{{$manager->getThemeURL() . $line}}"></script>
+                {{/if}}
+                {{if strpos($line, ".css", strlen($line) - strlen(".css")) !== FALSE}}
+        <link rel="stylesheet" href="{{$manager->getThemeURL(). $line}}">
+                {{/if}}
+            {{/if}}
+        {{/foreach}}
+        <script type="text/javascript" src="{{$manager->getThemeURL()}}theme.js"></script>
+    </head>
+    <body class="has-sidebar">

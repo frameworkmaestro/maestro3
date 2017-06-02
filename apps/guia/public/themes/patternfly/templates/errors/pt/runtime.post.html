@@ -1,0 +1,12 @@
+<div id="pageruntimepost" class="mScripts">
+<script type="text/javascript">
+    var message = {{$result->getException()->getMessage()}};
+    var go = ">" + {{$manager->getApp()}} + "/main";
+    var json = "{\"type\":\"error\",\"title\":\"Error\",\"msg\": \"" +message + "\"}";
+    var mprompt_runtime = theme.prompt('mprompt_runtime',json, go ,"");
+    manager.onLoad["pageruntimepost"] = function() {
+        mprompt_runtime.show();;
+    };
+    //-->
+</script>
+</div>

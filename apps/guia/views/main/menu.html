@@ -1,0 +1,28 @@
+<nav class="navbar navbar-sidebar ">
+    <ul>
+        <li class="secondary-menu">
+            <a class="secondary-menu-toggle"><span class="secondary-menu-toggle-icon"></span>Conteúdo</a>
+            <ul>
+                {{foreach $data->primary as $i => $p}}
+                <li >
+                    <a class="collapsed"
+                       role="button" data-toggle="collapse"
+                       href="#{{$i}}-secondary"
+                       aria-expanded="false"
+                       aria-controls="{{$i}}-secondary">
+                        {{$p[1]}}
+                    </a>
+                    <ul class="collapse "
+                        id="{{$i}}-secondary">
+                        {{foreach $data->menu[$i] as $m}}
+                        <li >
+                            <a href="{{$manager->getAppURL($m[2])}}">{{$m[1]}}</a>
+                        </li>
+                        {{/foreach}}
+                    </ul>
+                </li>
+                {{/foreach}}
+            </ul>
+        </li>
+    </ul>
+</nav><!--{ % endif % }-->

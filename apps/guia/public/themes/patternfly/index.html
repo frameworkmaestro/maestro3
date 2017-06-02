@@ -1,0 +1,29 @@
+{{$page->fetch('header')|noescape}}
+<!-- basic preloader: -->
+<header>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" id="logo" title="maestro framework" href="/">Maestro</a>
+            </div>
+        </div>
+    </nav>
+
+<div id="mainMenu" class="melement" data-manager="href:'{{$manager->getURL('main/menu')}}'"></div>
+</header>
+
+<div class="container-fluid">
+    <div class="clearfix row" id="content">
+        <div id="main" class="col-md-12 clearfix" role="main">
+{{$page->generate('content')|noescape}}
+</div>
+    </div>
+</div>
+
+{{$page->fetch('footer')|noescape}}
