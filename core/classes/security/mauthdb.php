@@ -1,38 +1,37 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
 class MAuthDb extends MAuth
 {
     var $errors;
-    
+
     public function authenticate($userId, $pass)
     {
         $this->manager->logMessage("[LOGIN] Authenticating $userId");
         $login = NULL;
 
-        try
-        {
+        try {
             $user = $this->manager->getBusinessMAD('user');
             $user->getByLoginPass($userId, $pass);
 
-            if ($user->login)
-            {
+            if ($user->login) {
                 $login = new MLogin($user);
-                if ($this->manager->getConf("options.dbsession"))
-                {
+                if ($this->manager->getConf("options.dbsession")) {
                     $session = $this->manager->getBusinessMAD('session');
                     $session->lastAccess($login);
                     $session->registerIn($login);
@@ -41,14 +40,10 @@ class MAuthDb extends MAuth
                 $this->setLogin($login);
                 $this->manager->logMessage("[LOGIN] Authenticated $userId");
                 return true;
-            }
-            else
-            {
+            } else {
                 $this->manager->logMessage("[LOGIN] $userId NOT Authenticated");
             }
-        }
-        catch( Exception $e )
-        {
+        } catch (Exception $e) {
             $this->manager->logMessage("[LOGIN] $userId NOT Authenticated - " . $e->getMessage());
             $this->errors = $e->getMessage();
         }
@@ -56,4 +51,3 @@ class MAuthDb extends MAuth
         return false;
     }
 }
-?>

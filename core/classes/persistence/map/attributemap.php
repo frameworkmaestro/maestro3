@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class AttributeMap {
+class AttributeMap
+{
 
     private $classMap;
     private $name;
@@ -31,18 +33,21 @@ class AttributeMap {
     private $db;
     private $platform;
 
-    public function __construct($name, $classMap) {
+    public function __construct($name, $classMap)
+    {
         $this->name = $name;
         $this->classMap = $classMap;
         $this->db = $classMap->getDb();
         $this->platform = $classMap->getPlatform();
     }
 
-    public function getClassMap() {
+    public function getClassMap()
+    {
         return $this->classMap;
     }
 
-    public function getName($alias = '') {
+    public function getName($alias = '')
+    {
         if ($alias != '') {
             return $alias . '.' . $this->name;
         } else {
@@ -50,51 +55,63 @@ class AttributeMap {
         }
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function setAlias($alias) {
+    public function setAlias($alias)
+    {
         $this->alias = $alias;
     }
 
-    public function getAlias() {
+    public function getAlias()
+    {
         return $this->alias;
     }
 
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
     }
 
-    public function getHandled() {
+    public function getHandled()
+    {
         return $this->handled;
     }
 
-    public function setHandled($handled) {
+    public function setHandled($handled)
+    {
         $this->handled = $handled;
     }
 
-    public function setColumnName($name) {
+    public function setColumnName($name)
+    {
         $this->columnName = $name;
     }
 
-    public function setIndex($index) {
+    public function setIndex($index)
+    {
         $this->index = $index;
     }
 
-    public function setConverter($converter) {
+    public function setConverter($converter)
+    {
         $this->converter = $converter;
     }
 
-    public function getConverter() {
+    public function getConverter()
+    {
         return $this->converter;
     }
 
-    public function setValue($object, $value) {
+    public function setValue($object, $value)
+    {
         if (($pos = strpos($this->name, '.')) !== FALSE) {
             $nested = substr($this->name, 0, $pos);
             $nestedObject = $object->get($nested);
@@ -113,43 +130,53 @@ class AttributeMap {
         }
     }
 
-    public function getValue($object) {
+    public function getValue($object)
+    {
         return $object->get($this->index ? $this->name . $this->index : $this->name);
     }
 
-    public function setReference($attributeMap) {
+    public function setReference($attributeMap)
+    {
         $this->reference = $attributeMap;
     }
 
-    public function getReference() {
+    public function getReference()
+    {
         return $this->reference;
     }
 
-    public function getTableName() {
+    public function getTableName()
+    {
         return $this->classMap->getTableName();
     }
 
-    public function setKeyType($type) {
+    public function setKeyType($type)
+    {
         $this->keyType = $type;
     }
 
-    public function getKeyType() {
+    public function getKeyType()
+    {
         return $this->keyType;
     }
 
-    public function setIdGenerator($idGenerator) {
+    public function setIdGenerator($idGenerator)
+    {
         $this->idGenerator = $idGenerator;
     }
 
-    public function getIdGenerator() {
+    public function getIdGenerator()
+    {
         return $this->idGenerator;
     }
 
-    public function getColumnName(){
+    public function getColumnName()
+    {
         return $this->columnName;
     }
-    
-    public function getFullyQualifiedName($alias = '') {
+
+    public function getFullyQualifiedName($alias = '')
+    {
         if ($alias != '') {
             $name = $alias . '.' . $this->columnName;
         } else {
@@ -158,7 +185,8 @@ class AttributeMap {
         return $name;
     }
 
-    public function convertValue($value) {
+    public function convertValue($value)
+    {
         if (is_array($this->converter)) {
             foreach ($this->converter as $conv => $args) {
                 $charset = \Manager::getConf("options.charset");
@@ -192,8 +220,9 @@ class AttributeMap {
         }
         return $value;
     }
-    
-    public function getValueToDb($object) {
+
+    public function getValueToDb($object)
+    {
         $value = $this->convertValue($this->getValue($object));
         if (is_string($value)) {
             $value = $object->sanitize($this->name, $value);
@@ -202,11 +231,13 @@ class AttributeMap {
         return array($value, $this->type);
     }
 
-    public function getValueFromDb($value) {
+    public function getValueFromDb($value)
+    {
         return $this->platform->convertToPHPValue($value, $this->type);
     }
 
-    public function getColumnNameToDb($criteriaAlias = '', $as = TRUE) {
+    public function getColumnNameToDb($criteriaAlias = '', $as = TRUE)
+    {
         $fullyName = $this->getFullyQualifiedName($criteriaAlias);
         $name = $this->platform->convertColumn($fullyName, $this->type);
         if ($as && ($name != $fullyName)) { // need a "as" clause
@@ -215,11 +246,10 @@ class AttributeMap {
         return $name;
     }
 
-    public function getColumnWhereName($criteriaAlias = '') {
+    public function getColumnWhereName($criteriaAlias = '')
+    {
         $fullyName = $this->getFullyQualifiedName($criteriaAlias);
         $name = $this->platform->convertWhere($fullyName, $this->type);
         return $name;
     }
 }
-
-?>

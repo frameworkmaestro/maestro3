@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class MView {
+class MView
+{
 
     public $application;
     public $module;
@@ -26,28 +28,33 @@ class MView {
     //public $page;
     //public $result;
 
-    public function __construct($application, $module, $controller, $viewFile) {
+    public function __construct($application, $module, $controller, $viewFile)
+    {
         $this->application = $application;
         $this->module = $module;
         $this->controller = $controller;
         $this->viewFile = $viewFile;
     }
 
-    public function init() {
+    public function init()
+    {
         //$this->page = $this->manager->getPage();
         //$this->manager->view = $this;
         //$this->result = $this->manager->getResult();
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         $this->$name = $value;
     }
 
-    public function __get($name) {
+    public function __get($name)
+    {
         return $this->$name;
     }
 
-    public function setArgs($args) {
+    public function setArgs($args)
+    {
         if (count($args)) {
             foreach ($args as $name => $value) {
                 $this->$name = $value;
@@ -55,11 +62,13 @@ class MView {
         }
     }
 
-    public function getPath() {
+    public function getPath()
+    {
         return pathinfo($this->viewFile, PATHINFO_DIRNAME);
     }
-    
-    public function getControl($className){
+
+    public function getControl($className)
+    {
         return MControl::instance($className);
     }
 
@@ -67,9 +76,10 @@ class MView {
      * Processa o arquivo da view e inclui o conteudo no objeto Page.
      * @param type $controller
      * @param type $parameters
-     * @return type 
+     * @return type
      */
-    public function process($controller, $parameters) {
+    public function process($controller, $parameters)
+    {
 
         mtrace('view file = ' . $this->viewFile);
 
@@ -105,7 +115,7 @@ class MView {
                         $view->load();
                         if ($page->isPostBack()) {
                             $view->postback();
-                        }       
+                        }
                         $page->addContent($view);
                     }
                 }
@@ -130,5 +140,3 @@ class MView {
     }
 
 }
-
-?>

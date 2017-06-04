@@ -1,22 +1,23 @@
 <?php
 
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class PersistentCriteria extends BaseCriteria {
+class PersistentCriteria extends BaseCriteria
+{
 
     protected $columns = array();
     protected $classes = array();
@@ -37,7 +38,8 @@ class PersistentCriteria extends BaseCriteria {
     protected $tableCriteria = array();
     protected $tableCriteriaColumn = array();
 
-    public function __construct($classMap = NULL) {
+    public function __construct($classMap = NULL)
+    {
         $this->manager = PersistentManager::getInstance();
         $this->setClassMap($classMap);
         // Fill tables with tableMaps
@@ -49,11 +51,13 @@ class PersistentCriteria extends BaseCriteria {
         //$this->havingCondition->setCriteria($this);
     }
 
-    public function getManager() {
+    public function getManager()
+    {
         return $this->manager;
     }
 
-    public function setClassMap($classMap = NULL) {
+    public function setClassMap($classMap = NULL)
+    {
         if ($classMap) {
             $this->classMap = $classMap;
             do {
@@ -63,33 +67,39 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function getClassMap($className = '') {
+    public function getClassMap($className = '')
+    {
         if ($className == '') {
             return $this->classMap;
         }
         return $this->getMap($className);
     }
 
-    public function getNewCondition() {
+    public function getNewCondition()
+    {
         $condition = new ConditionCriteria();
         $condition->setCriteria($this);
         return $condition;
     }
 
-    public function getWhereCondition() {
+    public function getWhereCondition()
+    {
         return $this->whereCondition;
     }
 
-    public function getHavingCondition() {
+    public function getHavingCondition()
+    {
         return $this->havingCondition;
     }
 
-    public function getMap($className) {
+    public function getMap($className)
+    {
         $className = trim(strtolower($className));
         return $this->maps[$className];
     }
 
-    public function addClass($className, $alias = '', $classMap = NULL) {
+    public function addClass($className, $alias = '', $classMap = NULL)
+    {
         $className = trim(strtolower($className));
         $fullClassName = $className;
         if (strrpos($className, '\\') === false) {
@@ -111,12 +121,14 @@ class PersistentCriteria extends BaseCriteria {
         return $this;
     }
 
-    public function addClassMap($classMap, $alias = '') {
+    public function addClassMap($classMap, $alias = '')
+    {
         $className = $classMap->getName();
         $this->addClass($className, $alias, $classMap);
     }
 
-    public function registerAlias($alias, $class = NULL) {
+    public function registerAlias($alias, $class = NULL)
+    {
         if ($class instanceof ClassMap) {
             $this->aliases[$alias] = $class;
         } else {
@@ -125,7 +137,8 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function getAlias($className = '') {
+    public function getAlias($className = '')
+    {
         if ($className != '') {
             $className = trim(strtolower($className));
             $fullClassName = $className;
@@ -139,7 +152,8 @@ class PersistentCriteria extends BaseCriteria {
         return $alias;
     }
 
-    public function setAlias($alias, $class = NULL) {
+    public function setAlias($alias, $class = NULL)
+    {
         if ($class == NULL) {
             $class = $this->classMap;
             $this->alias = $alias;
@@ -149,15 +163,18 @@ class PersistentCriteria extends BaseCriteria {
         return $this;
     }
 
-    public function getMapFromAlias($alias) {
+    public function getMapFromAlias($alias)
+    {
         return $this->aliases[$alias];
     }
 
-    public function isAlias($name) {
+    public function isAlias($name)
+    {
         return (isset($this->aliases[$name]));
     }
 
-    public function getAliases() {
+    public function getAliases()
+    {
         return $this->aliases;
     }
 
@@ -165,7 +182,8 @@ class PersistentCriteria extends BaseCriteria {
      * Merge aliases from outer criteria.
      * @param <type> $criteria
      */
-    public function mergeAliases($criteria) {
+    public function mergeAliases($criteria)
+    {
         $aliases = $criteria->getAliases();
         if (count($aliases)) {
             foreach ($aliases as $alias => $classMap) {
@@ -176,7 +194,8 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function setAssociationAlias($associationName, $alias) {
+    public function setAssociationAlias($associationName, $alias)
+    {
         $association = $this->getAssociation($associationName);
         if ($association == NULL) {
             $association = $this->addAssociation($associationName);
@@ -187,7 +206,8 @@ class PersistentCriteria extends BaseCriteria {
         return $this;
     }
 
-    public function setAssociationType($associationName, $joinType) {
+    public function setAssociationType($associationName, $joinType)
+    {
         $association = $this->getAssociation($associationName);
         if ($association == NULL) {
             $association = $this->addAssociation($associationName);
@@ -196,7 +216,8 @@ class PersistentCriteria extends BaseCriteria {
         return $this;
     }
 
-    public function setAutoAssociation($alias1, $alias2, $condition = '', $joinType = 'INNER') {
+    public function setAutoAssociation($alias1, $alias2, $condition = '', $joinType = 'INNER')
+    {
         $className = $this->classMap->getName();
         $this->setAlias($alias1);
         $this->addClass($className, $alias1);
@@ -205,13 +226,15 @@ class PersistentCriteria extends BaseCriteria {
         return $this;
     }
 
-    public function setReferenceAlias($alias) {
+    public function setReferenceAlias($alias)
+    {
         $className = $this->classMap->getName();
         $this->addClass($className, $alias);
         return $this;
     }
 
-    public function getAssociationsJoin() {
+    public function getAssociationsJoin()
+    {
         // Build a join array to sql statement
         $join = array();
 
@@ -267,7 +290,8 @@ class PersistentCriteria extends BaseCriteria {
         return $join;
     }
 
-    public function getAttributeMap(&$attribute) {
+    public function getAttributeMap(&$attribute)
+    {
         if ($this->checkAttributesToSkip($attribute)) {
             return;
         }
@@ -282,7 +306,7 @@ class PersistentCriteria extends BaseCriteria {
                 } else {
                     $currentClassMap = $classMap;
                     $association = $this->getAssociation($name, $classMap)
-                            ? : $this->addAssociation($name, 'INNER', $classMap);
+                        ?: $this->addAssociation($name, 'INNER', $classMap);
                     if ($association == NULL) {
                         return $association;
                     }
@@ -315,7 +339,8 @@ class PersistentCriteria extends BaseCriteria {
         return $attributeMap;
     }
 
-    private function checkAttributesToSkip($attribute) {
+    private function checkAttributesToSkip($attribute)
+    {
         return in_array(trim($attribute), ['', '=', '?', '(', ')', 'and', 'or', 'not']);
     }
 
@@ -323,7 +348,8 @@ class PersistentCriteria extends BaseCriteria {
      * Criteria clauses
      */
 
-    public function addColumnAttribute($attribute, $label = '') {
+    public function addColumnAttribute($attribute, $label = '')
+    {
         $attribute = trim($attribute);
         if ($attribute == '*') {
             $classMap = $this->classMap;
@@ -336,15 +362,18 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function addCriteria($op1, $operator = '', $op2 = NULL) {
+    public function addCriteria($op1, $operator = '', $op2 = NULL)
+    {
         $this->whereCondition->and_($op1, $operator, $op2);
     }
 
-    public function addOrCriteria($op1, $operator = '', $op2 = NULL) {
+    public function addOrCriteria($op1, $operator = '', $op2 = NULL)
+    {
         $this->whereCondition->or_($op1, $operator, $op2);
     }
 
-    private function convertMultiCriteria($condition, &$criteriaCondition) {
+    private function convertMultiCriteria($condition, &$criteriaCondition)
+    {
         if (is_array($condition)) {
             foreach ($condition as $c) {
                 if (is_array($c[1])) {
@@ -360,7 +389,8 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function addMultiCriteria($condition) {
+    public function addMultiCriteria($condition)
+    {
         $this->convertMultiCriteria($condition, $this->whereCondition);
     }
 
@@ -369,41 +399,49 @@ class PersistentCriteria extends BaseCriteria {
      * @param <type> $criteria
      * @param <type> $alias
      */
-    public function tableCriteria($criteria, $alias) {
+    public function tableCriteria($criteria, $alias)
+    {
         $sql = $criteria->getSqlStatement();
         $sql->setDb($this->getClassMap()->getDb());
         $this->tableCriteria[] = array($sql->select()->getCommand(), $alias);
         return $this;
     }
 
-    public function getCriteria($op1, $operator = '', $op2 = NULL) {
+    public function getCriteria($op1, $operator = '', $op2 = NULL)
+    {
         $operand1 = $this->getOperand($op1);
         $operand2 = $this->getOperand($op2);
         $criteria = BaseCriteria::getCondition($operand1, $operator, $operand2);
         return $criteria;
     }
 
-    public function addGroupAttribute($attribute) {
+    public function addGroupAttribute($attribute)
+    {
         $this->groups[] = $attribute;
     }
 
-    public function addHavingCriteria($op1, $operator, $op2) {
+    public function addHavingCriteria($op1, $operator, $op2)
+    {
         $this->havingCondition->addCriteria($this->getCriteria($op1, $operator, $op2));
     }
 
-    public function addOrHavingCriteria($op1, $operator, $op2) {
+    public function addOrHavingCriteria($op1, $operator, $op2)
+    {
         $this->havingCondition->addOrCriteria($this->getCriteria($op1, $operator, $op2));
     }
 
-    public function addOrderAttribute($attribute, $ascend = TRUE) {
+    public function addOrderAttribute($attribute, $ascend = TRUE)
+    {
         $this->orders[] = $attribute . ($ascend ? ' ASC' : ' DESC');
     }
 
-    public function addParameters($parameters) {
+    public function addParameters($parameters)
+    {
         $this->parameters = $parameters;
     }
 
-    public function addParameter($value, $name = '') {
+    public function addParameter($value, $name = '')
+    {
         if ($name != '') {
             $this->parameters[$name] = $value;
         } else {
@@ -415,14 +453,15 @@ class PersistentCriteria extends BaseCriteria {
      * Associations methods
      */
 
-    public function getAssociation($associationName, $classMap = NULL) {
+    public function getAssociation($associationName, $classMap = NULL)
+    {
         if ($classMap == NULL) {
             $classMap = $this->classMap;
         }
         $associationCriteria = NULL;
         foreach ($this->associations as $a) {
             $classMapName = $classMap->getName();
-            $prefixedAssociationName =  $classMapName . '.' . $associationName;
+            $prefixedAssociationName = $classMapName . '.' . $associationName;
             /*
             if ($classMap != NULL) { // classMap definido
                 $classMapName = $classMap->getName();
@@ -443,7 +482,8 @@ class PersistentCriteria extends BaseCriteria {
         return $associationCriteria;
     }
 
-    public function addAssociation($name, $joinType = 'INNER', $classMap = NULL) {
+    public function addAssociation($name, $joinType = 'INNER', $classMap = NULL)
+    {
         if ($classMap == NULL) {
             $classMap = $this->classMap;
         } else {
@@ -485,7 +525,8 @@ class PersistentCriteria extends BaseCriteria {
         }
     }
 
-    public function addAssociationCriteria($name, $associationMap, $joinType = 'INNER') {
+    public function addAssociationCriteria($name, $associationMap, $joinType = 'INNER')
+    {
         $this->associations[$name] = new AssociationCriteria($name, $this, $joinType);
         $this->associations[$name]->setAssociationMap($associationMap);
         return $this->associations[$name];
@@ -495,22 +536,24 @@ class PersistentCriteria extends BaseCriteria {
      * Retrieve methods
      */
 
-    public function retrieveAsQuery($parameters = null) {
+    public function retrieveAsQuery($parameters = null)
+    {
         return $this->manager->processCriteriaAsQuery($this, $parameters);
     }
 
-    public function retrieveAsCursor($parameters = null) {
+    public function retrieveAsCursor($parameters = null)
+    {
         return $this->manager->processCriteriaAsCursor($this, $parameters);
     }
 
-    public function retrieveAsProxyQuery($parameters = null) {
+    public function retrieveAsProxyQuery($parameters = null)
+    {
         return $this->manager->processCriteriaAsProxyQuery($this, $parameters);
     }
 
-    public function retrieveAsProxyCursor($parameters = null) {
+    public function retrieveAsProxyCursor($parameters = null)
+    {
         return $this->manager->processCriteriaAsProxyCursor($this, $parameters);
     }
 
 }
-
-?>

@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -34,19 +34,23 @@ class MCPF extends MType
      */
     private $value;
 
-    public function __construct($value) {
+    public function __construct($value)
+    {
         $this->setValue($value);
     }
 
-    public static function create($value) {
+    public static function create($value)
+    {
         return new MCPF($value);
     }
 
-    public function getValue() {
+    public function getValue()
+    {
         return $this->value ?: '';
     }
 
-    public function setValue($value) {
+    public function setValue($value)
+    {
         if (strpos($value, '.') !== false) { // $value está com pontuação
             $value = str_replace('.', '', $value);
             $value = str_replace('-', '', $value);
@@ -54,27 +58,33 @@ class MCPF extends MType
         $this->value = $value;
     }
 
-    static public function validate($value) {
+    static public function validate($value)
+    {
         return $value->isValid();
     }
 
-    public function isValid() {
+    public function isValid()
+    {
         return $this->validateCPF();
     }
 
-    public function format() {
+    public function format()
+    {
         return sprintf('%s.%s.%s-%s', substr($this->value, 0, 3), substr($this->value, 3, 3), substr($this->value, 6, 3), substr($this->value, 9, 2));
     }
 
-    public function getPlainValue() {
+    public function getPlainValue()
+    {
         return $this->getValue();
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->format();
     }
 
-    private function validateCPF() {
+    private function validateCPF()
+    {
         $cpf = $this->value;
         if (preg_match('/[0-9]{9}YY/', $cpf) == 1) {
             return true;
@@ -99,5 +109,3 @@ class MCPF extends MType
     }
 
 }
-
-?>

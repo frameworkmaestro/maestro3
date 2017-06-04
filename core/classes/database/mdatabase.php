@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,7 +19,8 @@ namespace database;
 
 use Doctrine\DBAL;
 
-class MDatabase implements \IDataBase {
+class MDatabase implements \IDataBase
+{
 
     /**
      * List of supported drivers and their mappings to the driver classes.
@@ -50,7 +51,8 @@ class MDatabase implements \IDataBase {
     private $ormLogger = NULL;
     private $lastInsertId = 0;
 
-    public function __construct($name = 'default') {
+    public function __construct($name = 'default')
+    {
         try {
             $this->name = trim($name);
             $this->config = \Manager::$conf['db'][$name];
@@ -64,14 +66,14 @@ class MDatabase implements \IDataBase {
             }
             //mdump($this->config);
             $this->connection = $this->newConnection();
-            
+
             $this->params = $this->connection->getParams();
             $this->platform->connect();
             $ormLogger = $this->config['ormLoggerClass'];
             if ($ormLogger) {
                 $this->ormLogger = new $ormLogger();
             }
-            
+
             if ($this->config['enableUserInformation']) {
                 $this->setUserInformation();
             }
@@ -86,18 +88,21 @@ class MDatabase implements \IDataBase {
      * @param sting $name the connection name
      * @return Doctrine\DBAL\Connection
      */
-    public function newConnection() {
+    public function newConnection()
+    {
         $configuration = new DBAL\Configuration();
         $logger = new MSQLLogger($this);
         $configuration->setSQLLogger($logger);
         return DBAL\DriverManager::getConnection($this->config, $configuration);
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->connection;
     }
 
-    public function getConfig($key) {
+    public function getConfig($key)
+    {
         $k = explode('.', $key);
         $conf = $this->config;
         foreach ($k as $token) {
@@ -106,38 +111,46 @@ class MDatabase implements \IDataBase {
         return $conf;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getPlatform() {
+    public function getPlatform()
+    {
         return $this->platform;
     }
 
-    public function getORMLogger() {
+    public function getORMLogger()
+    {
         return $this->ormLogger;
     }
 
-    public function getTransaction() {
+    public function getTransaction()
+    {
         return $this->connection;
     }
 
-    public function lastInsertId() {
+    public function lastInsertId()
+    {
         return $this->lastInsertId;
     }
 
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         $this->connection->beginTransaction();
         return $this->connection;
     }
 
-    public function getSQL($columns = '', $tables = '', $where = '', $orderBy = '', $groupBy = '', $having = '', $forUpdate = false) {
+    public function getSQL($columns = '', $tables = '', $where = '', $orderBy = '', $groupBy = '', $having = '', $forUpdate = false)
+    {
         $sql = new MSQL($columns, $tables, $where, $orderBy, $groupBy, $having, $forUpdate);
         $sql->setDb($this);
         return $sql;
     }
 
-    public function execute(MSQL $sql, $parameters = NULL) {
+    public function execute(MSQL $sql, $parameters = NULL)
+    {
         if ($this->connection->isTransactionActive()) {
             try {
                 $sql->setParameters($parameters);
@@ -152,7 +165,9 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    public function executeBatch(/* array of MSQL */ $sqlArray) {
+    public function executeBatch(/* array of MSQL */
+        $sqlArray)
+    {
         if (!is_array($sqlArray)) {
             $sqlArray = array($sqlArray);
         }
@@ -176,18 +191,21 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    public function executeCommand($command, $parameters = null) {
+    public function executeCommand($command, $parameters = null)
+    {
         $msql = new MSQL();
         $msql->setDb($this);
         $msql->setCommand($command);
         $this->execute($msql, $parameters);
     }
 
-    public function count(MQuery $query) {
+    public function count(MQuery $query)
+    {
         return $query->count();
     }
 
-    public function getNewId($sequence = 'admin') {
+    public function getNewId($sequence = 'admin')
+    {
         try {
             $value = $this->platform->getNewId($sequence);
         } catch (\Exception $e) {
@@ -196,11 +214,13 @@ class MDatabase implements \IDataBase {
         return $value;
     }
 
-    public function prepare(MSQL $sql) {
+    public function prepare(MSQL $sql)
+    {
         $sql->prepare();
     }
 
-    public function query(MSQL $sql) {
+    public function query(MSQL $sql)
+    {
         try {
             $query = $this->getQuery($sql);
             return $query->fetchAll();
@@ -209,7 +229,8 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    public function executeQuery($command, $parameters = null, $page = null, $rows = null) {
+    public function executeQuery($command, $parameters = null, $page = null, $rows = null)
+    {
         try {
             $query = new MQuery();
             $query->setDb($this);
@@ -233,7 +254,8 @@ class MDatabase implements \IDataBase {
      * @return MQuery
      * @throws \EDBException
      */
-    public function getQueryCommand($command) {
+    public function getQueryCommand($command)
+    {
         try {
             $query = new MQuery();
             $query->setDb($this);
@@ -246,7 +268,8 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    public function getQuery(MSQL $sql) {
+    public function getQuery(MSQL $sql)
+    {
         try {
             $query = new MQuery();
             $query->setDb($this);
@@ -257,7 +280,8 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    public function getTable($tableName) {
+    public function getTable($tableName)
+    {
         try {
             $sql = new MSql("*", $tableName);
             $query = $this->getQuery($sql);
@@ -267,26 +291,27 @@ class MDatabase implements \IDataBase {
         }
     }
 
-    private function setUserInformation() {
+    private function setUserInformation()
+    {
         $login = \Manager::getLogin();
-        
-        if(!$login) {
-           $userId = 1; 
+
+        if (!$login) {
+            $userId = 1;
         } else {
-           $userId = $login->getIdUser(); 
+            $userId = $login->getIdUser();
         }
-        
+
         $userIP = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
         $this->platform->setUserInformation($userId, $userIP, null, null);
     }
-    
-    public function executeProcedure($sql, $aParams = array(), $aResult = array()) {
+
+    public function executeProcedure($sql, $aParams = array(), $aResult = array())
+    {
         /* TODO */
     }
 
-    public function ignoreAccentuation($ignore = true) {
+    public function ignoreAccentuation($ignore = true)
+    {
         $this->platform->ignoreAccentuation($ignore);
     }
 }
-    
-?>

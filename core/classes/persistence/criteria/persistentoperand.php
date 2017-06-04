@@ -1,48 +1,56 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class PersistentOperand {
+class PersistentOperand
+{
 
     public $operand;
     public $type;
 
-    public function __construct($operand) {
+    public function __construct($operand)
+    {
         $this->operand = $operand;
         $this->type = '';
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         return '';
     }
 
-    public function getSqlWhere() {
+    public function getSqlWhere()
+    {
         return $this->getSql();
     }
 
 }
 
-class OperandValue extends PersistentOperand {
+class OperandValue extends PersistentOperand
+{
 
-    public function __construct($operand) {
+    public function __construct($operand)
+    {
         parent::__construct($operand);
         $this->type = 'value';
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         $value = $this->operand;
         if ($value{0} != '?') {
             if ($value{0} == ':') {
@@ -58,24 +66,27 @@ class OperandValue extends PersistentOperand {
 
 }
 
-class OperandArray extends PersistentOperand {
+class OperandArray extends PersistentOperand
+{
 
-    public function __construct($operand) {
+    public function __construct($operand)
+    {
         parent::__construct($operand);
         $this->type = 'array';
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         $sql = "(";
         $i = 0;
-        if (is_array($this->operand)){
+        if (is_array($this->operand)) {
             $list = '';
             foreach ($this->operand as $o) {
-                $list .= ( $i++ > 0) ? ", " : "";
+                $list .= ($i++ > 0) ? ", " : "";
                 $list .= "'$o'";
             }
             $sql .= (($list == '') ? "''" : $list);
-        }else{
+        } else {
             $sql .= "'$this->operand'";
         }
         $sql .= ")";
@@ -84,14 +95,16 @@ class OperandArray extends PersistentOperand {
 
 }
 
-class OperandAttributeMap extends PersistentOperand {
+class OperandAttributeMap extends PersistentOperand
+{
 
     public $attributeMap;
     public $alias = '';
     public $criteria;
     public $as;
 
-    public function __construct($operand, $name) {
+    public function __construct($operand, $name)
+    {
         parent::__construct($operand);
         $this->type = 'attributemap';
         if ($p = strpos($name, '.')) {
@@ -100,38 +113,46 @@ class OperandAttributeMap extends PersistentOperand {
         $this->attributeMap = $operand;
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         return $this->attributeMap->getColumnNameToDb($this->alias);
     }
 
-    public function getSqlName() {
+    public function getSqlName()
+    {
         return $this->attributeMap->getName();
     }
 
-    public function getSqlOrder() {
+    public function getSqlOrder()
+    {
         return $this->attributeMap->getFullyQualifiedName($this->alias);
     }
 
-    public function getSqlWhere() {
+    public function getSqlWhere()
+    {
         return $this->attributeMap->getFullyQualifiedName($this->alias);
         //return $this->attributeMap->getColumnWhereName($this->alias);
     }
 
-    public function getSqlGroup() {
+    public function getSqlGroup()
+    {
         return $this->attributeMap->getFullyQualifiedName($this->alias);
     }
 
 }
 
-class OperandCriteria extends PersistentOperand {
+class OperandCriteria extends PersistentOperand
+{
 
-    public function __construct($operand, $criteria) {
+    public function __construct($operand, $criteria)
+    {
         parent::__construct($operand);
         $this->criteria = $criteria;
         $this->type = 'criteria';
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         /*
           $sql = $this->operand->getSqlStatement();
           $sql->setDb($this->operand->getManager()->getConnection($this->operand->getClassMap()->getDatabase()));
@@ -144,12 +165,14 @@ class OperandCriteria extends PersistentOperand {
 
 }
 
-class OperandFunction extends PersistentOperand {
+class OperandFunction extends PersistentOperand
+{
 
     public $argument;
     public $argOperand;
 
-    public function __construct($operand, $criteria) {
+    public function __construct($operand, $criteria)
+    {
         parent::__construct($operand);
         $this->type = 'public function';
         $str = $this->argument = $this->operand;
@@ -168,61 +191,72 @@ class OperandFunction extends PersistentOperand {
         }
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         return $this->argument;
     }
 
-    public function getSqlGroup() {
+    public function getSqlGroup()
+    {
         return $this->argument;
     }
 
-    public function getSqlOrder() {
+    public function getSqlOrder()
+    {
         return $this->argument;
     }
 
 }
 
-class OperandNull extends PersistentOperand {
+class OperandNull extends PersistentOperand
+{
 
-    public function __construct($operand) {
+    public function __construct($operand)
+    {
         parent::__construct($operand);
         $this->type = 'null';
     }
 
 }
 
-class OperandObject extends PersistentOperand {
+class OperandObject extends PersistentOperand
+{
 
     private $criteria;
-    
-    public function __construct($operand, $criteria) {
+
+    public function __construct($operand, $criteria)
+    {
         parent::__construct($operand);
         $this->type = 'object';
         $this->criteria = $criteria;
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         if (method_exists($this->operand, 'getSql')) {
             return $this->operand->getSql();
         } else { // se não existe o método getSql, acrescenta como parâmetro nomeado
             $name = uniqid('param_');
-            $this->criteria->addParameter($this->operand,$name);
+            $this->criteria->addParameter($this->operand, $name);
             return ':' . $name;
         }
     }
 
-    public function getSqlWhere() {
+    public function getSqlWhere()
+    {
         $platform = $this->criteria->getClassMap()->getPlatform();
         return $platform->convertWhere($this->operand);
     }
 }
 
-class OperandExpression extends PersistentOperand {
+class OperandExpression extends PersistentOperand
+{
 
     public $argument;
     public $argOperand;
 
-    public function __construct($criteria, $operand) {
+    public function __construct($criteria, $operand)
+    {
         parent::__construct($criteria, $operand);
         $this->type = 'expression';
         $str = $this->argument = $this->operand;
@@ -241,29 +275,35 @@ class OperandExpression extends PersistentOperand {
         }
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         return $this->argument;
     }
 
-    public function getSqlGroup() {
+    public function getSqlGroup()
+    {
         return $this->argument;
     }
 
-    public function getSqlOrder() {
+    public function getSqlOrder()
+    {
         return $this->argument;
     }
 
 }
 
-class OperandString extends PersistentOperand {
+class OperandString extends PersistentOperand
+{
 
-    public function __construct($operand, $criteria) {
+    public function __construct($operand, $criteria)
+    {
         parent::__construct($operand);
         $this->criteria = $criteria;
         $this->type = 'string';
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         $value = $this->operand;
         $sql = '';
         $tokens = preg_split('/([\s()=]+)/', $value, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -294,7 +334,8 @@ class OperandString extends PersistentOperand {
         return $sql;
     }
 
-    public function getSqlWhere() {
+    public function getSqlWhere()
+    {
         $value = $this->operand;
         $sql = '';
         $tokens = preg_split('/([\s()=]+)/', $value, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -316,7 +357,8 @@ class OperandString extends PersistentOperand {
         return $sql;
     }
 
-    public function getSqlGroup() {
+    public function getSqlGroup()
+    {
         $value = $this->operand;
         $sql = '';
         $tokens = preg_split('/([\s()=]+)/', $value, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -336,7 +378,8 @@ class OperandString extends PersistentOperand {
         return $sql;
     }
 
-    public function getSqlOrder() {
+    public function getSqlOrder()
+    {
         $value = $this->operand;
         $sql = '';
         $tokens = preg_split('/([\s()=]+)/', $value, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -358,12 +401,15 @@ class OperandString extends PersistentOperand {
 
 }
 
-class OperandStringAI extends OperandString {
-    public function getSqlWhere() {
+class OperandStringAI extends OperandString
+{
+    public function getSqlWhere()
+    {
         return $this->getSql();
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         $sql = parent::getSql();
 
         return "TRANSLATE( $sql, 'ÁÇÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÜáçéíóúàèìòùâêîôûãõëü', 'ACEIOUAEIOUAEIOUAOEUaceiouaeiouaeiouaoeu')";

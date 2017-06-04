@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class AssociationCriteria {
+class AssociationCriteria
+{
 
     private $name;
     private $associationMap;
@@ -24,55 +26,66 @@ class AssociationCriteria {
     private $alias;
     private $persistentCriteria;
 
-    public function __construct($name, $criteria, $joinType = 'INNER') {
+    public function __construct($name, $criteria, $joinType = 'INNER')
+    {
         $this->name = $name;
         $this->joinType = $joinType;
         $this->persistentCriteria = $criteria;
     }
 
-    public function setCriteria($criteria) {
+    public function setCriteria($criteria)
+    {
         $thos->persistentCriteria = $criteria;
     }
 
-    public function getCriteria() {
+    public function getCriteria()
+    {
         return $this->persistentCriteria;
     }
 
-    public function setAssociationMap($associationMap) {
+    public function setAssociationMap($associationMap)
+    {
         $this->associationMap = $associationMap;
         //if ($associationMap instanceof AssociationMap) {
         //    if ($associationMap->isAutoAssociation()) {
         //        $this->alias = $associationMap->getName();
-                //$this->getCriteria()->setAlias($this->alias, $associationMap->getToClassMap());
+        //$this->getCriteria()->setAlias($this->alias, $associationMap->getToClassMap());
         //    }
         //}
     }
 
-    public function getAssociationMap() {
+    public function getAssociationMap()
+    {
         return $this->associationMap;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setAlias($alias) {
+    public function setAlias($alias)
+    {
         $this->alias = $alias;
     }
 
-    public function getAlias() {
+    public function getAlias()
+    {
         return $this->alias;
     }
 
-    public function getJoinType() {
+    public function getJoinType()
+    {
         return $this->joinType;
     }
 
-    public function setJoinType($joinType) {
+    public function setJoinType($joinType)
+    {
         $this->joinType = $joinType;
     }
 
-    public function getJoin() {
+    public function getJoin()
+    {
         $this->associationMap->setKeysAttributes();
         $cardinality = $this->associationMap->getCardinality();
         if ($cardinality == 'manyToMany') {
@@ -94,5 +107,3 @@ class AssociationCriteria {
     }
 
 }
-
-?>

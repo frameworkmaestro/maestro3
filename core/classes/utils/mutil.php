@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -189,7 +189,8 @@ class MUtil
      * Retira os caracteres especiais.
      * @param <type> $string
      */
-    public static function RemoveSpecialChars($string, $whiteList = array()) {
+    public static function RemoveSpecialChars($string, $whiteList = array())
+    {
         $specialCharacters = array_merge(self::getSpecialCharsExceptAccents(), self::getAccentedChars());
         return self::replaceSpecialChars($string, $specialCharacters, $whiteList);
     }
@@ -641,15 +642,15 @@ class MUtil
     {
         if (getenv('HTTP_CLIENT_IP'))
             $ip = getenv('HTTP_CLIENT_IP');
-        else if(getenv('HTTP_X_FORWARDED_FOR'))
+        else if (getenv('HTTP_X_FORWARDED_FOR'))
             $ip = getenv('HTTP_X_FORWARDED_FOR');
-        else if(getenv('HTTP_X_FORWARDED'))
+        else if (getenv('HTTP_X_FORWARDED'))
             $ip = getenv('HTTP_X_FORWARDED');
-        else if(getenv('HTTP_FORWARDED_FOR'))
+        else if (getenv('HTTP_FORWARDED_FOR'))
             $ip = getenv('HTTP_FORWARDED_FOR');
-        else if(getenv('HTTP_FORWARDED'))
+        else if (getenv('HTTP_FORWARDED'))
             $ip = getenv('HTTP_FORWARDED');
-        else if(getenv('REMOTE_ADDR'))
+        else if (getenv('REMOTE_ADDR'))
             $ip = getenv('REMOTE_ADDR');
         else
             $ip = 'UNKNOWN';
@@ -661,7 +662,8 @@ class MUtil
      * Pega a hora corrente em milisegundos.
      * @return float Hora corrente em milisegundos.
      */
-    public static function getCurrentTimeInMilliseconds() {
+    public static function getCurrentTimeInMilliseconds()
+    {
         return round(microtime(true) * 1000);
     }
 
@@ -671,13 +673,14 @@ class MUtil
      * @return bool
      * @throws Exception
      */
-    public static function randomBoolean($trueChance = 0.5) {
+    public static function randomBoolean($trueChance = 0.5)
+    {
         if ($trueChance < 0.00001 || $trueChance > 1) {
             throw new \Exception("Valor inválido");
         }
 
         $max = 100000;
-        return (mt_rand(0,$max) <= $trueChance * $max);
+        return (mt_rand(0, $max) <= $trueChance * $max);
     }
 
     /**
@@ -685,7 +688,8 @@ class MUtil
      * @param $value
      * @return null|string
      */
-    public static function zeroOrOneToSorN($value) {
+    public static function zeroOrOneToSorN($value)
+    {
         switch ($value) {
             case 0;
                 return 'N';
@@ -696,7 +700,8 @@ class MUtil
         }
     }
 
-    public static function sendMail($address, $subject, $body) {
+    public static function sendMail($address, $subject, $body)
+    {
         $mail = \MMailer::getMailer(null);
         $mail->addAddress($address);
         $mail->Subject = '[SIGA/UFJF] ' . $subject;
@@ -704,7 +709,8 @@ class MUtil
         return $mail->send();
     }
 
-    public static function limitText($text, $charLimit) {
+    public static function limitText($text, $charLimit)
+    {
         if (mb_strlen($text) > $charLimit) {
             $text = mb_substr($text, 0, $charLimit - 3) . "...";
         }
@@ -722,5 +728,3 @@ class MDataObject
 {
 
 }
-
-?>

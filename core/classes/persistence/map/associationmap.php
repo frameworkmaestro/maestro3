@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class AssociationMap {
+class AssociationMap
+{
 
     private $manager;
     private $name;
@@ -40,7 +42,8 @@ class AssociationMap {
     private $indexAttribute;
     private $autoAssociation = FALSE;
 
-    public function __construct(ClassMap $fromClassMap, $name) {
+    public function __construct(ClassMap $fromClassMap, $name)
+    {
         $this->manager = PersistentManager::getInstance();
         $this->fromClassMap = $fromClassMap;
         $this->fromClassName = $fromClassMap->getName();
@@ -48,27 +51,33 @@ class AssociationMap {
         $this->inverse = FALSE;
     }
 
-    public function getFromClassMap() {
+    public function getFromClassMap()
+    {
         return $this->fromClassMap;
     }
 
-    public function getFromClassName() {
+    public function getFromClassName()
+    {
         return $this->fromClassName;
     }
 
-    public function setToClassName($name) {
+    public function setToClassName($name)
+    {
         $this->toClassName = $name;
     }
 
-    public function getToClassName() {
+    public function getToClassName()
+    {
         return $this->toClassName;
     }
 
-    public function setToClassMap($classMap) {
+    public function setToClassMap($classMap)
+    {
         $this->toClassMap = $classMap;
     }
 
-    public function getToClassMap() {
+    public function getToClassMap()
+    {
         $toClassMap = $this->toClassMap;
         if ($toClassMap == NULL) {
             $toClassMap = $this->toClassMap = $this->manager->getClassMap($this->toClassName);
@@ -76,21 +85,25 @@ class AssociationMap {
         return $toClassMap;
     }
 
-    public function setAssociativeTable($tableName) {
+    public function setAssociativeTable($tableName)
+    {
         $this->associativeTable = $tableName;
     }
 
-    public function getAssociativeTable() {
+    public function getAssociativeTable()
+    {
         return $this->associativeTable;
     }
 
-    public function addKeys($fromKey, $toKey) {
+    public function addKeys($fromKey, $toKey)
+    {
         $this->fromKey = $fromKey;
         $this->toKey = $toKey;
         $this->inverse = ($fromKey == $this->fromClassMap->getKeyAttributeName());
     }
 
-    public function setKeysAttributes() {
+    public function setKeysAttributes()
+    {
         if ($this->toClassMap == NULL) {
             $this->getToClassMap();
         }
@@ -112,87 +125,108 @@ class AssociationMap {
         }
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setOrder($order) {
+    public function setOrder($order)
+    {
         $this->order = $order;
     }
 
-    public function setOrderAttributes($orderAttributes) {
+    public function setOrderAttributes($orderAttributes)
+    {
         $this->orderAttributes = $orderAttributes;
     }
 
-    public function getOrderAttributes() {
+    public function getOrderAttributes()
+    {
         return $this->orderAttributes;
     }
 
-    public function setIndexAttribute($indexAttribute) {
+    public function setIndexAttribute($indexAttribute)
+    {
         $this->indexAttribute = $indexAttribute;
     }
 
-    public function getIndexAttribute() {
+    public function getIndexAttribute()
+    {
         return $this->indexAttribute;
     }
 
-    public function setDeleteAutomatic($value = false) {
+    public function setDeleteAutomatic($value = false)
+    {
         $this->deleteAutomatic = $value;
     }
 
-    public function setRetrieveAutomatic($value = false) {
+    public function setRetrieveAutomatic($value = false)
+    {
         $this->retrieveAutomatic = $value;
     }
 
-    public function setSaveAutomatic($value = false) {
+    public function setSaveAutomatic($value = false)
+    {
         $this->saveAutomatic = $value;
     }
 
-    public function setInverse($value = false) {
+    public function setInverse($value = false)
+    {
         $this->inverse = $value;
     }
 
-    public function setAutoAssociation($value = false) {
+    public function setAutoAssociation($value = false)
+    {
         $this->autoAssociation = $value;
     }
 
-    public function isDeleteAutomatic() {
+    public function isDeleteAutomatic()
+    {
         return $this->deleteAutomatic;
     }
 
-    public function isRetrieveAutomatic() {
+    public function isRetrieveAutomatic()
+    {
         return $this->retrieveAutomatic;
     }
 
-    public function isSaveAutomatic() {
+    public function isSaveAutomatic()
+    {
         return $this->saveAutomatic;
     }
 
-    public function isInverse() {
+    public function isInverse()
+    {
         return $this->inverse;
     }
 
-    public function isAutoAssociation() {
+    public function isAutoAssociation()
+    {
         return $this->autoAssociation;
     }
 
-    public function setCardinality($value = 'oneToOne') {
+    public function setCardinality($value = 'oneToOne')
+    {
         $this->cardinality = $value;
     }
 
-    public function getCardinality() {
+    public function getCardinality()
+    {
         return $this->cardinality;
     }
 
-    public function getFromAttributeMap() {
+    public function getFromAttributeMap()
+    {
         return $this->fromAttributeMap;
     }
 
-    public function getToAttributeMap() {
+    public function getToAttributeMap()
+    {
         return $this->toAttributeMap;
     }
 
@@ -214,7 +248,8 @@ class AssociationMap {
       }
      */
 
-    public function getNames($fromAlias = '', $toAlias = '') {
+    public function getNames($fromAlias = '', $toAlias = '')
+    {
         $names = new \stdClass();
         $names->fromTable = $this->fromAttributeMap->getClassMap()->getTableName($fromAlias);
         $names->toTable = $this->toAttributeMap->getClassMap()->getTableName($toAlias);
@@ -225,7 +260,8 @@ class AssociationMap {
         return $names;
     }
 
-    public function getCriteria($orderAttrs) {
+    public function getCriteria($orderAttrs)
+    {
         $criteria = new RetrieveCriteria($this->toClassMap);
         if ($this->cardinality == 'manyToMany') {
             $criteria->addAssociationCriteria($this->fromClassName . $this->name, $this);
@@ -241,13 +277,15 @@ class AssociationMap {
         return $criteria;
     }
 
-    public function getCriteriaParameters($object) {
+    public function getCriteriaParameters($object)
+    {
         $attributeMap = $this->fromAttributeMap;
         $criteriaParameters = array($object->getAttributeValue($attributeMap));
         return $criteriaParameters;
     }
 
-    public function getDeleteStatement($object, $refObject = NULL) {
+    public function getDeleteStatement($object, $refObject = NULL)
+    {
         $statement = new \database\MSQL();
         $statement->setDb($this->fromClassMap->getDb());
         $statement->setTables($this->getAssociativeTable());
@@ -261,7 +299,8 @@ class AssociationMap {
         return $statement->delete();
     }
 
-    public function getDeleteStatementId($object, $id) {
+    public function getDeleteStatementId($object, $id)
+    {
         $statement = new \database\MSQL();
         $statement->setDb($this->fromClassMap->getDb());
         $statement->setTables($this->getAssociativeTable());
@@ -272,7 +311,8 @@ class AssociationMap {
         return $statement->delete();
     }
 
-    public function getInsertStatement($object, $refObject) {
+    public function getInsertStatement($object, $refObject)
+    {
         $statement = new \database\MSQL();
         $statement->setDb($this->fromClassMap->getDb());
         $statement->setTables($this->getAssociativeTable());
@@ -285,7 +325,8 @@ class AssociationMap {
         return $statement->insert();
     }
 
-    public function getInsertStatementId($object, $id) {
+    public function getInsertStatementId($object, $id)
+    {
         $statement = new \database\MSQL();
         $statement->setDb($this->fromClassMap->getDb());
         $statement->setTables($this->getAssociativeTable());
@@ -298,7 +339,8 @@ class AssociationMap {
         return $statement->insert();
     }
 
-    public function getUpdateStatementId($object, $id, $value = NULL) {
+    public function getUpdateStatementId($object, $id, $value = NULL)
+    {
         // $id = array com PK dos objetos associados
         $statement = new \database\MSQL();
         $statement->setDb($this->fromClassMap->getDb());
@@ -312,7 +354,5 @@ class AssociationMap {
         return $statement->update();
     }
 
-    
-}
 
-?>
+}

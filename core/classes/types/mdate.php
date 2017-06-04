@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -102,106 +102,129 @@
   S      seconds
  */
 
-class MDate extends MType {
+class MDate extends MType
+{
 
     private $datetime;
     private $format;
     private $separator = '/';
 
-    public function __construct($datetime = NULL, $format = '') {
+    public function __construct($datetime = NULL, $format = '')
+    {
         parent::__construct();
         $this->separator = Manager::getOptions('separatorDate');
-        $this->format = ($format ? : Manager::getOptions('formatDate'));
+        $this->format = ($format ?: Manager::getOptions('formatDate'));
         $this->datetime = MKrono::getDateTime($datetime, $this->format);
     }
 
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments)
+    {
         if ($arguments) {
             return $this->datetime->$name($arguments);
         }
         return $this->datetime->$name();
     }
-    
-    public static function getSysDate($format = 'd/m/Y') {
+
+    public static function getSysDate($format = 'd/m/Y')
+    {
         return new MDate(date($format));
-    }    
+    }
 
-    public static function create($date = '01/01/01') {
+    public static function create($date = '01/01/01')
+    {
         return new MDate($date);
-    }    
+    }
 
-    public function getDateTime() {
+    public function getDateTime()
+    {
         return $this->datetime;
     }
 
-    public function getValue() {
+    public function getValue()
+    {
         return $this->datetime;
     }
-    
-    public function copy() {
+
+    public function copy()
+    {
         return clone $this;
     }
 
-    public function format($format = '') {
+    public function format($format = '')
+    {
         return MKrono::format($this, $format ?: $this->format);
     }
 
-    public function invert() {
+    public function invert()
+    {
         $date = $this->format();
         return MKrono::invertDate($date);
     }
-    
-    public function add($interval) {
+
+    public function add($interval)
+    {
         MKrono::dateAdd($this->datetime, $interval);
         return $this;
     }
 
-    public function sub($interval) {
+    public function sub($interval)
+    {
         MKrono::dateSub($this->datetime, $interval);
         return $this;
     }
 
-    public function diff($date, $format = '%a') {
+    public function diff($date, $format = '%a')
+    {
         return MKrono::dateDiff($this->datetime, $date, $format);
     }
 
-    public function getPeriod($dateInitial, $interval, $dateFinal) {
+    public function getPeriod($dateInitial, $interval, $dateFinal)
+    {
         return MKrono::getPeriod($dateInitial, $interval, $dateFinal);
     }
 
-    public function compare($operator, $date) {
+    public function compare($operator, $date)
+    {
         return MKrono::compareDate($this->datetime, $operator, $date);
     }
 
-    public function getDay($format = 'd') {
+    public function getDay($format = 'd')
+    {
         return MKrono::getDay($this, $format);
     }
 
-    public function getMonth($format = 'm') {
+    public function getMonth($format = 'm')
+    {
         return MKrono::getMonth($this, $format);
     }
 
-    public function getYear($format = 'Y') {
+    public function getYear($format = 'Y')
+    {
         return MKrono::getYear($this, $format);
     }
 
-    public function getDayNick() {
+    public function getDayNick()
+    {
         return strftime('%a', $this->datetime->getTimeStamp());
     }
 
-    public function getDayName() {
+    public function getDayName()
+    {
         return strftime('%A', $this->datetime->getTimeStamp());
     }
 
-    public function getMonthNick() {
+    public function getMonthNick()
+    {
         return strftime('%b', $this->datetime->getTimeStamp());
     }
 
-    public function getMonthName() {
+    public function getMonthName()
+    {
         return strftime('%B', $this->datetime->getTimeStamp());
     }
 
-    public function getFullName($dayOfWeek = false) {
+    public function getFullName($dayOfWeek = false)
+    {
         $locale = \Manager::getOptions('locale');
         $prefix = ($dayOfWeek ? $this->getDayName() . ', ' : '');
         if ($locale[0] == 'pt_BR') {
@@ -210,19 +233,20 @@ class MDate extends MType {
             return $prefix . $this->getMonthName() . ' ' . $this->getDay('j') . ',' . $this->getYear();
         }
     }
-    
-    public function getPlainValue(){
+
+    public function getPlainValue()
+    {
         return $this->format();
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->format();
     }
-    
-    public function isValid(){
+
+    public function isValid()
+    {
         return MKrono::isValid($this->format());
     }
 
 }
-
-?>

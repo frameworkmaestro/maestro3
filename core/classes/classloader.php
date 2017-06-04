@@ -1,21 +1,18 @@
 <?php
-
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
+ * Este arquivo é parte do programa Framework Maestro.
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
+ * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
+ * Este programa é distribuído na esperança que possa ser  útil,
+ * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
+ * em português para maiores detalhes.
+ * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
+ * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
+ * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 
 /**
@@ -23,14 +20,15 @@
  * installed on the SPL autoload stack. It is a class loader that either loads only classes
  * of a specific namespace or all namespaces and it is suitable for working together
  * with other autoloaders in the SPL autoload stack.
- * 
+ *
  * If no include path is configured through the constructor or {@link setIncludePath}, a ClassLoader
  * relies on the PHP <code>include_path</code>.
- * 
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class ClassLoader {
+class ClassLoader
+{
 
     private $fileExtension = '.php';
     private $namespace;
@@ -44,80 +42,89 @@ class ClassLoader {
      * If no include path is given, the ClassLoader relies on the PHP include_path.
      * If neither a namespace nor an include path is given, the ClassLoader will
      * be responsible for loading all classes, thereby relying on the PHP include_path.
-     * 
+     *
      * @param string $ns The namespace of the classes to load.
      * @param string $includePath The base include path to use.
      */
-    public function __construct($ns = null, $includePath = null) {
+    public function __construct($ns = null, $includePath = null)
+    {
         $this->namespace = $ns;
         $this->includePath = $includePath;
     }
 
     /**
      * Sets the namespace separator used by classes in the namespace of this ClassLoader.
-     * 
+     *
      * @param string $sep The separator to use.
      */
-    public function setNamespaceSeparator($sep) {
+    public function setNamespaceSeparator($sep)
+    {
         $this->namespaceSeparator = $sep;
     }
 
     /**
      * Gets the namespace separator used by classes in the namespace of this ClassLoader.
-     * 
+     *
      * @return string
      */
-    public function getNamespaceSeparator() {
+    public function getNamespaceSeparator()
+    {
         return $this->namespaceSeparator;
     }
 
     /**
      * Sets the base include path for all class files in the namespace of this ClassLoader.
-     * 
+     *
      * @param string $includePath
      */
-    public function setIncludePath($includePath) {
+    public function setIncludePath($includePath)
+    {
         $this->includePath = $includePath;
     }
 
     /**
      * Gets the base include path for all class files in the namespace of this ClassLoader.
-     * 
+     *
      * @return string
      */
-    public function getIncludePath() {
+    public function getIncludePath()
+    {
         return $this->includePath;
     }
 
     /**
      * Sets the file extension of class files in the namespace of this ClassLoader.
-     * 
+     *
      * @param string $fileExtension
      */
-    public function setFileExtension($fileExtension) {
+    public function setFileExtension($fileExtension)
+    {
         $this->fileExtension = $fileExtension;
     }
 
     /**
      * Gets the file extension of class files in the namespace of this ClassLoader.
-     * 
+     *
      * @return string
      */
-    public function getFileExtension() {
+    public function getFileExtension()
+    {
         return $this->fileExtension;
     }
 
     /**
      * Registers this ClassLoader on the SPL autoload stack.
      */
-    public function register() {
+    public function register()
+    {
         spl_autoload_register(array($this, 'loadClass'));
     }
 
     /**
      * Removes this ClassLoader from the SPL autoload stack.
      */
-    public function unregister() {
+    public function unregister()
+    {
         spl_autoload_unregister(array($this, 'loadClass'));
     }
 
@@ -127,13 +134,14 @@ class ClassLoader {
      * @param string $classname The name of the class to load.
      * @return boolean TRUE if the class has been successfully loaded, FALSE otherwise.
      */
-    public function loadClass($className) {
+    public function loadClass($className)
+    {
         if ($this->namespace !== null && strpos($className, $this->namespace . $this->namespaceSeparator) !== 0) {
             return false;
         }
         $file = ($this->includePath !== null ? $this->includePath . DIRECTORY_SEPARATOR : '')
-                . str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className)
-                . $this->fileExtension;
+            . str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className)
+            . $this->fileExtension;
         //$toLower = (\strpos($file,'Doctrine') === false) && (\strpos($file,'apps') === false) && (\strpos($file,'modules') === false);
         if (!file_exists($file)) {
             $file = strtolower($file);
@@ -152,7 +160,8 @@ class ClassLoader {
      * @param string $className The fully-qualified name of the class.
      * @return boolean TRUE if this ClassLoader can load the class, FALSE otherwise.
      */
-    public function canLoadClass($className) {
+    public function canLoadClass($className)
+    {
         if ($this->namespace !== null && strpos($className, $this->namespace . $this->namespaceSeparator) !== 0) {
             return false;
         }
@@ -187,7 +196,8 @@ class ClassLoader {
      * @param string $className The fully-qualified name of the class.
      * @return boolean TRUE if the class exists as per the definition given above, FALSE otherwise.
      */
-    public static function classExists($className) {
+    public static function classExists($className)
+    {
         if (class_exists($className, false)) {
             return true;
         }
@@ -224,7 +234,8 @@ class ClassLoader {
      * @param string $className The name of the class.
      * @return The <tt>ClassLoader</tt> for the class or NULL if no such <tt>ClassLoader</tt> exists.
      */
-    public static function getClassLoader($className) {
+    public static function getClassLoader($className)
+    {
         foreach (spl_autoload_functions() as $loader) {
             if (is_array($loader) && $loader[0] instanceof ClassLoader && $loader[0]->canLoadClass($className)
             ) {
@@ -239,7 +250,8 @@ class ClassLoader {
      * @param string $file The file relative path.
      * @return boolean Whether file exists in include_path.
      */
-    public static function fileExistsInIncludePath($file) {
+    public static function fileExistsInIncludePath($file)
+    {
         foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir) {
             if (file_exists($dir . DIRECTORY_SEPARATOR . $file)) {
                 return true;

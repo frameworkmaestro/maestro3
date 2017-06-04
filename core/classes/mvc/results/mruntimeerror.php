@@ -1,32 +1,36 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class MRuntimeError extends MResult {
+class MRuntimeError extends MResult
+{
     protected $exception;
     protected $request;
     protected $response;
 
 
-    public function __construct($exception = NULL) {
+    public function __construct($exception = NULL)
+    {
         parent::__construct();
         $this->exception = $exception;
     }
 
-    public function apply($request, $response) {
+    public function apply($request, $response)
+    {
         $this->request = $request;
         $this->response = $response;
 
@@ -35,7 +39,8 @@ class MRuntimeError extends MResult {
         $this->setResponseOutput();
     }
 
-    private function setResponseContentType() {
+    private function setResponseContentType()
+    {
         $format = $this->request->format;
         if ($this->request->isAjax() && ($format == "html")) {
             $format = "json";
@@ -43,7 +48,8 @@ class MRuntimeError extends MResult {
         $this->response->setContentType($this->response->getMimeType("xx." + $format));
     }
 
-    private function setResponseStatusCode() {
+    private function setResponseStatusCode()
+    {
         if ($this->exception instanceof ELoginException) {
             $this->response->status = MStatusCode::UNAUTHORIZED;
         } else {
@@ -51,13 +57,16 @@ class MRuntimeError extends MResult {
         }
     }
 
-    private function setResponseOutput() {
+    private function setResponseOutput()
+    {
         try {
             $this->response->out = $this->getOutput();
-        } catch (EMException $e) { }
+        } catch (EMException $e) {
+        }
     }
 
-    private function getOutput() {
+    private function getOutput()
+    {
         $errorHtml = $this->fetchTemplate();
         if ($this->request->isAjax()) {
             return $this->getAjaxOutput($errorHtml);
@@ -66,7 +75,8 @@ class MRuntimeError extends MResult {
         }
     }
 
-    private function fetchTemplate() {
+    private function fetchTemplate()
+    {
         $template = new MTemplate();
         $template->context('result', $this->exception);
         $template->context('redirect', $this->exception->getGoto());
@@ -78,12 +88,11 @@ class MRuntimeError extends MResult {
         }
     }
 
-    private function getAjaxOutput($html) {
+    private function getAjaxOutput($html)
+    {
         $this->ajax->setId('error');
         $this->ajax->setType('page');
         $this->ajax->setData($html);
         return $this->ajax->returnData();
     }
 }
-
-?>

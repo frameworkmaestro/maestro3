@@ -1,53 +1,60 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
 namespace database\platforms\SQLSrv;
 
-class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
+class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform
+{
 
     public $db;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
-    public function connect() {
+    public function connect()
+    {
         $charset = $this->db->getConfig('charset');
         if ($charset) {
-        //    $this->db->getConnection()->exec("SET CHARACTER SET '{$charset}'");
+            //    $this->db->getConnection()->exec("SET CHARACTER SET '{$charset}'");
         }
     }
 
-    public function getTypedAttributes() {
+    public function getTypedAttributes()
+    {
         return ''; //'lob,blob,clob,text';
     }
 
-    public function getSetOperation($operation) {
+    public function getSetOperation($operation)
+    {
         $operation = strtoupper($operation);
         $set = array('UNION' => 'UNION', 'UNION ALL' => 'UNION', 'INTERSECT' => 'INTERSECT', 'MINUS' => 'MINUS');
         return $set[$operation];
     }
 
-    public function getNewId($sequence = 'admin') {
+    public function getNewId($sequence = 'admin')
+    {
         $this->value = $this->_getNextValue($sequence);
         return $this->value;
     }
 
-    private function _getNextValue($sequence = 'admin') {
+    private function _getNextValue($sequence = 'admin')
+    {
         $transaction = $this->db->beginTransaction();
         $table = $this->db->getConfig('sequence.table');
         $name = $this->db->getConfig('sequence.name');
@@ -62,11 +69,13 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         return $value;
     }
 
-    public function lastInsertId() {
+    public function lastInsertId()
+    {
         return $this->db->getConnection()->lastInsertId();
     }
 
-    public function getMetaData($stmt) {
+    public function getMetaData($stmt)
+    {
         $s = $stmt->getWrappedStatement();
         $metadata['columnCount'] = $count = $s->columnCount();
         for ($i = 0; $i < $count; $i++) {
@@ -83,7 +92,8 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         return $metadata;
     }
 
-    private function _getMetaType($pdo_type) {
+    private function _getMetaType($pdo_type)
+    {
         if ($pdo_type == \PDO::PARAM_BOOL) {
             $type = 'B';
         } else if ($pdo_type == \PDO::PARAM_NULL) {
@@ -100,20 +110,24 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         return $type;
     }
 
-    public function getSQLRange(\MRange $range) {
+    public function getSQLRange(\MRange $range)
+    {
         return "LIMIT " . $range->offset . "," . $range->rows;
     }
 
-    public function fetchAll($query) {
+    public function fetchAll($query)
+    {
         return $query->msql->stmt->fetchAll($query->fetchStyle);
     }
 
-    public function fetchObject($query) {
+    public function fetchObject($query)
+    {
         $stmt = $query->msql->stmt->getWrappedStatement();
         return $stmt->fetchObject();
     }
 
-    public function convertToDatabaseValue($value, $type, &$bindingType) {
+    public function convertToDatabaseValue($value, $type, &$bindingType)
+    {
         if ($type == '') {
             if (is_object($value)) {
                 $type = substr(strtolower(get_class($value)), 1);
@@ -140,7 +154,8 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         }
     }
 
-    public function convertToPHPValue($value, $type) {
+    public function convertToPHPValue($value, $type)
+    {
         if ($type == 'date') {
             return \Manager::Date($value);
         } elseif ($type == 'timestamp') {
@@ -162,7 +177,8 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         }
     }
 
-    public function convertColumn($value, $type) {
+    public function convertColumn($value, $type)
+    {
         if ($type == 'date') {
             return "DATE_FORMAT(" . $value . ",'" . $this->db->getConfig('formatDate') . "') ";
         } elseif ($type == 'timestamp') {
@@ -172,7 +188,8 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         }
     }
 
-    public function convertWhere($value, $dbalType) {
+    public function convertWhere($value, $dbalType)
+    {
         if ($dbalType == 'date') {
             return "DATE_FORMAT(" . $value . ",'" . $this->db->getConfig('formatDateWhere') . "') ";
         } elseif ($dbalType == 'datetime') {
@@ -182,30 +199,33 @@ class Platform extends \Doctrine\DBAL\Platforms\SQLServer2008Platform {
         }
     }
 
-    public function handleTypedAttribute($attributeMap, $operation) {
+    public function handleTypedAttribute($attributeMap, $operation)
+    {
         $method = 'handle' . $attributeMap->getType();
         $this->$method($operation);
     }
-    
-    public function setUserInformation($userId, $userIP = null, $module = null, $action = null) {
-        
+
+    public function setUserInformation($userId, $userIP = null, $module = null, $action = null)
+    {
+
     }
 
-    private function handleLOB($operation) {
+    private function handleLOB($operation)
+    {
 
         //mdump('platform::handleLob');
     }
 
-    private function handleBLOB($operation) {
+    private function handleBLOB($operation)
+    {
 
         //mdump('platform::handleBLob');
     }
 
-    private function handleText($operation) {
+    private function handleText($operation)
+    {
 
         //mdump('platform::handleText');
     }
 
 }
-
-?>

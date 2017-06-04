@@ -1,5 +1,5 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 

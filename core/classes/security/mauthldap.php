@@ -1,29 +1,31 @@
 <?php
 
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class MAuthLdap extends MAuth {
+class MAuthLdap extends MAuth
+{
 
     public $login;  // objeto Login
     public $iduser; // iduser do usuario corrente
     public $module; // authentication module;
     public $conn; //the ldap connection
 
-    public function connect() {
+    public function connect()
+    {
         $host = $this->manager->getConf('login.ldap.host');
         $port = $this->manager->getConf('login.ldap.port');
         $user = $this->manager->getConf('login.ldap.user');
@@ -40,16 +42,19 @@ class MAuthLdap extends MAuth {
         return true;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         ldap_close($this->conn);
     }
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->connect();
     }
 
-    public function authenticate($user, $pass, $log = true) {
+    public function authenticate($user, $pass, $log = true)
+    {
         $base = $this->manager->getConf('login.ldap.base');
         $custom = $this->manager->getConf('login.ldap.custom');
         $schema = $this->manager->getConf('login.ldap.schema');
@@ -118,5 +123,3 @@ class MAuthLdap extends MAuth {
     }
 
 }
-
-?>

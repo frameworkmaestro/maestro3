@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class ClassMap {
+class ClassMap
+{
 
     private $namespace;
     private $name;
@@ -42,7 +44,8 @@ class ClassMap {
     private $manager;
     private $hasTypedAttribute = FALSE;
 
-    public function __construct($name, $databaseName, \IPersistentManager $manager = null) {
+    public function __construct($name, $databaseName, \IPersistentManager $manager = null)
+    {
         $this->name = $name;
         $p = strrpos($name, '\\');
         $this->namespace = substr($name, 0, $p);
@@ -53,39 +56,48 @@ class ClassMap {
         $this->hasTypedAttribute = FALSE;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getNamespace() {
+    public function getNamespace()
+    {
         return $this->namespace;
     }
 
-    public function setNamespace($value) {
+    public function setNamespace($value)
+    {
         $this->namespace = $value;
     }
 
-    public function getDatabaseName() {
+    public function getDatabaseName()
+    {
         return $this->databaseName;
     }
 
-    public function setDatabaseName($databaseName) {
+    public function setDatabaseName($databaseName)
+    {
         $this->databaseName = $databaseName;
     }
 
-    public function getDb() {
+    public function getDb()
+    {
         return $this->db;
     }
 
-    public function getPlatform() {
+    public function getPlatform()
+    {
         return $this->platform;
     }
 
-    public function setTableName($tableName) {
+    public function setTableName($tableName)
+    {
         $this->tableName = $tableName;
     }
 
-    public function getTableName($alias = '') {
+    public function getTableName($alias = '')
+    {
         return $this->tableName . ($alias ? ' ' . $alias : '');
     }
 
@@ -104,43 +116,51 @@ class ClassMap {
       }
      */
 
-    public function setHasTypedAttribute($has) {
+    public function setHasTypedAttribute($has)
+    {
         $this->hasTypedAttribute = $has;
     }
 
-    public function getHasTypedAttribute() {
+    public function getHasTypedAttribute()
+    {
         return $this->hasTypedAttribute;
     }
 
     /**
      * @return PersistentObject
      */
-    public function getObject() {
+    public function getObject()
+    {
         $className = $this->getName();
         $object = new $className;
         return $object;
     }
 
-    public function setSuperClassName($superClassName) {
+    public function setSuperClassName($superClassName)
+    {
         if (($superClassName != 'businessmodel') && ($superClassName != 'persistentobject')) {
             $this->superClassName = $superClassName;
             $this->superClassMap = $this->manager->getClassMap($superClassName);
         }
     }
 
-    public function getSuperClassMap() {
+    public function getSuperClassMap()
+    {
         return $this->superClassMap;
     }
 
-    public function setSuperAssociationMap($associationMap) {
+    public function setSuperAssociationMap($associationMap)
+    {
         $this->superAssociationMap = $associationMap;
     }
 
-    public function getSuperAssociationMap() {
+    public function getSuperAssociationMap()
+    {
         return $this->superAssociationMap;
     }
 
-    public function addAttributeMap($attributeMap) {
+    public function addAttributeMap($attributeMap)
+    {
         $this->hashedAttributeMaps[$attributeMap->getName()] = $attributeMap;
         $columnName = $attributeMap->getColumnName();
         if ($columnName != '') {
@@ -167,7 +187,8 @@ class ClassMap {
         }
     }
 
-    public function getAttributeMap($name, $areSuperClassesIncluded = false) {
+    public function getAttributeMap($name, $areSuperClassesIncluded = false)
+    {
         $attributeMap = null;
         $classMap = $this;
 
@@ -182,23 +203,28 @@ class ClassMap {
         return $attributeMap;
     }
 
-    public function getKeyAttributeMap($index = 0) {
+    public function getKeyAttributeMap($index = 0)
+    {
         return $this->keyAttributeMaps[$index];
     }
 
-    public function getUpdateAttributeMap($index = 0) {
+    public function getUpdateAttributeMap($index = 0)
+    {
         return $this->updateAttributeMaps[$index];
     }
 
-    public function getInsertAttributeMap($index = 0) {
+    public function getInsertAttributeMap($index = 0)
+    {
         return $this->insertAttributeMaps[$index];
     }
 
-    public function getReferenceAttributeMap($index = 0) {
+    public function getReferenceAttributeMap($index = 0)
+    {
         return $this->referenceAttributeMaps[$index];
     }
 
-    public function getAssociationMap($name) {
+    public function getAssociationMap($name)
+    {
         $associationMap = NULL;
         $classMap = $this;
         do {
@@ -211,39 +237,48 @@ class ClassMap {
         return $associationMap;
     }
 
-    public function putAssociationMap($associationMap) {
+    public function putAssociationMap($associationMap)
+    {
         $this->associationMaps[$associationMap->getName()] = $associationMap;
     }
 
-    public function getAssociationMaps() {
+    public function getAssociationMaps()
+    {
         return $this->associationMaps;
     }
 
-    public function getSize() {
+    public function getSize()
+    {
         return count($this->attributeMaps);
     }
 
-    public function getReferenceSize() {
+    public function getReferenceSize()
+    {
         return count($this->referenceAttributeMaps);
     }
 
-    public function getAssociationSize() {
+    public function getAssociationSize()
+    {
         return count($this->associationMaps);
     }
 
-    public function getKeyAttributeName($index = 0) {
+    public function getKeyAttributeName($index = 0)
+    {
         return $this->keyAttributeMaps[$index]->getName();
     }
 
-    public function getKeySize() {
+    public function getKeySize()
+    {
         return count($this->keyAttributeMaps);
     }
 
-    public function getUpdateSize() {
+    public function getUpdateSize()
+    {
         return count($this->updateAttributeMaps);
     }
 
-    public function getInsertSize() {
+    public function getInsertSize()
+    {
         return count($this->insertAttributeMaps);
     }
 
@@ -251,7 +286,8 @@ class ClassMap {
      * Se existir um campo do tipo UID no map ele é setado automaticamente aqui.
      * @param PersistentObject $object
      */
-    public function setObjectUid(\PersistentObject $object) {
+    public function setObjectUid(\PersistentObject $object)
+    {
         $field = $this->getUidField();
         if ($field) {
             $setter = 'set' . ucfirst($field);
@@ -259,7 +295,8 @@ class ClassMap {
         }
     }
 
-    public function setObjectKey($object) {
+    public function setObjectKey($object)
+    {
         for ($i = 0; $i < $this->getKeySize(); $i++) {
             $keyAttributeMap = $this->getKeyAttributeMap($i);
             if ($keyAttributeMap->getKeyType() == 'primary') {
@@ -276,7 +313,8 @@ class ClassMap {
         }
     }
 
-    public function setPostObjectKey($object) {
+    public function setPostObjectKey($object)
+    {
         $keyAttributeMap = $this->getKeyAttributeMap(0);
         $idGenerator = $keyAttributeMap->getIdGenerator();
         if ($idGenerator == 'identity') {
@@ -285,7 +323,8 @@ class ClassMap {
         }
     }
 
-    public function setObject($object, $data, $classMap = NULL) {
+    public function setObject($object, $data, $classMap = NULL)
+    {
         if (is_null($classMap)) {
             $classMap = $this;
         }
@@ -296,7 +335,8 @@ class ClassMap {
         }
     }
 
-    public function retrieveObjectFromData($object, $data) {
+    public function retrieveObjectFromData($object, $data)
+    {
         $classMap = $this;
         if ($data) {
             do {
@@ -306,28 +346,32 @@ class ClassMap {
             $object->setPersistent(TRUE);
         }
     }
-    
-    public function retrieveObject($object, $query) {
+
+    public function retrieveObject($object, $query)
+    {
         $data = $query->fetchObject();
         $this->retrieveObjectFromData($object, $data);
     }
 
-    public function retrieveAssociation(Association $association, $query) {
+    public function retrieveAssociation(Association $association, $query)
+    {
         $query->fetchAll();
         $association->init($query);
     }
 
-    public function getSelectSqlFor($object) {
+    public function getSelectSqlFor($object)
+    {
         $statement = $this->getSelectStatement();
         $func = function ($attributeMap) use ($object, $statement) {
-                    $value = $attributeMap->getValueToDb($object);
-                    $statement->addParameter($value);
-                };
+            $value = $attributeMap->getValueToDb($object);
+            $statement->addParameter($value);
+        };
         array_walk($this->keyAttributeMaps, $func);
         return $statement;
     }
 
-    public function getSelectSql($alias = '') {
+    public function getSelectSql($alias = '')
+    {
         $classMap = $this;
         do {
             foreach ($classMap->attributeMaps as $attributeMap) {
@@ -338,7 +382,8 @@ class ClassMap {
         return implode(',', $columns);
     }
 
-    public function getFromSql() {
+    public function getFromSql()
+    {
         $classMap = $this;
         do {
             $tables[] = $classMap->tableName;
@@ -347,7 +392,8 @@ class ClassMap {
         return implode(',', $tables);
     }
 
-    public function getWhereSql() {
+    public function getWhereSql()
+    {
         $inheritanceAssociations = $this->getInheritanceAssociations();
         if (($this->getKeySize() > 0) || ($inheritanceAssociations != '')) {
             foreach ($this->keyAttributeMaps as $attributeMap) {
@@ -361,7 +407,8 @@ class ClassMap {
         return implode(' AND ', $conditions);
     }
 
-    public function getInheritanceAssociations() {
+    public function getInheritanceAssociations()
+    {
         $classMap = $this;
         $conditions = array();
         do {
@@ -376,28 +423,31 @@ class ClassMap {
         return implode(' AND ', $conditions);
     }
 
-    public function getUpdateSqlFor($object) {
+    public function getUpdateSqlFor($object)
+    {
         $statement = $this->getUpdateStatement();
 
         $funcUpdate = function ($attributeMap) use ($object, $statement) {
-                    $value = $attributeMap->getValueToDb($object);
-                    $statement->addParameter($value);
-                };
+            $value = $attributeMap->getValueToDb($object);
+            $statement->addParameter($value);
+        };
         array_walk($this->updateAttributeMaps, $funcUpdate);
 
         $funcKey = function ($attributeMap) use ($object, $statement) {
-                    $value = $attributeMap->getValueToDb($object);
-                    $statement->addParameter($value);
-                };
+            $value = $attributeMap->getValueToDb($object);
+            $statement->addParameter($value);
+        };
         array_walk($this->keyAttributeMaps, $funcKey);
         return $statement;
     }
 
-    public function getUpdateSql() {
+    public function getUpdateSql()
+    {
         return $this->getTableName();
     }
 
-    public function getUpdateSetSql() {
+    public function getUpdateSetSql()
+    {
         $classMap = $this;
         do {
             foreach ($this->updateAttributeMaps as $attributeMap) {
@@ -408,7 +458,8 @@ class ClassMap {
         return implode(',', $columns);
     }
 
-    public function getUpdateWhereSql() {
+    public function getUpdateWhereSql()
+    {
         $classMap = $this;
         foreach ($this->keyAttributeMaps as $attributeMap) {
             $column = $attributeMap->getFullyQualifiedName($alias);
@@ -420,22 +471,25 @@ class ClassMap {
         return implode(' AND ', $conditions);
     }
 
-    public function getInsertSqlFor($object) {
+    public function getInsertSqlFor($object)
+    {
         $statement = $this->getInsertStatement();
 
         $funcInsert = function ($attributeMap) use ($object, $statement) {
-                    $value = $attributeMap->getValueToDb($object);
-                    $statement->addParameter($value);
-                };
+            $value = $attributeMap->getValueToDb($object);
+            $statement->addParameter($value);
+        };
         array_walk($this->insertAttributeMaps, $funcInsert);
         return $statement;
     }
 
-    public function getInsertSql() {
+    public function getInsertSql()
+    {
         return $this->getTableName();
     }
 
-    public function getInsertValuesSql() {
+    public function getInsertValuesSql()
+    {
         $classMap = $this;
         do {
             foreach ($this->insertAttributeMaps as $attributeMap) {
@@ -446,22 +500,25 @@ class ClassMap {
         return implode(',', $columns);
     }
 
-    public function getDeleteSqlFor($object) {
+    public function getDeleteSqlFor($object)
+    {
         $statement = $this->getDeleteStatement();
 
         $funcKey = function ($attributeMap) use ($object, $statement) {
-                    $value = $attributeMap->getValueToDb($object);
-                    $statement->addParameter($value);
-                };
+            $value = $attributeMap->getValueToDb($object);
+            $statement->addParameter($value);
+        };
         array_walk($this->keyAttributeMaps, $funcKey);
         return $statement;
     }
 
-    public function getDeleteSql() {
+    public function getDeleteSql()
+    {
         return $this->getTableName();
     }
 
-    public function getDeleteWhereSql() {
+    public function getDeleteWhereSql()
+    {
         $classMap = $this;
         foreach ($this->keyAttributeMaps as $attributeMap) {
             $column = $attributeMap->getFullyQualifiedName($alias);
@@ -473,7 +530,8 @@ class ClassMap {
         return implode(' AND ', $conditions);
     }
 
-    public function getSelectStatement() {
+    public function getSelectStatement()
+    {
         $this->selectStatement = new \database\MSQL();
         $this->selectStatement->setDb($this->getDb());
         $this->selectStatement->setColumns($this->getSelectSql());
@@ -482,7 +540,8 @@ class ClassMap {
         return $this->selectStatement;
     }
 
-    public function getUpdateStatement() {
+    public function getUpdateStatement()
+    {
         $this->updateStatement = new \database\MSQL();
         $this->updateStatement->setDb($this->getDb());
         $this->updateStatement->setColumns($this->getUpdateSetSql());
@@ -491,7 +550,8 @@ class ClassMap {
         return $this->updateStatement;
     }
 
-    public function getInsertStatement() {
+    public function getInsertStatement()
+    {
         $this->insertStatement = new \database\MSQL();
         $this->insertStatement->setDb($this->getDb());
         $this->insertStatement->setColumns($this->getInsertValuesSql());
@@ -499,7 +559,8 @@ class ClassMap {
         return $this->insertStatement;
     }
 
-    public function getDeleteStatement() {
+    public function getDeleteStatement()
+    {
         $this->deleteStatement = new \database\MSQL();
         $this->deleteStatement->setDb($this->getDb());
         $this->deleteStatement->setTables($this->getDeleteSql());
@@ -507,14 +568,16 @@ class ClassMap {
         return $this->deleteStatement;
     }
 
-    public function handleTypedAttribute($object, $operation) {
+    public function handleTypedAttribute($object, $operation)
+    {
         foreach ($this->handledAttributeMaps as $attributeMap) {
             $cmd[] = array($this->getPlatform(), $attributeMap, $operation, $object);
         }
         return $cmd;
     }
 
-    public function getUidField() {
+    public function getUidField()
+    {
         foreach ($this->attributeMaps as $attributeMap) {
             if ($attributeMap->getIdGenerator() === 'uid') {
                 return $attributeMap->getName();
@@ -524,5 +587,3 @@ class ClassMap {
     }
 
 }
-
-?>

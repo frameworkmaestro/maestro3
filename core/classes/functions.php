@@ -1,28 +1,42 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 5/29/2017
- * Time: 9:40 AM
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
+ * Este arquivo é parte do programa Framework Maestro.
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
+ * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
+ * Este programa é distribuído na esperança que possa ser  útil,
+ * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
+ * em português para maiores detalhes.
+ * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
+ * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
+ * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 
-function _M($msg, $params = NULL) {
-    return Manager::getMessage($msg, $params) ? : $msg;
+function _M($msg, $params = NULL)
+{
+    return Manager::getMessage($msg, $params) ?: $msg;
 }
 
-function mdump($var, $tag = null) {
+function mdump($var, $tag = null)
+{
     Manager::traceDump($var, false, 0, $tag);
 }
 
-function mtrace($var) {
+function mtrace($var)
+{
     Manager::trace(print_r($var, true));
 }
 
-function mtracestack() {
+function mtracestack()
+{
     return Manager::tracestack();
 }
 
-function mrequest($vars, $from = 'ALL', $order = '') {
+function mrequest($vars, $from = 'ALL', $order = '')
+{
     if (is_array($vars)) {
         foreach ($vars as $v) {
             $values[$v] = mrequest($v, $from);
@@ -63,7 +77,7 @@ function mrequest($vars, $from = 'ALL', $order = '') {
 
             // If we still didn't have the value
             // let's try in the global scope
-            if ((is_null($value) ) && ( ( strpos($vars, '[') ) === false)) {
+            if ((is_null($value)) && ((strpos($vars, '[')) === false)) {
                 $value = isset($_GLOBALS[$vars]) ? $_GLOBALS[$vars] : NULL;
             }
 
@@ -88,7 +102,8 @@ function mrequest($vars, $from = 'ALL', $order = '') {
     }
 }
 
-function shutdown() {
+function shutdown()
+{
     $error = error_get_last();
     if ($error) var_dump($error);
     Manager::errorHandler($error['type'], $error['message'], $error['file'], $error['line']);

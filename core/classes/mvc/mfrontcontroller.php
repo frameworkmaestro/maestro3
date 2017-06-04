@@ -1,6 +1,5 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -20,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MFrontController {
+class MFrontController
+{
 
     static private $instance = NULL;
     public $context;
@@ -36,7 +36,8 @@ class MFrontController {
     public $filters;
     public $container;
 
-    public function __construct() {
+    public function __construct()
+    {
         Manager::logMessage('[RESET_LOG_MESSAGES]');
         Manager::logMessage('[FrontController::construct]');
         $this->request = new MRequest();
@@ -45,14 +46,16 @@ class MFrontController {
         $this->conf = Manager::$conf;
     }
 
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance == NULL) {
             self::$instance = new MFrontController();
         }
         return self::$instance;
     }
 
-    public function handlerRequest($data = NULL) {
+    public function handlerRequest($data = NULL)
+    {
         try {
             $this->context = new MContext($this->request);
             Manager::getInstance()->baseURL = $this->request->getBaseURL(false);
@@ -61,7 +64,7 @@ class MFrontController {
             $appPath = $this->context->isCore ? Manager::getInstance()->coreAppsPath : Manager::getInstance()->appsPath;
             Manager::getInstance()->appPath = $appPath . '/' . $app;
             $this->removeInputSlashes();
-            $this->setData($data ? : $_REQUEST);
+            $this->setData($data ?: $_REQUEST);
             mtrace('DTO Data:');
             mtrace($this->getData());
             $this->loadExtensions();
@@ -91,12 +94,14 @@ class MFrontController {
         }
     }
 
-    public function handlerResponse($return = false) {
+    public function handlerResponse($return = false)
+    {
         Manager::getSession()->freeze();
         return $this->response->sendResponse($this->result, $return);
     }
 
-    public function setData($value) {
+    public function setData($value)
+    {
         $data = new stdClass();
         // se for o $_REQUEST, converte para objeto
         $valid = (is_object($value)) || (is_array($value) && count($value));
@@ -128,39 +133,48 @@ class MFrontController {
         Manager::setData($data);
     }
 
-    public function getData() {
+    public function getData()
+    {
         return Manager::getData();
     }
 
-    public function setResult($result) {
+    public function setResult($result)
+    {
         $this->result = $result;
     }
 
-    public function getResult() {
+    public function getResult()
+    {
         return $this->result;
     }
 
-    public function getContext() {
+    public function getContext()
+    {
         return $this->context;
     }
 
-    public function getController() {
+    public function getController()
+    {
         return $this->controller;
     }
 
-    public function getContainer() {
+    public function getContainer()
+    {
         return $this->container;
     }
 
-    public function getAction() {
+    public function getAction()
+    {
         return str_replace('.', '/', $this->controllerAction);
     }
 
-    public function setForward($action) {
+    public function setForward($action)
+    {
         $this->forward = $action;
     }
 
-    public function init() {
+    public function init()
+    {
         $this->dumpping = Manager::getOptions('dump');
         // if it is a AJAX call, initialize MAjax
         if (Manager::isAjaxCall()) {
@@ -175,7 +189,8 @@ class MFrontController {
         $this->forward = '';
     }
 
-    public function prepare() {
+    public function prepare()
+    {
         $appPath = Manager::getAppPath();
         $appPathSrc = Manager::getAppPath() . Manager::getOptions('srcPath');
 
@@ -210,7 +225,7 @@ class MFrontController {
         if (is_array($registerModules)) {
             foreach ($registerModules as $module) {
                 $srcPath = Manager::getConf("srcPath.{$module}");
-                Manager::registerAutoloader($module, $appPath . '/modules' . $srcPath . '/' );
+                Manager::registerAutoloader($module, $appPath . '/modules' . $srcPath . '/');
                 Manager::addAutoloadPath($appPath . "/modules/{$module}{$srcPath}/components");
                 $path = Manager::getModulePath($module, "conf/actions.php");
                 Manager::loadActions($path);
@@ -239,16 +254,17 @@ class MFrontController {
                 $this->addModuleContainer($module);
             } else { // manual register
                 mdump('using manual');
-                Manager::registerAutoloader($module, $appPath . '/modules/' );
+                Manager::registerAutoloader($module, $appPath . '/modules/');
                 Manager::addAutoloadPath($appPath . "/modules/{$module}{$srcPath}/components");
             }
         }
-        $this->controllerAction = $this->forward ? : '';
+        $this->controllerAction = $this->forward ?: '';
         $this->forward = '';
         $this->canCallHandler(true);
     }
 
-    public function canCallHandler($status = true) {
+    public function canCallHandler($status = true)
+    {
         if (func_num_args()) {
             $this->canCallHandler = $status;
         } else {
@@ -256,7 +272,8 @@ class MFrontController {
         }
     }
 
-    public function handler() {
+    public function handler()
+    {
         $confFilters = Manager::getConf('filters');
         $this->filters = array();
         if (is_array($confFilters)) {
@@ -279,7 +296,8 @@ class MFrontController {
 
     // Controller
 
-    public function handlerController() {
+    public function handlerController()
+    {
         if ($this->controllerAction == '') {
             $this->controllerAction = $this->context->getControllerAction();
         }
@@ -287,7 +305,8 @@ class MFrontController {
         $this->invokeController(Manager::getApp(), Manager::getModule(), $this->controllerAction);
     }
 
-    public function invokeController($app, $module, $controllerAction) {
+    public function invokeController($app, $module, $controllerAction)
+    {
         Manager::logMessage("[FrontController::invokeController {$app}:{$module}:$controllerAction]");
         list($class, $action) = explode('.', $controllerAction);
         $this->controller = $controller = Manager::getController($app, $module, $class);
@@ -299,7 +318,8 @@ class MFrontController {
 
     // Service
 
-    public function handlerService() {
+    public function handlerService()
+    {
         if ($this->controllerAction == '') {
             $this->controllerAction = $this->context->getService() . '.' . $this->context->getAction();
         }
@@ -307,7 +327,8 @@ class MFrontController {
         $this->invokeService(Manager::getApp(), Manager::getModule(), $this->controllerAction);
     }
 
-    public function invokeService($app, $module, $controllerAction) {
+    public function invokeService($app, $module, $controllerAction)
+    {
         Manager::logMessage("[FrontController::invokeService {$app}:{$module}:$controllerAction]");
         list($class, $action) = explode('.', $controllerAction);
         $this->controller = $controller = Manager::getService($app, $module, $class);
@@ -319,16 +340,18 @@ class MFrontController {
 
     // API
 
-    public function handlerAPI() {
+    public function handlerAPI()
+    {
         $api = $this->context->getAPI();
         $service = $this->context->getService();
         $system = $this->context->getSystem();
-        mtrace('handler apiService=' . $api . ($system ? '.'.$system: '') . $service);
+        mtrace('handler apiService=' . $api . ($system ? '.' . $system : '') . $service);
         $this->invokeAPI(Manager::getApp(), Manager::getModule(), $api, $system, $service);
     }
 
-    public function invokeAPI($app, $module, $api, $system, $service) {
-        Manager::logMessage("[FrontController::invokeAPI {$app}:{$module}:" . $api . ($system ? ':'.$system: '') . ':' . $service . "]");
+    public function invokeAPI($app, $module, $api, $system, $service)
+    {
+        Manager::logMessage("[FrontController::invokeAPI {$app}:{$module}:" . $api . ($system ? ':' . $system : '') . ':' . $service . "]");
         $this->controller = $controller = Manager::getAPIService($app, $module, $api, $system, $service);
         $controller->setParams($this->getData());
         $controller->setData();
@@ -338,7 +361,8 @@ class MFrontController {
 
     // Component
 
-    public function handlerComponent() {
+    public function handlerComponent()
+    {
         $module = $this->context->getModule();
         $component = $this->context->getComponent();
         mtrace('handler component=' . $component);
@@ -364,7 +388,8 @@ class MFrontController {
         }
     }
 
-    public function terminate() {
+    public function terminate()
+    {
         $controllers = Manager::getControllers();
         if (count($controllers)) {
             foreach ($controllers as $controller) {
@@ -373,46 +398,54 @@ class MFrontController {
         }
     }
 
-    public function addApplicationConf() {
+    public function addApplicationConf()
+    {
         $configFile = Manager::getAppPath('conf/conf.php');
         Manager::loadConf($configFile);
     }
 
-    public function addApplicationMessages() {
+    public function addApplicationMessages()
+    {
         $msgDir = Manager::getAppPath('conf/');
         Manager::$msg->addMessages($msgDir);
     }
 
-    public function addApplicationActions() {
+    public function addApplicationActions()
+    {
         $actionsFile = Manager::getAppPath('conf/actions.php');
         Manager::loadActions($actionsFile);
     }
 
-    public function addApplicationContainer() {
+    public function addApplicationContainer()
+    {
         $containerFile = Manager::getAppPath('conf/container.php');
         if (file_exists($containerFile)) {
             $this->container = require $containerFile;
         }
     }
 
-    public function addModuleConf($module) {
+    public function addModuleConf($module)
+    {
         $configFile = Manager::getModulePath($module, 'conf/conf.php');
         Manager::loadConf($configFile);
     }
 
-    public function addModuleMessages($module) {
+    public function addModuleMessages($module)
+    {
         $msgDir = Manager::getModulePath($module, 'conf/');
         Manager::$msg->addMessages($msgDir);
     }
 
-    public function addModuleContainer($module) {
+    public function addModuleContainer($module)
+    {
         $containerFile = Manager::getModulePath($module, 'conf/container.php');
         if (file_exists($containerFile)) {
             $this->container = require $containerFile;
         }
     }
 
-    public function loadExtensions() {
+    public function loadExtensions()
+    {
         $dir = Manager::getHome() . '/extensions/';
         $extensions = Manager::$conf['extensions'];
         for ($i = 0; $i < count($extensions); $i++) {
@@ -421,19 +454,19 @@ class MFrontController {
         }
     }
 
-    public static function removeInputSlashesValue($value) {
+    public static function removeInputSlashesValue($value)
+    {
         if (is_array($value)) {
             return array_map(array('MFrontController', 'removeInputSlashesValue'), $value);
         }
         return stripslashes($value);
     }
 
-    public function removeInputSlashes() {
+    public function removeInputSlashes()
+    {
         if (get_magic_quotes_gpc()) { // Yes? Strip the added slashes
             $_REQUEST = array_map(array('MFrontController', 'removeInputSlashesValue'), $_REQUEST);
         }
     }
 
 }
-
-?>

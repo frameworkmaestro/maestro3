@@ -1,31 +1,33 @@
 <?php
 
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class MPermsLdap extends MPerms {
+class MPermsLdap extends MPerms
+{
 
     private $auth;
     public $perms;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->auth = $this->manager->getAuth();
         $this->perms = array
-            (
+        (
             A_ACCESS => "SELECT",
             A_INSERT => "INSERT",
             A_DELETE => "DELETE",
@@ -35,11 +37,13 @@ class MPermsLdap extends MPerms {
         );
     }
 
-    public function setAuth($auth) {
+    public function setAuth($auth)
+    {
         $this->auth = $auth;
     }
 
-    public function checkAccess($module, $action, $deny = false, $group = false) {
+    public function checkAccess($module, $action, $deny = false, $group = false)
+    {
         if ($this->auth->isLogged()) {
             $login = $this->auth->getLogin();  // MLogin object
             $isAdmin = $login->isAdmin(); // Is administrator?
@@ -58,8 +62,8 @@ class MPermsLdap extends MPerms {
         if (!$ok && $deny) {
 
             $msg = _M('Access Denied') . "<br><br>\n" .
-                    '<center><big><i><font color=red>' . _M('Transaction: ') . "$transaction</font></i></big></center><br><br>\n" .
-                    _M('Please inform a valid login/password to access this content.') . "<br>";
+                '<center><big><i><font color=red>' . _M('Transaction: ') . "$transaction</font></i></big></center><br><br>\n" .
+                _M('Please inform a valid login/password to access this content.') . "<br>";
 
             $users = $this->getUsersAllowed($module, $action);
 
@@ -76,13 +80,15 @@ class MPermsLdap extends MPerms {
         return $ok;
     }
 
-    public function getTransactionRights($transaction, $login) {
+    public function getTransactionRights($transaction, $login)
+    {
         $user = $this->manager->getBusinessMAD('user');
         $user->getByLogin($login);
         return $user->getTransactionRights($transaction);
     }
 
-    public function getRights($login) {
+    public function getRights($login)
+    {
         $base = $this->manager->getConf('login.ldap.base');
         $filter = "(&(objectClass=managerUserPermission)(login=$login))";
 
@@ -102,13 +108,15 @@ class MPermsLdap extends MPerms {
         return $rights;
     }
 
-    public function getGroups($login) {
+    public function getGroups($login)
+    {
         $user = $this->manager->getBusinessMAD('user');
         $user->getByLogin($login);
         return $user->getArrayGroups();
     }
 
-    public function getUsersAllowed($module, $action = A_ACCESS) {
+    public function getUsersAllowed($module, $action = A_ACCESS)
+    {
         $base = $this->manager->getConf('login.ldap.base');
         $filter = "(&(objectClass=managerUserPermission)(managerModuleName=$module)(managerModuleAction=$action))";
         $sr = ldap_search($this->manager->auth->conn, $base, $filter, array('login'));
@@ -121,7 +129,8 @@ class MPermsLdap extends MPerms {
         return $users;
     }
 
-    public function getGroupsAllowed($module, $action = A_ACCESS) {
+    public function getGroupsAllowed($module, $action = A_ACCESS)
+    {
         $base = $this->manager->getConf('login.ldap.base');
         $filter = "(&(objectClass=managerGroupPermission)(managerModuleName=$module)(managerModuleAction=$action))";
         $sr = ldap_search($this->manager->auth->conn, $base, $filter, array('managergroup'));
@@ -136,4 +145,3 @@ class MPermsLdap extends MPerms {
 
 }
 
-?>

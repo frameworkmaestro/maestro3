@@ -1,23 +1,24 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
 namespace database;
 
-class MSQL {
+class MSQL
+{
 
     /**
      * Attribute Description.
@@ -100,7 +101,8 @@ class MSQL {
      */
     public $stmt;
 
-    public function __construct($columns = '', $tables = '', $where = '', $orderBy = '', $groupBy = '', $having = '', $forUpdate = false) {
+    public function __construct($columns = '', $tables = '', $where = '', $orderBy = '', $groupBy = '', $having = '', $forUpdate = false)
+    {
         $this->clear();
         $this->setColumns($columns);
         $this->setTables($tables);
@@ -116,7 +118,8 @@ class MSQL {
         $this->stmt = null;
     }
 
-    private function _getTokens($string, &$array) {
+    private function _getTokens($string, &$array)
+    {
         if ($string == '') {
             return;
         }
@@ -149,7 +152,8 @@ class MSQL {
         }
     }
 
-    private function _getJoin() {
+    private function _getJoin()
+    {
         $cond = '';
         if (is_array($this->join)) {
             foreach ($this->join as $join) {
@@ -165,7 +169,8 @@ class MSQL {
         $this->setTables($cond);
     }
 
-    private function _getSetOperation() {
+    private function _getSetOperation()
+    {
         $command = '';
         foreach ($this->setOperation as $s) {
             $s[1]->setDB($this->db);
@@ -174,61 +179,75 @@ class MSQL {
         return $command;
     }
 
-    public function setCommand($command) {
+    public function setCommand($command)
+    {
         $this->command = $command;
     }
 
-    public function getCommand() {
+    public function getCommand()
+    {
         return $this->command;
     }
 
-    public function setDb(MDatabase $db) {
+    public function setDb(MDatabase $db)
+    {
         $this->db = $db;
         $this->platform = $db->getPlatForm();
     }
 
-    public function setColumns($string, $distinct = false) {
+    public function setColumns($string, $distinct = false)
+    {
         $this->_getTokens($string, $this->columns);
         $this->distinct = $distinct;
     }
 
-    public function setTables($string) {
+    public function setTables($string)
+    {
         $this->_getTokens($string, $this->tables);
     }
 
-    public function setGroupBy($string) {
+    public function setGroupBy($string)
+    {
         $this->_getTokens($string, $this->groupBy);
     }
 
-    public function setOrderBy($string) {
+    public function setOrderBy($string)
+    {
         $this->_getTokens($string, $this->orderBy);
     }
 
-    public function setWhere($string) {
-        $this->where .= ( ($this->where != '') && ($string != '') ? " and " : "") . $string;
+    public function setWhere($string)
+    {
+        $this->where .= (($this->where != '') && ($string != '') ? " and " : "") . $string;
     }
 
-    public function setWhereAnd($string) {
-        $this->where .= ( ($this->where != '') && ($string != '') ? " and " : "") . $string;
+    public function setWhereAnd($string)
+    {
+        $this->where .= (($this->where != '') && ($string != '') ? " and " : "") . $string;
     }
 
-    public function setWhereOr($string) {
-        $this->where .= ( ($this->where != '') && ($string != '') ? " or " : "") . $string;
+    public function setWhereOr($string)
+    {
+        $this->where .= (($this->where != '') && ($string != '') ? " or " : "") . $string;
     }
 
-    public function setHaving($string) {
-        $this->having .= ( ($this->having != '') && ($string != '') ? " and " : "") . $string;
+    public function setHaving($string)
+    {
+        $this->having .= (($this->having != '') && ($string != '') ? " and " : "") . $string;
     }
 
-    public function setHavingAnd($string) {
-        $this->having .= ( ($this->having != '') && ($string != '') ? " and " : "") . $string;
+    public function setHavingAnd($string)
+    {
+        $this->having .= (($this->having != '') && ($string != '') ? " and " : "") . $string;
     }
 
-    public function setHavingOr($string) {
-        $this->having .= ( ($this->having != '') && ($string != '') ? " or " : "") . $string;
+    public function setHavingOr($string)
+    {
+        $this->having .= (($this->having != '') && ($string != '') ? " or " : "") . $string;
     }
 
-    public function setJoin($table1, $table2, $cond, $type = 'INNER') {
+    public function setJoin($table1, $table2, $cond, $type = 'INNER')
+    {
         $this->join[] = array(
             $table1,
             $table2,
@@ -237,26 +256,31 @@ class MSQL {
         );
     }
 
-    public function setLeftJoin($table1, $table2, $cond) {
+    public function setLeftJoin($table1, $table2, $cond)
+    {
         $this->setJoin($table1, $table2, $cond, 'LEFT');
     }
 
-    public function setRightJoin($table1, $table2, $cond) {
+    public function setRightJoin($table1, $table2, $cond)
+    {
         $this->setJoin($table1, $table2, $cond, 'RIGHT');
     }
 
-    public function setForUpdate($forUpdate = false) {
+    public function setForUpdate($forUpdate = false)
+    {
         $this->forUpdate = $forUpdate;
     }
 
-    function setSetOperation($operation, MSQL $sql) {
+    function setSetOperation($operation, MSQL $sql)
+    {
         $this->setOperation[] = array(
             $operation,
             $sql
         );
     }
 
-    private function _prepareParameters() {
+    private function _prepareParameters()
+    {
         if ($this->parameters === NULL) {
             return;
         }
@@ -296,14 +320,16 @@ class MSQL {
         }
     }
 
-    public function prepare() {
+    public function prepare()
+    {
         $connection = $this->db->getConnection();
         $this->_prepareParameters();
         $this->stmt = $connection->prepare($this->command);
         return $this;
     }
 
-    public function bind() {
+    public function bind()
+    {
         if ($this->parameters === NULL) {
             return;
         }
@@ -319,7 +345,8 @@ class MSQL {
         return $this;
     }
 
-    public function bindValue($name, $value, $type = null) {
+    public function bindValue($name, $value, $type = null)
+    {
         $bindingType = null;
         if (($type !== null) || (is_object($value))) {
             $value = $this->platform->convertToDatabaseValue($value, $type, $bindingType);
@@ -327,7 +354,8 @@ class MSQL {
         return $this->stmt->bindValue($name, $value, $bindingType);
     }
 
-    public function insert($parameters = null) {
+    public function insert($parameters = null)
+    {
         $this->setParameters($parameters);
         $sqlText = 'INSERT INTO ' . implode($this->tables, ',') . ' ( ' . implode($this->columns, ',') . ' ) VALUES ( ';
 
@@ -343,14 +371,16 @@ class MSQL {
         return $this;
     }
 
-    public function insertFrom($sql) {
+    public function insertFrom($sql)
+    {
         $sqlText = 'INSERT INTO ' . implode($this->tables, ',') . ' ( ' . implode($this->columns, ',') . ' ) ';
         $sqlText .= $sql;
         $this->command = $sqlText;
         return $this;
     }
 
-    public function delete($parameters = null) {
+    public function delete($parameters = null)
+    {
         $this->setParameters($parameters);
         $sqlText = 'DELETE FROM ' . implode($this->tables, ',');
         $sqlText .= ' WHERE ' . $this->where;
@@ -361,7 +391,8 @@ class MSQL {
         return $this;
     }
 
-    public function update($parameters = null) {
+    public function update($parameters = null)
+    {
         $this->setParameters($parameters);
         $sqlText = 'UPDATE ' . implode($this->tables, ',') . ' SET ';
 
@@ -378,7 +409,8 @@ class MSQL {
         return $this;
     }
 
-    public function select($parameters = null) {
+    public function select($parameters = null)
+    {
         $this->setParameters($parameters);
         $sqlText = $this->command;
         if ($sqlText == '') {
@@ -435,14 +467,16 @@ class MSQL {
         return $this;
     }
 
-    public function execute($parameters = null) {
+    public function execute($parameters = null)
+    {
         $this->setParameters($parameters);
         $this->prepare();
         $this->bind();
         return $this->stmt->execute();
     }
 
-    public function clear() {
+    public function clear()
+    {
         $this->columns = '';
         $this->tables = '';
         $this->where = '';
@@ -454,7 +488,8 @@ class MSQL {
         $this->stmt = NULL;
     }
 
-    public function setParameters() {
+    public function setParameters()
+    {
         $numargs = func_num_args();
         if ($numargs > 0) {
             if ($numargs == 1) {
@@ -477,7 +512,8 @@ class MSQL {
         }
     }
 
-    public function addParameter($value, $type = null) {
+    public function addParameter($value, $type = null)
+    {
         if (is_array($value)) {
             $this->parameters[] = $value[0];
             $this->paramType[] = $value[1];
@@ -487,7 +523,8 @@ class MSQL {
         }
     }
 
-    public function setRange() {
+    public function setRange()
+    {
         $numargs = func_num_args();
         if ($numargs == 1) {
             $this->range = func_get_arg(0);
@@ -498,13 +535,15 @@ class MSQL {
         }
     }
 
-    public function setOffset($page, $rows) {
+    public function setOffset($page, $rows)
+    {
         if (!$this->range) {
             $this->range = new \MRange($page, $rows);
         }
     }
 
-    private function _findStr($target, $source) {
+    private function _findStr($target, $source)
+    {
         $l = strlen($target);
         $lsource = strlen($source);
         $pos = 0;
@@ -526,7 +565,8 @@ class MSQL {
         return ($fim ? $pos : -1);
     }
 
-    public function parseSqlCommand(&$cmd, $clause, $delimiters) {
+    public function parseSqlCommand(&$cmd, $clause, $delimiters)
+    {
         if (substr($cmd, 0, strlen($clause)) != $clause)
             return false;
 
@@ -546,7 +586,8 @@ class MSQL {
         return $r;
     }
 
-    public function createFrom($sqltext) {
+    public function createFrom($sqltext)
+    {
         $this->command = $sqltext;
         $sqltext = trim($sqltext) . " #";
         $sqltext = preg_replace("/(?i)select /", "select ", $sqltext);
@@ -571,4 +612,3 @@ class MSQL {
 
 }
 
-?>

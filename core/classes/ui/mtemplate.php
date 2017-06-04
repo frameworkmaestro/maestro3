@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -20,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MTemplate extends MComponent {
+class MTemplate extends MComponent
+{
 
     public $engine;
     public $context;
@@ -28,7 +28,8 @@ class MTemplate extends MComponent {
     public $template;
     private $templateEngine;
 
-    public function __construct($path = '') {
+    public function __construct($path = '')
+    {
         parent::__construct();
 
         $this->path = $path;
@@ -62,27 +63,31 @@ class MTemplate extends MComponent {
         $this->context('manager', Manager::getInstance());
     }
 
-    public function setPath($path) {
+    public function setPath($path)
+    {
         $this->path = $path;
     }
 
-    public function context($key, $value) {
+    public function context($key, $value)
+    {
         $this->context[$key] = $value;
     }
 
     public function multicontext($context = [])
     {
-        foreach($context as $key => $value) {
+        foreach ($context as $key => $value) {
             $this->context[$key] = $value;
         }
     }
 
-    public function load($fileName) {
+    public function load($fileName)
+    {
         $this->template = (($this->templateEngine == 'latte') ? $this->path . DIRECTORY_SEPARATOR : '') . $fileName;
 
     }
 
-    public function render($args = array()) {
+    public function render($args = array())
+    {
         $params = array_merge($this->context, $args);
         if ($this->templateEngine == 'smarty') {
             foreach ($params as $name => $value) {
@@ -96,11 +101,13 @@ class MTemplate extends MComponent {
 
     }
 
-    public function exists($fileName) {
+    public function exists($fileName)
+    {
         return file_exists($this->path . '/' . $fileName);
     }
 
-    public function fetch($fileName, $args = array()) {
+    public function fetch($fileName, $args = array())
+    {
         //mdump('=========fetch==='. $fileName);
         $this->load($fileName);
         return $this->render($args);
@@ -110,7 +117,8 @@ class MTemplate extends MComponent {
      * Helper functions
      */
 
-    private function parameters($control, $parameters = '') {
+    private function parameters($control, $parameters = '')
+    {
         $args = json_decode($parameters);
         foreach ($args as $k => $v) {
             if ($k{0} == '$') {
@@ -122,19 +130,22 @@ class MTemplate extends MComponent {
         }
     }
 
-    public function link($text, $action, $parameters = '') {
+    public function link($text, $action, $parameters = '')
+    {
         $a = new MLink('', $text, $action);
         $this->parameters($a, $parameters);
         return $a->generate();
     }
 
-    public function control($class, $parameters = '') {
+    public function control($class, $parameters = '')
+    {
         $control = new $class;
         $this->parameters($control, $parameters);
         return $control->generate();
     }
 
-    public function css($type, $value) {
+    public function css($type, $value)
+    {
         if ($type == 'file') {
             Manager::getPage()->addStyleSheet($value);
         } elseif ($type == 'code') {
@@ -145,7 +156,8 @@ class MTemplate extends MComponent {
         }
     }
 
-    public function js($type, $value) {
+    public function js($type, $value)
+    {
         if ($type == 'file') {
             Manager::getPage()->addJsFile($value);
         } elseif ($type == 'script') {
@@ -158,7 +170,8 @@ class MTemplate extends MComponent {
         }
     }
 
-    public function file($type, $fileName) {
+    public function file($type, $fileName)
+    {
         if ($type == 'file') {
             $file = $this->path . '/' . $fileName;
         } elseif ($type == 'component') {
@@ -167,4 +180,3 @@ class MTemplate extends MComponent {
         return $file;
     }
 }
-?>

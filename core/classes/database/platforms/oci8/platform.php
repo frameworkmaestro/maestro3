@@ -1,5 +1,5 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -19,17 +19,20 @@ namespace database\platforms\OCI8;
 
 use database\MDatabase;
 
-class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
+class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform
+{
 
     public $db;
     public $executeMode = OCI_COMMIT_ON_SUCCESS;
     private $linguistic = false;
 
-    public function __construct(MDatabase $db) {
+    public function __construct(MDatabase $db)
+    {
         $this->db = $db;
     }
 
-    public function connect() {
+    public function connect()
+    {
         $nlsLang = $this->db->getConfig('nls_lang');
         if ($nlsLang) {
             putenv("NLS_LANG=" . $nlsLang);
@@ -41,17 +44,20 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         $this->db->getConnection()->exec("alter session set NLS_TIMESTAMP_FORMAT='" . $nlsDate . ' ' . $nlsTime . "'");
     }
 
-    public function getTypedAttributes() {
+    public function getTypedAttributes()
+    {
         return 'blob'; //'lob,blob,clob,text';
     }
 
-    public function getSetOperation($operation) {
+    public function getSetOperation($operation)
+    {
         $operation = strtoupper($operation);
         $set = array('UNION' => 'UNION', 'UNION ALL' => 'UNION ALL', 'INTERSECT' => 'INTERSECT', 'MINUS' => 'MINUS');
         return $set[$operation];
     }
 
-    public function getNewId($sequence = 'admin', $tableGenerator = 'cm_sequence') {
+    public function getNewId($sequence = 'admin', $tableGenerator = 'cm_sequence')
+    {
         try {
             $this->value = $this->getNextValue($sequence);
             return $this->value;
@@ -61,7 +67,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
 
     }
 
-    public function getNextValue($sequence = 'admin', $tableGenerator = 'cm_sequence') {
+    public function getNextValue($sequence = 'admin', $tableGenerator = 'cm_sequence')
+    {
         try {
             $sql = new \database\MSQL($sequence . '.nextval as value', 'dual');
             $result = $this->db->query($sql);
@@ -72,7 +79,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function getMetadata($stmt) {
+    public function getMetadata($stmt)
+    {
         $s = $stmt->getWrappedStatement();
         $metadata['columnCount'] = $count = $s->columnCount();
         for ($i = 0; $i < $count; $i++) {
@@ -86,7 +94,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         return $metadata;
     }
 
-    private function _getColumnMeta($stmt, $columnIndex = 0) {
+    private function _getColumnMeta($stmt, $columnIndex = 0)
+    {
         $meta['name'] = \strtoupper((oci_field_name($stmt, $columnIndex + 1)));
         $meta['len'] = oci_field_size($stmt, $columnIndex + 1);
         $type = oci_field_type($stmt, $columnIndex + 1);
@@ -110,11 +119,13 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         return $meta;
     }
 
-    public function getSQLRange(\MRange $range) {
+    public function getSQLRange(\MRange $range)
+    {
         return "";
     }
 
-    public function fetchAll($query) {
+    public function fetchAll($query)
+    {
         $offset = $query->msql->range ? $query->msql->range->offset : 0;
         $maxrows = $query->msql->range ? $query->msql->range->rows : -1;
 
@@ -138,7 +149,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
      * @param $fetchStyle
      * @return int
      */
-    private function convertPdoToOciFetchStyle($fetchStyle) {
+    private function convertPdoToOciFetchStyle($fetchStyle)
+    {
         switch ($fetchStyle) {
             case \PDO::FETCH_ASSOC:
                 return OCI_ASSOC;
@@ -151,12 +163,14 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function fetchObject($query) {
+    public function fetchObject($query)
+    {
         $stmt = $query->msql->stmt->getWrappedStatement()->getHandle();
         return oci_fetch_object($stmt);
     }
 
-    public function convertToDatabaseValue($value, $type, &$bindingType) {
+    public function convertToDatabaseValue($value, $type, &$bindingType)
+    {
         if ($value === NULL) {
             return $value;
         }
@@ -192,7 +206,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function convertToPHPValue($value, $type) {
+    public function convertToPHPValue($value, $type)
+    {
         switch ($type) {
             case 'currency':
                 return \Manager::currency($value);
@@ -218,7 +233,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    private function parseBlob($value) {
+    private function parseBlob($value)
+    {
         $parsedValue = '';
         if (is_resource($value) or is_resource($value->descriptor)) {
             $value->rewind();
@@ -233,11 +249,13 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         return $value;
     }
 
-    private function parseClob($value) {
+    private function parseClob($value)
+    {
         return is_a($value, '\OCI-Lob') ? $value->load() : $value;
     }
 
-    public function convertColumn($value, $dbalType) {
+    public function convertColumn($value, $dbalType)
+    {
         if ($dbalType == 'date') {
             return "TO_CHAR(" . $value . ",'" . $this->db->getConfig('formatDate') . "') ";
         } elseif ($dbalType == 'timestamp') {
@@ -247,7 +265,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function convertWhere($value, $type) {
+    public function convertWhere($value, $type)
+    {
         if ($type == '') {
             if (is_object($value)) {
                 $type = substr(strtolower(get_class($value)), 1);
@@ -262,7 +281,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function handleTypedAttribute($attributeMap, $operation, $object) {
+    public function handleTypedAttribute($attributeMap, $operation, $object)
+    {
         $method = 'handle' . $attributeMap->getType();
         $this->$method($attributeMap, $operation, $object);
     }
@@ -274,13 +294,15 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
      * @param type $module Classe, Script ou módulo de onde está partindo a execução.
      * @param type $action Ação executada pelo usuário.
      */
-    public function setUserInformation($userId, $userIP, $module, $action) {
+    public function setUserInformation($userId, $userIP, $module, $action)
+    {
         $this->db->getConnection()
             ->getWrappedConnection()
             ->setUserInformation($userId, $userIP, $module, $action);
     }
 
-    private function handleBLOB($attributeMap, $operation, $object) {
+    private function handleBLOB($attributeMap, $operation, $object)
+    {
         //mdump('platform::handleBLOB');
         $classMap = $attributeMap->getClassMap();
         $statement = $classMap->getSelectStatement();
@@ -306,7 +328,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    public function ignoreAccentuation($ignore = true) {
+    public function ignoreAccentuation($ignore = true)
+    {
         if ($ignore) {
             $this->enableLinguisticSearchs();
         } else {
@@ -314,7 +337,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    private function enableLinguisticSearchs() {
+    private function enableLinguisticSearchs()
+    {
         if (!$this->linguistic) {
             $trans = $this->db->beginTransaction();
             $this->db->executeCommand('ALTER SESSION SET NLS_COMP=LINGUISTIC');
@@ -324,7 +348,8 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
         }
     }
 
-    private function disableLinguisticSearchs() {
+    private function disableLinguisticSearchs()
+    {
         if ($this->linguistic) {
             $trans = $this->db->beginTransaction();
             $this->db->executeCommand('ALTER SESSION SET NLS_COMP=BINARY');
@@ -335,8 +360,7 @@ class Platform extends \Doctrine\DBAL\Platforms\OraclePlatform {
     }
 }
 
-function handleText($attributeMap, $operation) {
+function handleText($attributeMap, $operation)
+{
     //mdump('platform::handleText');
 }
-
-?>

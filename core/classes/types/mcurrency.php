@@ -1,5 +1,6 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -15,37 +16,43 @@
  * 02110-1301, USA.
  */
 
-class MCurrency extends MType {
+class MCurrency extends MType
+{
 
     private $value;
 
-    public function __construct($value) {
+    public function __construct($value)
+    {
         $this->setValue($value);
     }
 
-    private function getValueFromString($value){
+    private function getValueFromString($value)
+    {
         $l = localeConv();
-        $sign = (strpos($value,$l['negative_sign']) !== false) ? -1 : 1;
-        $value = strtr($value,$l['positive_sign'].$l['negative_sign'].'()', '    ');
+        $sign = (strpos($value, $l['negative_sign']) !== false) ? -1 : 1;
+        $value = strtr($value, $l['positive_sign'] . $l['negative_sign'] . '()', '    ');
         $value = str_replace(' ', '', $value);
         $value = str_replace($l['currency_symbol'], '', $value);
         $value = str_replace($l['mon_thousands_sep'], '', $value);
         $value = str_replace($l['mon_decimal_point'], '.', $value);
-        return (float) ($value * $sign);
+        return (float)($value * $sign);
     }
 
-    public function getValue() {
-        return $this->value ? : (float) 0.0;
+    public function getValue()
+    {
+        return $this->value ?: (float)0.0;
     }
 
-    public function setValue($value) {
-        if ($value instanceof MCurrency){
+    public function setValue($value)
+    {
+        if ($value instanceof MCurrency) {
             $value = $value->getValue();
         }
-        $this->value = (is_numeric($value) ? round($value, 2,PHP_ROUND_HALF_DOWN) : (is_string($value) ? $this->getValueFromString($value) : 0.0)) ;
+        $this->value = (is_numeric($value) ? round($value, 2, PHP_ROUND_HALF_DOWN) : (is_string($value) ? $this->getValueFromString($value) : 0.0));
     }
 
-    public function format() {
+    public function format()
+    {
         $l = localeConv();
         // Sign specifications:
         if ($this->value >= 0) {
@@ -72,22 +79,29 @@ class MCurrency extends MType {
             $m = $m . $space . $l['currency_symbol'];
         }
         switch ($sign_posn) {
-            case 0: $m = "($m)";
+            case 0:
+                $m = "($m)";
                 break;
-            case 1: $m = "$sign$m";
+            case 1:
+                $m = "$sign$m";
                 break;
-            case 2: $m = "$m$sign";
+            case 2:
+                $m = "$m$sign";
                 break;
-            case 3: $m = "$sign$m";
+            case 3:
+                $m = "$sign$m";
                 break;
-            case 4: $m = "$m$sign";
+            case 4:
+                $m = "$m$sign";
                 break;
-            default: $m = "$m [error sign_posn=$sign_posn&nbsp;!]";
+            default:
+                $m = "$m [error sign_posn=$sign_posn&nbsp;!]";
         }
         return $m;
     }
 
-    public function formatValue() {
+    public function formatValue()
+    {
         $l = localeConv();
         // Sign specifications:
         if ($this->value >= 0) {
@@ -100,36 +114,46 @@ class MCurrency extends MType {
         // Currency format:
         $m = number_format(abs($this->value), $l['frac_digits'], $l['mon_decimal_point'], $l['mon_thousands_sep']);
         switch ($sign_posn) {
-            case 0: $m = "($m)";
+            case 0:
+                $m = "($m)";
                 break;
-            case 1: $m = "$sign$m";
+            case 1:
+                $m = "$sign$m";
                 break;
-            case 2: $m = "$m$sign";
+            case 2:
+                $m = "$m$sign";
                 break;
-            case 3: $m = "$sign$m";
+            case 3:
+                $m = "$sign$m";
                 break;
-            case 4: $m = "$m$sign";
+            case 4:
+                $m = "$m$sign";
                 break;
-            default: $m = "$m [error sign_posn=$sign_posn&nbsp;!]";
+            default:
+                $m = "$m [error sign_posn=$sign_posn&nbsp;!]";
         }
         return $m;
     }
 
-    public function getPlainValue(){
+    public function getPlainValue()
+    {
         return $this->getValue();
     }
-    public function  __toString() {
+
+    public function __toString()
+    {
         return $this->format();
     }
 
-    public function getExtension( $lang){
+    public function getExtension($lang)
+    {
         $valor = $this->getValue();
         if (strpos($valor, ",") > 0) {
-                // retira o ponto de milhar, se tiver
-                $valor = str_replace(".", "", $valor);
+            // retira o ponto de milhar, se tiver
+            $valor = str_replace(".", "", $valor);
 
-                // troca a virgula decimal por ponto decimal
-                $valor = str_replace(",", ".", $valor);
+            // troca a virgula decimal por ponto decimal
+            $valor = str_replace(",", ".", $valor);
         }
 
         //obtem o arquivo de configuração e linguagem
@@ -154,32 +178,32 @@ class MCurrency extends MType {
         $inteiro = explode(".", $valor);
         $cont = count($inteiro);
         for ($i = 0; $i < $cont; $i++)
-                for ($ii = strlen($inteiro[$i]); $ii < 3; $ii++)
+            for ($ii = strlen($inteiro[$i]); $ii < 3; $ii++)
                 $inteiro[$i] = "0" . $inteiro[$i];
 
         $fim = $cont - ($inteiro[$cont - 1] > 0 ? 1 : 2);
         $rt = '';
         for ($i = 0; $i < $cont; $i++) {
-                $valor = $inteiro[$i];
-                $rc = (($valor > 100) && ($valor < 200)) ? $ot[1] : $c[$valor[0]];
-                $rd = ($valor[1] < 2) ? "" : $d[$valor[1]];
-                $ru = ($valor > 0) ? (($valor[1] == 1) ? $d10[$valor[2]] : $u[$valor[2]]) : "";
+            $valor = $inteiro[$i];
+            $rc = (($valor > 100) && ($valor < 200)) ? $ot[1] : $c[$valor[0]];
+            $rd = ($valor[1] < 2) ? "" : $d[$valor[1]];
+            $ru = ($valor > 0) ? (($valor[1] == 1) ? $d10[$valor[2]] : $u[$valor[2]]) : "";
 
-                $r = $rc . (($rc && ($rd || $ru)) ? " ".$ot[2]." " : "") . $rd . (($rd &&
-                        $ru) ? " ".$ot[2]." " : "") . $ru;
-                $t = $cont - 1 - $i;
-                $r .= $r ? " " . ($valor > 1 ? $plural[$t] : $singular[$t]) : "";
-                if ($valor == "000"
+            $r = $rc . (($rc && ($rd || $ru)) ? " " . $ot[2] . " " : "") . $rd . (($rd &&
+                    $ru) ? " " . $ot[2] . " " : "") . $ru;
+            $t = $cont - 1 - $i;
+            $r .= $r ? " " . ($valor > 1 ? $plural[$t] : $singular[$t]) : "";
+            if ($valor == "000"
 
-                )$z++; elseif ($z > 0)
+            ) $z++; elseif ($z > 0)
                 $z--;
-                if (($t == 1) && ($z > 0) && ($inteiro[0] > 0))
-                $r .= ( ($z > 1) ? " ".$ot[3]." " : "") . $plural[$t];
-                if ($r)
+            if (($t == 1) && ($z > 0) && ($inteiro[0] > 0))
+                $r .= (($z > 1) ? " " . $ot[3] . " " : "") . $plural[$t];
+            if ($r)
                 $rt = $rt . ((($i > 0) && ($i <= $fim) &&
-                        ($inteiro[0] > 0) && ($z < 1)) ? ( ($i < $fim) ? ", " : " ".$ot[2]." ") : " ") . $r;
+                        ($inteiro[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " " . $ot[2] . " ") : " ") . $r;
         }
-        return($rt ? $rt : $ot[0]);
+        return ($rt ? $rt : $ot[0]);
     }
 
     public function equals($currency)
@@ -207,7 +231,7 @@ class MCurrency extends MType {
 
     public function div($value)
     {
-        if($value == 0) {
+        if ($value == 0) {
             throw new \InvalidArgumentException("Divide by zero!");
         }
 
@@ -215,5 +239,3 @@ class MCurrency extends MType {
     }
 
 }
-
-?>

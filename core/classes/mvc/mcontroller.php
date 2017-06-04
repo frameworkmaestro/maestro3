@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -20,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MController {
+class MController
+{
 
     private $logger;
     private $encryptedFields = array();
@@ -32,57 +32,70 @@ class MController {
     protected $params;
     public $renderArgs = array();
 
-    public function __construct() {
-        
+    public function __construct()
+    {
+
     }
 
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments)
+    {
         if (!is_callable($name)) {
             throw new \BadMethodCallException("Method [{$name}] doesn't exists in " . get_class($this) . " Controller.");
         }
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setApplication($application) {
+    public function setApplication($application)
+    {
         $this->application = $application;
     }
 
-    public function getApplication() {
+    public function getApplication()
+    {
         return $this->application;
     }
 
-    public function setModule($module) {
+    public function setModule($module)
+    {
         $this->module = $module;
     }
 
-    public function getModule() {
+    public function getModule()
+    {
         return $this->module;
     }
 
-    public function getAction() {
+    public function getAction()
+    {
         return $this->action;
     }
 
-    public function setEncryptedFields(array $fields) {
+    public function setEncryptedFields(array $fields)
+    {
         $this->encryptedFields = $fields;
     }
 
-    public function isPost() {
+    public function isPost()
+    {
         return \Manager::getRequest()->isPostBack();
     }
 
-    public function init() {
+    public function init()
+    {
         Manager::checkLogin();
     }
 
-    public function dispatch($action) {
+    public function dispatch($action)
+    {
         mtrace('mcontroller::dispatch = ' . $action);
         $this->decryptData();
 
@@ -106,16 +119,16 @@ class MController {
                 $method = new \ReflectionMethod(get_class($this), $action);
                 $params = $method->getParameters();
                 $values = array();
-                foreach($params as $param){
+                foreach ($params as $param) {
                     $value = $this->data->{$param->getName()};
-                    if(!$value && $param->isDefaultValueAvailable()){
+                    if (!$value && $param->isDefaultValueAvailable()) {
                         $value = $param->getDefaultValue();
                     }
                     $values[] = $value;
                 }
-                $result = call_user_func_array([$this,$action],$values);
+                $result = call_user_func_array([$this, $action], $values);
 
-                if(!$this->getResult()){
+                if (!$this->getResult()) {
                     if (!Manager::isAjaxCall()) {
                         Manager::$ajax = new MAjax(Manager::getOptions('charset'));
                     }
@@ -135,53 +148,65 @@ class MController {
     /**
      * Executed at the end of Controller execution.
      */
-    public function terminate() {
-        
+    public function terminate()
+    {
+
     }
 
-    public function forward($action) {
+    public function forward($action)
+    {
         Manager::getFrontController()->setForward($action);
     }
 
-    public function setResult($result) {
+    public function setResult($result)
+    {
         Manager::getFrontController()->setResult($result);
     }
 
-    public function getResult() {
+    public function getResult()
+    {
         return Manager::getFrontController()->getResult();
     }
 
-    public function getContainer() {
+    public function getContainer()
+    {
         return Manager::getFrontController()->getContainer();
     }
 
-    public function setParams($params) {
+    public function setParams($params)
+    {
         $this->params = $params;
     }
 
-    protected function setProperty($property, $value, $fields) {
+    protected function setProperty($property, $value, $fields)
+    {
         foreach ($fields as $field) {
             $this->data->{$field . $property} = $value;
         }
     }
 
-    public function getParams() {
+    public function getParams()
+    {
         return $this->params;
     }
 
-    public function setData() {
+    public function setData()
+    {
         $this->data = Manager::getData();
     }
 
-    public function setDataObject($data) {
+    public function setDataObject($data)
+    {
         $this->data = $data;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    private function getContent($controller, $view, $parameters = NULL) {
+    private function getContent($controller, $view, $parameters = NULL)
+    {
         if ($this->module != '') {
             $path = Manager::getConf("srcPath.{$this->module}") . '/views/' . $controller . '/' . $view;
         } else {
@@ -209,7 +234,8 @@ class MController {
         }
     }
 
-    private function getParameters($parameters = NULL) {
+    private function getParameters($parameters = NULL)
+    {
         if (!(is_object($parameters) || is_array($parameters))) {
             $parameters = array('result' => $parameters);
         }
@@ -218,23 +244,27 @@ class MController {
         }
     }
 
-    public function getService($service, $module = '') {
+    public function getService($service, $module = '')
+    {
         $service = Manager::getService($this->application, ($module == '' ? $this->module : $module), $service);
         $service->setData();
         return $service;
     }
 
-    public function renderAppView($app, $module, $controller, $viewFile, $parameters) {
+    public function renderAppView($app, $module, $controller, $viewFile, $parameters)
+    {
         $view = Manager::getView($app, $module, $controller, $viewFile);
         $view->setArgs($parameters);
         $view->process($this, $parameters);
     }
 
-    public function renderView($controller, $viewFile, $parameters = array()) {
+    public function renderView($controller, $viewFile, $parameters = array())
+    {
         $this->renderAppView($this->application, $this->module, $controller, $viewFile, $parameters);
     }
 
-    public function renderPrompt($prompt) {
+    public function renderPrompt($prompt)
+    {
         if (is_string($prompt)) {
             $args = func_get_args();
             $oPrompt = MPrompt::$prompt($args[1], $args[2], $args[3]);
@@ -249,7 +279,8 @@ class MController {
         }
     }
 
-    public function renderJSON($json = '') {
+    public function renderJSON($json = '')
+    {
         if (!Manager::isAjaxCall()) {
             Manager::$ajax = new MAjax();
             Manager::$ajax->initialize(Manager::getOptions('charset'));
@@ -259,19 +290,23 @@ class MController {
         $this->setResult(new MRenderJSON($json));
     }
 
-    public function renderStream($stream) {
+    public function renderStream($stream)
+    {
         $this->setResult(new MRenderBinary($stream, true, 'raw'));
     }
 
-    public function renderBinary($stream, $fileName = '') {
+    public function renderBinary($stream, $fileName = '')
+    {
         $this->setResult(new MRenderBinary($stream, true, $fileName));
     }
 
-    public function renderDownload($file, $fileName = '') {
+    public function renderDownload($file, $fileName = '')
+    {
         $this->setResult(new MRenderBinary(null, false, $fileName, $file));
     }
 
-    public function renderTemplate($templateName, $parameters = array()) {
+    public function renderTemplate($templateName, $parameters = array())
+    {
         $controller = strtolower($this->name);
         $path = Manager::getBasePath('/views/' . $controller . '/', $this->module);
         $file = $templateName . '.html';
@@ -285,15 +320,18 @@ class MController {
         }
     }
 
-    public function redirect($url) {
+    public function redirect($url)
+    {
         $this->setResult(new MRedirect(NULL, $url));
     }
 
-    public function notfound($msg) {
+    public function notfound($msg)
+    {
         $this->setResult(new MNotFound($msg));
     }
 
-    public function renderPartial($viewName = '', $parameters = array()) {
+    public function renderPartial($viewName = '', $parameters = array())
+    {
         if (($view = $viewName) == '') {
             $view = $this->action;
         }
@@ -302,7 +340,8 @@ class MController {
         $this->getContent($controller, $view, $this->data);
     }
 
-    public function renderContent($viewName = '', $parameters = array()) {
+    public function renderContent($viewName = '', $parameters = array())
+    {
         $controller = strtolower($this->name);
         $view = $viewName;
         if ($view == '') {
@@ -315,17 +354,20 @@ class MController {
         $this->getContent($controller, $view, $this->data);
     }
 
-    public function renderFile(MFile $file) {
+    public function renderFile(MFile $file)
+    {
         Manager::getPage()->window($file->getURL());
         $this->setResult(new MBrowserFile($file));
     }
 
-    public function renderWindow($viewName = '', $parameters = array()) {
+    public function renderWindow($viewName = '', $parameters = array())
+    {
         $this->renderContent($viewName, $parameters);
         $this->setResult(new MBrowserWindow());
     }
 
-    public function render($viewName = '', $parameters = array()) {
+    public function render($viewName = '', $parameters = array())
+    {
         $this->encryptData();
 
         $this->renderContent($viewName, $parameters);
@@ -336,24 +378,28 @@ class MController {
         }
     }
 
-    public function prepareFlush() {
+    public function prepareFlush()
+    {
         Manager::getFrontController()->response->prepareFlush();
     }
 
-    public function flush($output) {
+    public function flush($output)
+    {
         Manager::getFrontController()->response->sendFlush($output);
     }
 
-    public function renderFlush($viewName = '', $parameters = array()) {
+    public function renderFlush($viewName = '', $parameters = array())
+    {
         Manager::getPage()->clearContent();
         $this->renderContent($viewName, $parameters);
         $output = Manager::getPage()->generate();
         $this->flush($output);
     }
 
-    protected function log($message, $operation = 'default') {
+    protected function log($message, $operation = 'default')
+    {
         if ($this->logger === null) {
-            $this->logger= Manager::getModelMAD('log');
+            $this->logger = Manager::getModelMAD('log');
         }
 
         $idUser = \Manager::getLogin() ? \Manager::getLogin()->getIdUser() : 0;
@@ -364,8 +410,9 @@ class MController {
     /**
      * Vasculha o $this->data para encontrar campos que precisam ser criptografados.
      */
-    private function encryptData() {
-        $this->cryptIterator(function($plain, $token) {
+    private function encryptData()
+    {
+        $this->cryptIterator(function ($plain, $token) {
             return \MSSL::simmetricEncrypt($plain, $token);
         });
     }
@@ -373,12 +420,13 @@ class MController {
     /**
      * Vasculha o $this->data para encontrar campos que precisam ser descriptografados.
      */
-    private function decryptData() {
+    private function decryptData()
+    {
         if (!\Manager::getRequest()->getIsPostRequest()) {
             return;
         }
 
-        $this->cryptIterator(function($encrypted, $token) {
+        $this->cryptIterator(function ($encrypted, $token) {
             return \MSSL::simmetricDecrypt($encrypted, $token);
         });
     }
@@ -388,7 +436,8 @@ class MController {
      * @param \Closure $function
      * @throws \ESecurityException
      */
-    private function cryptIterator(\Closure $function) {
+    private function cryptIterator(\Closure $function)
+    {
         $token = \Manager::getSessionToken();
 
         foreach ($this->encryptedFields as $field) {

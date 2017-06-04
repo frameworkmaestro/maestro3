@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,9 +19,11 @@
  * Adaptado a partir do trabalho de Johannes Buchner
  * http://johbuc6.coconia.net/doku.php/mediawiki2html_machine
  */
-class MWiki {
+class MWiki
+{
 
-    function getPartBetween($str, $a, $b) {
+    function getPartBetween($str, $a, $b)
+    {
         $start = strpos($str, $a) + strlen($a);
         if (strpos($str, $a) === false) {
             return false;
@@ -33,7 +35,8 @@ class MWiki {
         return substr($str, $start, $length);
     }
 
-    function simpleText($html) {
+    function simpleText($html)
+    {
         $html = str_replace('&ndash;', '-', $html);
         $html = str_replace('&quot;', '"', $html);
         $html = preg_replace('/\&amp;(nbsp);/', '&${1};', $html);
@@ -85,7 +88,8 @@ class MWiki {
         return $html;
     }
 
-    function parse($title, $page) {
+    function parse($title, $page)
+    {
         $text = ($this->getPartBetween($page, '<text xml:space="preserve">', '</text>'));
         $html = $text;
         $html = html_entity_decode($html);
@@ -102,29 +106,33 @@ class MWiki {
         return $output;
     }
 
-    function giveSource($page) {
+    function giveSource($page)
+    {
         $text = ($this->getPartBetween($page, '<text xml:space="preserve">', '</text>'));
         $text = "<pre>" . $text . "</pre>";
         return $text;
     }
-    
-    function helper_anchor($matches) {
+
+    function helper_anchor($matches)
+    {
         $name = $matches[1];
         return '<a name="' . $name . '"></a>';
     }
 
-    function helper_externlinks($matches) {
+    function helper_externlinks($matches)
+    {
         $href = $matches[1];
-        if (substr(strtoupper($href),0,4) == 'HTTP') {
+        if (substr(strtoupper($href), 0, 4) == 'HTTP') {
             $text = empty($matches[2]) ? $matches[1] : $matches[2];
             $target = $matches[3] ?: '';
             return '<a class="mWikiLink" href="' . $href . '" target="' . $target . '" >' . $text . '</a>';
         } else {
-            return '['.$href.']';
-        }    
+            return '[' . $href . ']';
+        }
     }
 
-    function helper_interwikilinks($matches) {
+    function helper_interwikilinks($matches)
+    {
         $action = $matches[1];
         $text = empty($matches[2]) ? $matches[1] : $matches[2];
         $target = $matches[3];
@@ -139,7 +147,8 @@ class MWiki {
         return $link;
     }
 
-    function helper_pre($matches) {
+    function helper_pre($matches)
+    {
         $language = strtolower(trim($matches[2]));
         $line = trim($matches[3]);
         $escaped = trim($matches[4]);
@@ -191,14 +200,16 @@ class MWiki {
         return $output;
     }
 
-    function code_trim($code) {
+    function code_trim($code)
+    {
         // special ltrim b/c leading whitespace matters on 1st line of content
         $code = preg_replace("/^\s*\n/siU", "", $code);
         $code = rtrim($code);
         return $code;
     }
 
-    function line_numbers($code, $start) {
+    function line_numbers($code, $start)
+    {
         $line_count = count(explode("\n", $code));
         $output = "<pre>";
         for ($i = 0; $i < $line_count; $i++) {
@@ -208,7 +219,8 @@ class MWiki {
         return $output;
     }
 
-    function helper_image($matches) {
+    function helper_image($matches)
+    {
         $m = explode('|', $matches[1]);
         $source = Manager::getStaticURL('', 'images/' . $m[0], true);
         $image = new MImage('', '', '', $source);
@@ -216,7 +228,8 @@ class MWiki {
         return $image->generate();
     }
 
-    function convertTables($text) {
+    function convertTables($text)
+    {
         $lines = explode("\n", $text);
         $innerTable = 0;
         $innerTableData = array();
@@ -241,7 +254,8 @@ class MWiki {
         return $output;
     }
 
-    function convertTable($tableText) {
+    function convertTable($tableText)
+    {
         $text = $tableText;
         $lines = explode("\n", $text);
         foreach ($lines as $line) {
@@ -260,13 +274,13 @@ class MWiki {
                 if ($secondChar == '-') {
                     // row break
                     if ($thOpen) {
-                        $table .="</th>\n";
+                        $table .= "</th>\n";
                     }
                     if ($tdOpen) {
-                        $table .="</td>\n";
+                        $table .= "</td>\n";
                     }
                     if ($rowOpen) {
-                        $table .="\t</tr>\n";
+                        $table .= "\t</tr>\n";
                     }
                     $table .= "\t<tr>\n";
                     $rowOpen = true;
@@ -281,7 +295,7 @@ class MWiki {
                     foreach ($columns as $column) {
                         $stuff = explode('| ', $column, 2);
                         if ($tdOpen) {
-                            $table .="</td>\n";
+                            $table .= "</td>\n";
                         }
                         if (count($stuff) == 1) {
                             $table .= "\t\t<td>" . $this->simpleText($stuff[0]);
@@ -298,7 +312,7 @@ class MWiki {
                 foreach ($columns as $column) {
                     $stuff = explode('! ', $column, 2);
                     if ($thOpen) {
-                        $table .="</th>\n";
+                        $table .= "</th>\n";
                     }
                     if (count($stuff) == 1) {
                         $table .= "\t\t<th>" . $this->simpleText($stuff[0]);
@@ -313,16 +327,16 @@ class MWiki {
             }
         }
         if ($thOpen) {
-            $table .="</th>\n";
+            $table .= "</th>\n";
         }
         if ($tdOpen) {
-            $table .="</td>\n";
+            $table .= "</td>\n";
         }
         if ($rowOpen) {
-            $table .="\t</tr>\n";
+            $table .= "\t</tr>\n";
         }
         if ($tableOpen) {
-            $table .="</table>\n";
+            $table .= "</table>\n";
         }
         return $table;
     }

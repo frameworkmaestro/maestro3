@@ -1,31 +1,31 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
 /**
- *  Adapted for Maestro 
+ *  Adapted for Maestro
  *  IAM_CSVDump A class form performing a query dump and sending it to the browser or setting it or download.
- *  @package    iam_csvdump
+ * @package    iam_csvdump
  */
 
 /**
  *  IAM_CSVDump A class form performing a query dump and sending it to the browser or setting it or download.
- *  @author     IvÃ¡n Ariel Melgrati <phpclasses@imelgrat.mailshell.com>
- *  @package    iam_csvdump
- *  @version 1.0
+ * @author     IvÃ¡n Ariel Melgrati <phpclasses@imelgrat.mailshell.com>
+ * @package    iam_csvdump
+ * @version 1.0
  *
  *  IAM_CSVDump A class form performing a query dump and sending it to the browser or setting it or download.
  *
@@ -43,16 +43,18 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
  */
-class MCSVDump {
+class MCSVDump
+{
 
     private $separator;
     private $eol;
-    
+
     const WINDOWS_EOL = "\r\n";
     const MAC_EOL = "\r";
     const LINUX_EOL = "\n";
-    
-    public function __construct($separator = '', $eol = '') {
+
+    public function __construct($separator = '', $eol = '')
+    {
         $this->separator = ($separator ?: Manager::getOptions('csv'));
         $this->eol = ($eol ?: $this->_define_newline());
     }
@@ -61,14 +63,15 @@ class MCSVDump {
      * @desc Takes an array and creates a csv string from it.
      *
      * @access public
-     * @param  Array  $array (see below)
+     * @param  Array $array (see below)
      * @param  String $separator Field separator ()default is ';')
-     * @param  String $trim  If the cells should be trimmed , default is 'both'. It can also be 'left', 'right' or 'both'. 'none' makes it faster since omits many function calls.
-     * @param  Boolean   $removeEmptyLines (default is TRUE. removes "lines" that have no value, would come out empty.)
+     * @param  String $trim If the cells should be trimmed , default is 'both'. It can also be 'left', 'right' or 'both'. 'none' makes it faster since omits many function calls.
+     * @param  Boolean $removeEmptyLines (default is TRUE. removes "lines" that have no value, would come out empty.)
      * @return String A CSV String. It returns an empty string if there Array is empty (NULL)
      * @todo Add param "fill to fit max length"?
      */
-    public function arrayToCsvString($array, $separator=',', $trim='both', $removeEmptyLines=TRUE) {
+    public function arrayToCsvString($array, $separator = ',', $trim = 'both', $removeEmptyLines = TRUE)
+    {
         $separator = $this->separator;
         if (!is_array($array) || empty($array))
             return '';
@@ -118,11 +121,12 @@ class MCSVDump {
      * @access private
      * @param  String $val
      * @param  String $separator
-     * @param  Mixed  $trimFunction If the cells should be trimmed , default is 'both'. It can also be 'left', 'right' or 'both'. 'none' makes it faster since omits many function calls.
+     * @param  Mixed $trimFunction If the cells should be trimmed , default is 'both'. It can also be 'left', 'right' or 'both'. 'none' makes it faster since omits many function calls.
      * @return String
      * @see    arrayToCsvString()
      */
-    public function _valToCsvHelper($val, $separator, $trimFunction) {
+    public function _valToCsvHelper($val, $separator, $trimFunction)
+    {
         if ($trimFunction)
             $val = $trimFunction($val);
         //If there is a separator (;) or a quote (") or a linebreak in the string, we need to quote it.
@@ -153,7 +157,8 @@ class MCSVDump {
      * @access private
      * @return String A String containing the End Of Line Sequence corresponding to the client's OS
      */
-    public function _define_newline() {
+    public function _define_newline()
+    {
         $unewline = "\r\n";
 
         if (strstr(strtolower($_SERVER["HTTP_USER_AGENT"]), 'win')) {
@@ -172,7 +177,8 @@ class MCSVDump {
      * @access private
      * @return String A String containing the Browser's type or brand
      */
-    public function _get_browser_type() {
+    public function _get_browser_type()
+    {
         $USER_BROWSER_AGENT = "";
 
         if (ereg('OPERA(/| )([0-9].[0-9]{1,2})', strtoupper($_SERVER["HTTP_USER_AGENT"]), $log_version)) {
@@ -197,7 +203,8 @@ class MCSVDump {
      * @access private
      * @return String A string containing the MIME-TYPE String corresponding to the client's browser
      */
-    public function _get_mime_type() {
+    public function _get_mime_type()
+    {
         $USER_BROWSER_AGENT = $this->_get_browser_type();
 
         $mime_type = ($USER_BROWSER_AGENT == 'IE' || $USER_BROWSER_AGENT == 'OPERA') ? 'application/octetstream' : 'application/octet-stream';
@@ -213,7 +220,8 @@ class MCSVDump {
      * @param  String $password Password to Access the Database
      * @param  String $host Name of the Host holding the DB
      */
-    public function _generate_csv($array) {
+    public function _generate_csv($array)
+    {
         $file = "";
         $crlf = $this->eol;
         foreach ($array as $str) {
@@ -222,7 +230,8 @@ class MCSVDump {
         $this->_send_file($file);
     }
 
-    public function _generate_txt($array) {
+    public function _generate_txt($array)
+    {
         $file = "";
         $crlf = $this->eol;
         foreach ($array as $str) {
@@ -231,7 +240,8 @@ class MCSVDump {
         $this->_send_file($file);
     }
 
-    public function _send_file($file) {
+    public function _send_file($file)
+    {
         ob_end_clean();
         echo $file;
     }
@@ -239,15 +249,16 @@ class MCSVDump {
     /**
      * @desc Generate the CSV File and send it to browser or download it as a file
      * @access public
-     * @param String $query_string  An SQL statement (usually a SELECT statement)
-     * @param String $filename  Filename to use when downloading the File. Default="dump". If set to "", the dump is displayed on the browser.
+     * @param String $query_string An SQL statement (usually a SELECT statement)
+     * @param String $filename Filename to use when downloading the File. Default="dump". If set to "", the dump is displayed on the browser.
      * @param String $extension Extension to use when downloading the File. Default="csv"
      * @param  String $dbname Name of the Database to use
      * @param  String $user User to Access the Database
      * @param  String $password Password to Access the Database
      * @param  String $host Name of the Host holding the DB
      */
-    public function dump($array, $filename="dump", $ext="csv") {
+    public function dump($array, $filename = "dump", $ext = "csv")
+    {
         $now = gmdate('D, d M Y H:i:s') . ' GMT';
         $USER_BROWSER_AGENT = $this->_get_browser_type();
 
@@ -267,7 +278,8 @@ class MCSVDump {
         }
     }
 
-    public function dumpTxt($array, $filename="dump", $ext="txt") {
+    public function dumpTxt($array, $filename = "dump", $ext = "txt")
+    {
         $now = gmdate('D, d M Y H:i:s') . ' GMT';
         $USER_BROWSER_AGENT = $this->_get_browser_type();
 
@@ -286,10 +298,11 @@ class MCSVDump {
         }
     }
 
-    public function save($array, $fileName = '', $utf8Decode = false, $trim = 'both') {
+    public function save($array, $fileName = '', $utf8Decode = false, $trim = 'both')
+    {
         $content = "";
         $crlf = $this->eol;
-        if(!is_array($array)) {
+        if (!is_array($array)) {
             $array = array($array);
         }
         foreach ($array as $str) {
@@ -302,10 +315,8 @@ class MCSVDump {
         if ($utf8Decode) {
             $content = utf8_decode($content);
         }
-        $file = MFile::file($content,false,$fileName);
+        $file = MFile::file($content, false, $fileName);
         return $file;
     }
 
 }
-
-?>

@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MRequest {
+class MRequest
+{
 
     /**
      * Server host
@@ -134,7 +135,8 @@ class MRequest {
     private $_putParams;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->host = $_SERVER['SERVER_NAME'];
         $this->path = $this->getPathInfo();
         mtrace('MRequest path = ' . $this->path);
@@ -187,7 +189,8 @@ class MRequest {
      * Automatically resolve request format from the Accept header
      * (in this order : html > xml > json > text)
      */
-    public function resolveFormat() {
+    public function resolveFormat()
+    {
 
         if ($this->format != null) {
             return;
@@ -230,7 +233,8 @@ class MRequest {
      * This request was sent by an Ajax framework.
      * (rely on the X-Requested-With header).
      */
-    public function isAjax() {
+    public function isAjax()
+    {
         if ($this->isFileUpload()) {
             return true;
         }
@@ -240,55 +244,67 @@ class MRequest {
         return ($_SERVER['HTTP_X_REQUESTED_WITH'] == "XMLHttpRequest");
     }
 
-    public function isAjaxEvent() {
+    public function isAjaxEvent()
+    {
         if ($_SERVER['__ISAJAXEVENT'] == 'yes') {
             return false;
         }
     }
 
-    public function isPostBack() {
+    public function isPostBack()
+    {
         return $this->method == 'POST';
     }
 
-    public function isFileUpload() {
+    public function isFileUpload()
+    {
         return ($_REQUEST['__ISFILEUPLOAD'] == 'yes');
     }
 
-    public function isPage() {
+    public function isPage()
+    {
         return $this->isPage;
     }
 
-    public function getForm() {
+    public function getForm()
+    {
         $form = $this->params['__FORM'];
         return $form ? $form : 'MainForm';
     }
 
-    public function getParameters() {
+    public function getParameters()
+    {
         return $this->params;
     }
 
-    public function getParameter($name) {
+    public function getParameter($name)
+    {
         return $this->params[$name];
     }
 
-    public function getParametersNames() {
+    public function getParametersNames()
+    {
         return array_keys($this->params);
     }
 
-    public function getParameterValues($name) {
+    public function getParameterValues($name)
+    {
         return $this->params[$name];
     }
 
-    public function getURI() {
+    public function getURI()
+    {
         return $_SERVER['REQUEST_URI'];
     }
 
-    public function inDomain() {
+    public function inDomain()
+    {
         $url = $this->getBase();
         return ($url == $this->host);
     }
 
-    public function getBase() {
+    public function getBase()
+    {
         return $this->getBaseUrl();
         /*
           if ($this->port == 80 || $this->port == 443) {
@@ -310,7 +326,8 @@ class MRequest {
      * @see getQuery
      * @see getPost
      */
-    public function getParam($name, $defaultValue=null) {
+    public function getParam($name, $defaultValue = null)
+    {
         return isset($_GET[$name]) ? $_GET[$name] : (isset($_POST[$name]) ? $_POST[$name] : $defaultValue);
     }
 
@@ -324,7 +341,8 @@ class MRequest {
      * @see getPost
      * @see getParam
      */
-    public function getQuery($name, $defaultValue=null) {
+    public function getQuery($name, $defaultValue = null)
+    {
         return isset($_GET[$name]) ? $_GET[$name] : $defaultValue;
     }
 
@@ -338,7 +356,8 @@ class MRequest {
      * @see getParam
      * @see getQuery
      */
-    public function getPost($name, $defaultValue=null) {
+    public function getPost($name, $defaultValue = null)
+    {
         return isset($_POST[$name]) ? $_POST[$name] : $defaultValue;
     }
 
@@ -351,7 +370,8 @@ class MRequest {
      * @return mixed the DELETE parameter value
      * @since 1.1.7
      */
-    public function getDelete($name, $defaultValue=null) {
+    public function getDelete($name, $defaultValue = null)
+    {
         if ($this->_deleteParams === null)
             $this->_deleteParams = $this->getIsDeleteRequest() ? $this->getRestParams() : array();
         return isset($this->_deleteParams[$name]) ? $this->_deleteParams[$name] : $defaultValue;
@@ -366,7 +386,8 @@ class MRequest {
      * @return mixed the PUT parameter value
      * @since 1.1.7
      */
-    public function getPut($name, $defaultValue=null) {
+    public function getPut($name, $defaultValue = null)
+    {
         if ($this->_putParams === null)
             $this->_putParams = $this->getIsPutRequest() ? $this->getRestParams() : array();
         return isset($this->_putParams[$name]) ? $this->_putParams[$name] : $defaultValue;
@@ -377,7 +398,8 @@ class MRequest {
      * @return array the request parameters
      * @since 1.1.7
      */
-    protected function getRestParams() {
+    protected function getRestParams()
+    {
         $result = array();
         if (function_exists('mb_parse_str'))
             mb_parse_str(file_get_contents('php://input'), $result);
@@ -391,7 +413,8 @@ class MRequest {
      * This is the same as {@link getRequestUri}.
      * @return string part of the request URL after the host info.
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->getRequestUri();
     }
 
@@ -404,19 +427,20 @@ class MRequest {
      * @return string schema and hostname part (with port number if needed) of the request URL (e.g. http://www.yiiframework.com)
      * @see setHostInfo
      */
-    public function getHostInfo($schema='') {
+    public function getHostInfo($schema = '')
+    {
         if ($this->_hostInfo === null) {
             if ($secure = $this->getIsSecureConnection())
                 $http = 'https';
             else
-                $http='http';
+                $http = 'http';
             if (isset($_SERVER['HTTP_HOST']))
                 $this->_hostInfo = $http . '://' . $_SERVER['HTTP_HOST'];
             else {
                 $this->_hostInfo = $http . '://' . $_SERVER['SERVER_NAME'];
                 $port = $secure ? $this->getSecurePort() : $this->getPort();
                 if (($port !== 80 && !$secure) || ($port !== 443 && $secure))
-                    $this->_hostInfo.=':' . $port;
+                    $this->_hostInfo .= ':' . $port;
             }
         }
         if ($schema !== '') {
@@ -428,12 +452,11 @@ class MRequest {
             if ($port !== 80 && $schema === 'http' || $port !== 443 && $schema === 'https')
                 $port = ':' . $port;
             else
-                $port='';
+                $port = '';
 
             $pos = strpos($this->_hostInfo, ':');
             return $schema . substr($this->_hostInfo, $pos, strcspn($this->_hostInfo, ':', $pos + 1) + 1) . $port;
-        }
-        else
+        } else
             return $this->_hostInfo;
     }
 
@@ -443,7 +466,8 @@ class MRequest {
      * on certain Web servers.
      * @param string $value the schema and host part of the application URL.
      */
-    public function setHostInfo($value) {
+    public function setHostInfo($value)
+    {
         $this->_hostInfo = rtrim($value, '/');
     }
 
@@ -456,7 +480,8 @@ class MRequest {
      * @return string the relative URL for the application
      * @see setScriptUrl
      */
-    public function getBaseUrl($absolute=false) {
+    public function getBaseUrl($absolute = false)
+    {
         if ($this->_baseUrl === null)
             $this->_baseUrl = rtrim(dirname($this->getScriptUrl()), '\\/');
         return $absolute ? $this->getHostInfo() . $this->_baseUrl : $this->_baseUrl;
@@ -468,7 +493,8 @@ class MRequest {
      * This setter is provided in case you want to change this behavior.
      * @param string $value the relative URL for the application
      */
-    public function setBaseUrl($value) {
+    public function setBaseUrl($value)
+    {
         $this->_baseUrl = $value;
     }
 
@@ -477,7 +503,8 @@ class MRequest {
      * The implementation of this method referenced Zend_Controller_Request_Http in Zend Framework.
      * @return string the relative URL of the entry script.
      */
-    public function getScriptUrl() {
+    public function getScriptUrl()
+    {
         if ($this->_scriptUrl === null) {
             $scriptName = basename($_SERVER['SCRIPT_FILENAME']);
             if (basename($_SERVER['SCRIPT_NAME']) === $scriptName)
@@ -502,7 +529,8 @@ class MRequest {
      * on certain Web servers.
      * @param string $value the relative URL for the application entry script.
      */
-    public function setScriptUrl($value) {
+    public function setScriptUrl($value)
+    {
         $this->_scriptUrl = '/' . trim($value, '/');
     }
 
@@ -516,7 +544,8 @@ class MRequest {
      * (in most cases it is not decoded).
      * @throws CException if the request URI cannot be determined due to improper server configuration
      */
-    public function getPathInfo() {
+    public function getPathInfo()
+    {
         if ($this->_pathInfo === null) {
             $pathInfo = $this->getRequestUri();
             if (($pos = strpos($pathInfo, '?')) !== false)
@@ -539,7 +568,8 @@ class MRequest {
         return $this->_pathInfo;
     }
 
-    public function setPathInfo($value) {
+    public function setPathInfo($value)
+    {
         $this->_pathInfo = trim($value);
     }
 
@@ -552,9 +582,10 @@ class MRequest {
      * @throws CException if the request URI cannot be determined due to improper server configuration
      * @since 1.0.1
      */
-    public function getRequestUri() {
+    public function getRequestUri()
+    {
         if ($this->_requestUri === null) {
-			if ($_SERVER["SERVER_SOFTWARE"] == "JavaBridge")
+            if ($_SERVER["SERVER_SOFTWARE"] == "JavaBridge")
                 $this->_requestUri = $_SERVER['PHP_SELF'];
             else if (isset($_SERVER['HTTP_X_REWRITE_URL'])) // IIS
                 $this->_requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
@@ -563,16 +594,13 @@ class MRequest {
                 if (isset($_SERVER['HTTP_HOST'])) {
                     if (strpos($this->_requestUri, $_SERVER['HTTP_HOST']) !== false)
                         $this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
-                }
-                else
+                } else
                     $this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
-            }
-            else if (isset($_SERVER['ORIG_PATH_INFO'])) {  // IIS 5.0 CGI
+            } else if (isset($_SERVER['ORIG_PATH_INFO'])) {  // IIS 5.0 CGI
                 $this->_requestUri = $_SERVER['ORIG_PATH_INFO'];
                 if (!empty($_SERVER['QUERY_STRING']))
-                    $this->_requestUri.='?' . $_SERVER['QUERY_STRING'];
-            }
-            else
+                    $this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
+            } else
                 throw new CException(Yii::t('CHttpRequest is unable to determine the request URI.'));
         }
         return $this->_requestUri;
@@ -582,7 +610,8 @@ class MRequest {
      * Returns part of the request URL that is after the question mark.
      * @return string part of the request URL that is after the question mark
      */
-    public function getQueryString() {
+    public function getQueryString()
+    {
         return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
     }
 
@@ -590,7 +619,8 @@ class MRequest {
      * Return if the request is sent via secure channel (https).
      * @return boolean if the request is sent via secure channel (https)
      */
-    public function getIsSecureConnection() {
+    public function getIsSecureConnection()
+    {
         return isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'], 'on');
     }
 
@@ -598,7 +628,8 @@ class MRequest {
      * Returns the request type, such as GET, POST, HEAD, PUT, DELETE.
      * @return string request type, such as GET, POST, HEAD, PUT, DELETE.
      */
-    public function getRequestType() {
+    public function getRequestType()
+    {
         return strtoupper(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET');
     }
 
@@ -606,7 +637,8 @@ class MRequest {
      * Returns whether this is a POST request.
      * @return boolean whether this is a POST request.
      */
-    public function getIsPostRequest() {
+    public function getIsPostRequest()
+    {
         return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'], 'POST');
     }
 
@@ -615,7 +647,8 @@ class MRequest {
      * @return boolean whether this is a DELETE request.
      * @since 1.1.7
      */
-    public function getIsDeleteRequest() {
+    public function getIsDeleteRequest()
+    {
         return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'], 'DELETE');
     }
 
@@ -624,7 +657,8 @@ class MRequest {
      * @return boolean whether this is a PUT request.
      * @since 1.1.7
      */
-    public function getIsPutRequest() {
+    public function getIsPutRequest()
+    {
         return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'], 'PUT');
     }
 
@@ -632,7 +666,8 @@ class MRequest {
      * Returns whether this is an AJAX (XMLHttpRequest) request.
      * @return boolean whether this is an AJAX (XMLHttpRequest) request.
      */
-    public function getIsAjaxRequest() {
+    public function getIsAjaxRequest()
+    {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
 
@@ -640,7 +675,8 @@ class MRequest {
      * Returns the server name.
      * @return string server name
      */
-    public function getServerName() {
+    public function getServerName()
+    {
         return $_SERVER['SERVER_NAME'];
     }
 
@@ -648,7 +684,8 @@ class MRequest {
      * Returns the server port number.
      * @return integer server port number
      */
-    public function getServerPort() {
+    public function getServerPort()
+    {
         return $_SERVER['SERVER_PORT'];
     }
 
@@ -656,7 +693,8 @@ class MRequest {
      * Returns the URL referrer, null if not present
      * @return string URL referrer, null if not present
      */
-    public function getUrlReferrer() {
+    public function getUrlReferrer()
+    {
         return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
     }
 
@@ -664,7 +702,8 @@ class MRequest {
      * Returns the user agent, null if not present.
      * @return string user agent, null if not present
      */
-    public function getUserAgent() {
+    public function getUserAgent()
+    {
         return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
     }
 
@@ -672,7 +711,8 @@ class MRequest {
      * Returns the user IP address.
      * @return string user IP address
      */
-    public function getUserHostAddress() {
+    public function getUserHostAddress()
+    {
         return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
     }
 
@@ -680,7 +720,8 @@ class MRequest {
      * Returns the user host name, null if it cannot be determined.
      * @return string user host name, null if cannot be determined
      */
-    public function getUserHost() {
+    public function getUserHost()
+    {
         return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
     }
 
@@ -688,7 +729,8 @@ class MRequest {
      * Returns entry script file path.
      * @return string entry script file path (processed w/ realpath())
      */
-    public function getScriptFile() {
+    public function getScriptFile()
+    {
         if ($this->_scriptFile !== null)
             return $this->_scriptFile;
         else
@@ -702,7 +744,8 @@ class MRequest {
      * @return array user browser capabilities.
      * @see http://www.php.net/manual/en/function.get-browser.php
      */
-    public function getBrowser($userAgent=null) {
+    public function getBrowser($userAgent = null)
+    {
         return get_browser($userAgent, true);
     }
 
@@ -710,7 +753,8 @@ class MRequest {
      * Returns user browser accept types, null if not present.
      * @return string user browser accept types, null if not present
      */
-    public function getAcceptTypes() {
+    public function getAcceptTypes()
+    {
         return isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
     }
 
@@ -725,9 +769,10 @@ class MRequest {
      * @see setPort
      * @since 1.1.3
      */
-    public function getPort() {
+    public function getPort()
+    {
         if ($this->_port === null)
-            $this->_port = !$this->getIsSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : 80;
+            $this->_port = !$this->getIsSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 80;
         return $this->_port;
     }
 
@@ -738,8 +783,9 @@ class MRequest {
      * @param integer $value port number.
      * @since 1.1.3
      */
-    public function setPort($value) {
-        $this->_port = (int) $value;
+    public function setPort($value)
+    {
+        $this->_port = (int)$value;
         $this->_hostInfo = null;
     }
 
@@ -754,9 +800,10 @@ class MRequest {
      * @see setSecurePort
      * @since 1.1.3
      */
-    public function getSecurePort() {
+    public function getSecurePort()
+    {
         if ($this->_securePort === null)
-            $this->_securePort = $this->getIsSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : 443;
+            $this->_securePort = $this->getIsSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 443;
         return $this->_securePort;
     }
 
@@ -767,8 +814,9 @@ class MRequest {
      * @param integer $value port number.
      * @since 1.1.3
      */
-    public function setSecurePort($value) {
-        $this->_securePort = (int) $value;
+    public function setSecurePort($value)
+    {
+        $this->_securePort = (int)$value;
         $this->_hostInfo = null;
     }
 
@@ -780,7 +828,8 @@ class MRequest {
      * @param integer $statusCode the HTTP status code. Defaults to 302. See {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html}
      * for details about HTTP status code. This parameter has been available since version 1.0.4.
      */
-    public function redirect($url, $terminate=true, $statusCode=302) {
+    public function redirect($url, $terminate = true, $statusCode = 302)
+    {
         if (strpos($url, '/') === 0)
             $url = $this->getHostInfo() . $url;
         header('Location: ' . $url, true, $statusCode);
@@ -794,7 +843,8 @@ class MRequest {
      * This method returns false if the user does not have language preference.
      * @return string the user preferred language.
      */
-    public function getPreferredLanguage() {
+    public function getPreferredLanguage()
+    {
         if ($this->_preferredLanguage === null) {
             if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && ($n = preg_match_all('/([\w\-_]+)\s*(;\s*q\s*=\s*(\d*\.\d*))?/', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches)) > 0) {
                 $languages = array();
@@ -809,10 +859,9 @@ class MRequest {
         return $this->_preferredLanguage;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->method . " " . $this->path . ($this->querystring != null && strlen($this->querystring) > 0 ? "?" . $this->querystring : "");
     }
 
 }
-
-?>

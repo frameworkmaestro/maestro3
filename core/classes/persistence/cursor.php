@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class Cursor {
+class Cursor
+{
 
     private $position;
     private $rows;
@@ -26,7 +28,8 @@ class Cursor {
     private $baseObject;
     private $query;
 
-    public function __construct($query, Classmap $classMap, $proxy = FALSE, PersistentManager $manager) {
+    public function __construct($query, Classmap $classMap, $proxy = FALSE, PersistentManager $manager)
+    {
         $this->position = 0;
         $this->query = $query;
         $this->query->moveFirst();
@@ -38,15 +41,18 @@ class Cursor {
         $this->manager = $manager;
     }
 
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
 
-    public function getRows() {
+    public function getRows()
+    {
         return $this->rows;
     }
 
-    public function getRow() {
+    public function getRow()
+    {
         $row = NULL;
         if (!$this->query->eof()) {
             $row = $this->query->getRowValues();
@@ -55,7 +61,8 @@ class Cursor {
         return $row;
     }
 
-    public function retrieveObject($object) {
+    public function retrieveObject($object)
+    {
         $data = $this->query->getRowObject();
         $this->classMap->retrieveObjectFromData($object, $data);
 
@@ -65,7 +72,8 @@ class Cursor {
         }
     }
 
-    public function getObject() {
+    public function getObject()
+    {
         $object = NULL;
         if (!$this->query->eof()) {
             if ($this->baseObject == NULL) {
@@ -81,7 +89,8 @@ class Cursor {
         return $object;
     }
 
-    public function getObjects() {
+    public function getObjects()
+    {
         $array = array();
         $this->query->moveFirst();
         while (!$this->query->eof()) {
@@ -90,10 +99,9 @@ class Cursor {
         return $array;
     }
 
-    public function getSize() {
+    public function getSize()
+    {
         return $this->size;
     }
 
 }
-
-?>

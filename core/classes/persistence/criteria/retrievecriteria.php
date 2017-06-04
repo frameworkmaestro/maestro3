@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class RetrieveCriteria extends PersistentCriteria {
+class RetrieveCriteria extends PersistentCriteria
+{
 
     private $command = '';
     private $distinct = FALSE;
@@ -24,7 +26,8 @@ class RetrieveCriteria extends PersistentCriteria {
     private $setOperation = array();
     private $linguistic = false;
 
-    public function __construct($classMap, $command = '') {
+    public function __construct($classMap, $command = '')
+    {
         parent::__construct($classMap);
         $this->command = $command;
         if ($this->command != '') {
@@ -36,7 +39,8 @@ class RetrieveCriteria extends PersistentCriteria {
      * Parsing command
      */
 
-    private function findStr($target, $source) {
+    private function findStr($target, $source)
+    {
         $l = strlen($target);
         $lsource = strlen($source);
         $pos = 0;
@@ -55,7 +59,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return ($fim ? $pos : -1);
     }
 
-    protected function parseSqlCommand(&$cmd, $clause, $delimiters) {
+    protected function parseSqlCommand(&$cmd, $clause, $delimiters)
+    {
         if (substr($cmd, 0, strlen($clause)) != $clause) {
             return false;
         }
@@ -72,7 +77,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return $r;
     }
 
-    protected function parseCommand() {
+    protected function parseCommand()
+    {
         $command = trim($this->command) . " #";
         $command = preg_replace("/(?i)select /", "select ", $command);
         $command = preg_replace("/(?i) from /", " from ", $command);
@@ -116,12 +122,14 @@ class RetrieveCriteria extends PersistentCriteria {
         }
     }
 
-    public function getSql() {
+    public function getSql()
+    {
         $query = $this->asQuery();
         return $query->getCommand();
     }
 
-    public function getSqlStatement() {
+    public function getSqlStatement()
+    {
         $statement = new \database\MSQL();
 
         if (count($this->columns) == 0) {
@@ -155,7 +163,7 @@ class RetrieveCriteria extends PersistentCriteria {
 
         if ($n = count($this->tableCriteria)) {
             for ($i = 0; $i < $n; $i++) {
-                $tables .= ( ($i > 0 ? ", " : "") . '(' . $this->tableCriteria[$i][0] . ')' . ' ' . $this->tableCriteria[$i][1]);
+                $tables .= (($i > 0 ? ", " : "") . '(' . $this->tableCriteria[$i][0] . ')' . ' ' . $this->tableCriteria[$i][1]);
             }
             $statement->setTables($tables);
         }
@@ -195,7 +203,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return $statement;
     }
 
-    private function includeOrderStatment(\database\MSQL $statement) {
+    private function includeOrderStatment(\database\MSQL $statement)
+    {
         if (count($this->orders)) {
             $sqlOrders = array();
             foreach ($this->orders as $order) {
@@ -206,17 +215,20 @@ class RetrieveCriteria extends PersistentCriteria {
         }
     }
 
-    private function processOrder($order) {
+    private function processOrder($order)
+    {
         $parts = explode(' ', $order);
         return trim($this->getOperand($parts[0])->getSqlOrder() . ' ' . $parts[1] . ' ' . $parts[2] . ' ' . $parts[3]);
     }
 
-    public function distinct($distinct = TRUE) {
+    public function distinct($distinct = TRUE)
+    {
         $this->distinct = $distinct;
         return $this;
     }
 
-    public function range() {
+    public function range()
+    {
         $numargs = func_num_args();
         if ($numargs == 1) {
             $this->range = func_get_arg(0);
@@ -228,12 +240,14 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    public function forUpdate($forUpdate = FALSE) {
+    public function forUpdate($forUpdate = FALSE)
+    {
         $this->forUpdate = $forUpdate;
         return $this;
     }
 
-    public function select() {
+    public function select()
+    {
         if ($numargs = func_num_args()) {
             foreach (func_get_args() as $arg) {
                 $attributes = explode(',', $arg);
@@ -262,7 +276,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    public function from() {
+    public function from()
+    {
         if ($numargs = func_num_args()) {
             foreach (func_get_args() as $arg) {
                 $classes = explode(',', $arg);
@@ -276,7 +291,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    public function join($c1OrJoin, $c2 = '', $condition = '', $joinType = 'INNER') {
+    public function join($c1OrJoin, $c2 = '', $condition = '', $joinType = 'INNER')
+    {
         if (($numargs = func_num_args()) > 1) {
             $classes[] = $c1 = func_get_arg(0);
             $classes[] = $c2 = func_get_arg(1);
@@ -290,7 +306,7 @@ class RetrieveCriteria extends PersistentCriteria {
                 $classes[] = $c1 = trim($matches[1][0]);
                 $classes[] = $c2 = trim($matches[4][0]);
                 $condition = trim($matches[5][0]);
-                $joinType = trim($matches[3][0]) ? : 'inner';
+                $joinType = trim($matches[3][0]) ?: 'inner';
             }
         }
         $this->addMultipleClasses($classes);
@@ -298,7 +314,8 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    private function addMultipleClasses(array $classes) {
+    private function addMultipleClasses(array $classes)
+    {
         foreach ($classes as $class) {
             $parts = explode(' ', $class);
             $className = trim($parts[0]);
@@ -307,41 +324,49 @@ class RetrieveCriteria extends PersistentCriteria {
     }
 
 
-    public function autoAssociation($alias1, $alias2, $condition = '', $joinType = 'INNER') {
+    public function autoAssociation($alias1, $alias2, $condition = '', $joinType = 'INNER')
+    {
         $this->setAutoAssociation($alias1, $alias2, $condition, $joinType);
         return $this;
     }
 
-    public function associationAlias($associationName, $alias) {
+    public function associationAlias($associationName, $alias)
+    {
         return $this->setAssociationAlias($associationName, $alias);
     }
 
-    public function associationType($associationName, $joinType) {
+    public function associationType($associationName, $joinType)
+    {
         return $this->setAssociationType($associationName, $joinType);
     }
 
-    public function where($op1, $operator = '', $op2 = NULL) {
+    public function where($op1, $operator = '', $op2 = NULL)
+    {
         $this->whereCondition->and_($op1, $operator, $op2);
         return $this;
     }
 
-    public function and_($op1, $operator = '', $op2 = NULL) {
+    public function and_($op1, $operator = '', $op2 = NULL)
+    {
         return $this->where($op1, $operator, $op2);
     }
 
-    public function or_($op1, $operator = '', $op2 = NULL) {
+    public function or_($op1, $operator = '', $op2 = NULL)
+    {
         $this->whereCondition->or_($op1, $operator, $op2);
         return $this;
     }
 
-    public function condition() {
+    public function condition()
+    {
         if ($numargs = func_num_args()) {
             $this->addMultiCriteria(func_get_args());
         }
         return $this;
     }
 
-    public function groupBy() {
+    public function groupBy()
+    {
         if ($numargs = func_num_args()) {
             foreach (func_get_args() as $arg) {
                 $arg = trim($arg);
@@ -353,21 +378,25 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    public function having($op1, $operator = '', $op2 = NULL) {
+    public function having($op1, $operator = '', $op2 = NULL)
+    {
         $this->havingCondition->and_($op1, $operator, $op2);
         return $this;
     }
 
-    public function havingAnd($op1, $operator = '', $op2 = NULL) {
+    public function havingAnd($op1, $operator = '', $op2 = NULL)
+    {
         return $this->having($op1, $operator, $op2);
     }
 
-    public function havingOr_($op1, $operator = '', $op2 = NULL) {
+    public function havingOr_($op1, $operator = '', $op2 = NULL)
+    {
         $this->havingCondition->or_($op1, $operator, $op2);
         return $this;
     }
 
-    public function orderBy() {
+    public function orderBy()
+    {
         if ($numargs = func_num_args()) {
             foreach (func_get_args() as $arg) {
                 $orders = explode(',', $arg);
@@ -390,7 +419,8 @@ class RetrieveCriteria extends PersistentCriteria {
      * @param string $value Valor do parametro
      * @return $this
      */
-    public function addParameter($name, $value) {
+    public function addParameter($name, $value)
+    {
         if (null === $this->parameters) {
             $this->parameters = [];
         }
@@ -408,32 +438,39 @@ class RetrieveCriteria extends PersistentCriteria {
         return $this;
     }
 
-    public function parameters($parameters) {
+    public function parameters($parameters)
+    {
         $this->parameters = $parameters;
         return $this;
     }
 
-    public function getParameters() {
+    public function getParameters()
+    {
         return $this->parameters;
     }
 
-    public function setOperation($operation, $criteria) {
+    public function setOperation($operation, $criteria)
+    {
         $this->setOperation[] = array($operation, $criteria);
     }
 
-    public function union($criteria) {
+    public function union($criteria)
+    {
         $this->setOperation('UNION', $criteria);
     }
 
-    public function intersect($criteria) {
+    public function intersect($criteria)
+    {
         $this->setOperation('INTERSECT', $criteria);
     }
 
-    public function minus($criteria) {
+    public function minus($criteria)
+    {
         $this->setOperation('MINUS', $criteria);
     }
 
-    public function ignoreAccentuation() {
+    public function ignoreAccentuation()
+    {
         $this->linguistic = true;
         return $this;
     }
@@ -441,7 +478,8 @@ class RetrieveCriteria extends PersistentCriteria {
     /**
      * @return \database\MQuery
      */
-    public function asQuery($parameters = null) {
+    public function asQuery($parameters = null)
+    {
         if (func_num_args() == 0) {
             $parameters = $this->parameters;
         } elseif (func_num_args() > 1) {
@@ -454,14 +492,16 @@ class RetrieveCriteria extends PersistentCriteria {
             $query->ignoreAccentuation();
         }
 
-        return  $query;
+        return $query;
     }
 
-    public function asCursor($parameters = null) {
+    public function asCursor($parameters = null)
+    {
         return $this->manager->processCriteriaAsCursor($this, $parameters);
     }
 
-    public function asObjectArray($parameters = null) {
+    public function asObjectArray($parameters = null)
+    {
         return $this->manager->processCriteriaAsObjectArray($this, $parameters);
     }
 
@@ -469,10 +509,9 @@ class RetrieveCriteria extends PersistentCriteria {
      * Compatibilidade
      */
 
-    public function setDistinct($value) {
+    public function setDistinct($value)
+    {
         $this->distinct($value);
     }
 
 }
-
-?>

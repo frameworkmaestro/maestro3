@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,22 +18,23 @@
 /**
  * Classe base de todos os Business Models.
  * Business Models são modelos que contém regras de negócio e são, geralmente, persistentes.
- * 
+ *
  * @category    Maestro
  * @package     Core
  * @subpackage  MVC
- * @version     1.0 
+ * @version     1.0
  * @since       1.0
  */
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory as Factory;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class MBusinessModel extends PersistentObject {
+class MBusinessModel extends PersistentObject
+{
 
     /**
      * Namespace do Model.
-     * @var string 
+     * @var string
      */
     private $_namespace;
 
@@ -58,7 +58,8 @@ class MBusinessModel extends PersistentObject {
     protected $_proxyModel;
     protected $_initialized = [];
 
-    public function __construct($data = NULL, $model = null) {
+    public function __construct($data = NULL, $model = null)
+    {
         parent::__construct();
         $this->_proxyModel = $model;
         if (is_callable(array($this, 'ORMMap'))) {
@@ -74,13 +75,14 @@ class MBusinessModel extends PersistentObject {
         $this->onCreate($data);
     }
 
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments)
+    {
 
         //mdump('Calling on MBusinessModel: ' . $name);
         //mdump('proxyclass = ' . get_class($this->_proxyModel));
         if (is_callable(array($this->_proxyModel, $name))) {
-        //if (method_exists($this->_proxyModel, $name)) {
-            return $this->_proxyModel->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3],null);
+            //if (method_exists($this->_proxyModel, $name)) {
+            return $this->_proxyModel->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], null);
         }
         throw new \BadMethodCallException("Method [{$name}] doesn't exists in " . get_class($this) . " class.");
     }
@@ -174,7 +176,8 @@ class MBusinessModel extends PersistentObject {
         return $this->_proxyModel;
     }
 */
-    public function getMap() {
+    public function getMap()
+    {
         return $this->_map;
     }
 
@@ -183,12 +186,13 @@ class MBusinessModel extends PersistentObject {
      * @param mixed $data
      * @return void
      */
-    public function onCreate($data = NULL) {
+    public function onCreate($data = NULL)
+    {
         if (is_null($data)) {
             return;
         } elseif (is_object($data)) {
             $oid = $this->getOIDName();
-            $id = $data->$oid ? : $data->id;
+            $id = $data->$oid ?: $data->id;
             $this->getById($id);
             $this->setOriginalData();
             $this->setData($data);
@@ -203,7 +207,8 @@ class MBusinessModel extends PersistentObject {
      * @param type $data
      * @return static
      */
-    public static function create($data = NULL) {
+    public static function create($data = NULL)
+    {
         $className = get_called_class();
         return new $className($data);
     }
@@ -212,7 +217,8 @@ class MBusinessModel extends PersistentObject {
      * Array de configuração do Model.
      * @return array
      */
-    public static function config() {
+    public static function config()
+    {
         return [
             'log' => [],
             'validators' => [],
@@ -221,10 +227,11 @@ class MBusinessModel extends PersistentObject {
     }
 
     /**
-     * Nome da classe do Model. 
+     * Nome da classe do Model.
      * @return string
      */
-    public function getClassName() {
+    public function getClassName()
+    {
         return $this->_className;
     }
 
@@ -232,7 +239,8 @@ class MBusinessModel extends PersistentObject {
      * Namespace do Model.
      * @return string
      */
-    public function getNamespace() {
+    public function getNamespace()
+    {
         return $this->_namespace;
     }
 
@@ -240,7 +248,8 @@ class MBusinessModel extends PersistentObject {
      * Array com o mapa de atributos do Model.
      * @return array
      */
-    public function getAttributesMap() {
+    public function getAttributesMap()
+    {
         $attributes = array();
         $map = $this->_map;
         do {
@@ -259,7 +268,8 @@ class MBusinessModel extends PersistentObject {
      * Array com o mapa de associações do Model.
      * @return array
      */
-    public function getAssociationsMap() {
+    public function getAssociationsMap()
+    {
         return $this->_map['associations'];
     }
 
@@ -267,7 +277,8 @@ class MBusinessModel extends PersistentObject {
      * Valor do atributo de descrição do Model.
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         if ($this->_proxyModel) {
             if (method_exists($this->_proxyModel, 'getDescription')) {
                 return $this->_proxyModel->getDescription();
@@ -276,16 +287,18 @@ class MBusinessModel extends PersistentObject {
         return $this->_className;
     }
 
-    public function logIsEnabled() {
+    public function logIsEnabled()
+    {
         $config = $this->config();
-        return  count($config['log']) > 0;
+        return count($config['log']) > 0;
     }
 
     /**
      * Descrição usada para Log.
      * @return string
      */
-    public function getLogDescription() {
+    public function getLogDescription()
+    {
         if (!$this->logIsEnabled()) {
             return '';
         }
@@ -309,7 +322,8 @@ class MBusinessModel extends PersistentObject {
      * @param type $id
      * @return \MBusinessModel
      */
-    public function getById($id) {
+    public function getById($id)
+    {
         if (($id === '') || ($id === NULL)) {
             return;
         }
@@ -320,7 +334,8 @@ class MBusinessModel extends PersistentObject {
         return $this;
     }
 
-    public function save() {
+    public function save()
+    {
         if (!$this->isPersistent() || $this->wasChanged()) {
             parent::save();
             $this->setOriginalData();
@@ -329,17 +344,19 @@ class MBusinessModel extends PersistentObject {
         return false;
     }
 
-    public function delete() {
+    public function delete()
+    {
         parent::delete();
     }
 
-    public static function getByIds(array $ids) {
+    public static function getByIds(array $ids)
+    {
         $instance = new static;
 
         return $instance->getCriteria()
-                        ->where($instance->getPKName(), 'in', $ids)
-                        ->asCursor()
-                        ->getObjects();
+            ->where($instance->getPKName(), 'in', $ids)
+            ->asCursor()
+            ->getObjects();
     }
 
     /**
@@ -351,7 +368,8 @@ class MBusinessModel extends PersistentObject {
      * @param string $order
      * @return criteria
      */
-    public function listAll($filter = '', $attribute = '', $order = '') {
+    public function listAll($filter = '', $attribute = '', $order = '')
+    {
         $criteria = $this->getCriteria();
         if ($attribute != '') {
             $criteria->addCriteria($attribute, 'LIKE', "'{$filter}%'");
@@ -367,7 +385,8 @@ class MBusinessModel extends PersistentObject {
      * @param string $idGenerator
      * @return integer
      */
-    public function getNewId($idGenerator) {
+    public function getNewId($idGenerator)
+    {
         return $this->getDb()->getNewId($idGenerator);
     }
 
@@ -375,7 +394,8 @@ class MBusinessModel extends PersistentObject {
      * Retorna handler para a conexão corrente no Database.
      * @return \Doctrine\DBAL\Connection
      */
-    public function getTransaction() {
+    public function getTransaction()
+    {
         return $this->getDb()->getTransaction();
     }
 
@@ -384,7 +404,8 @@ class MBusinessModel extends PersistentObject {
      * conexão.
      * @return \Doctrine\DBAL\Connection
      */
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         return $this->getDb()->beginTransaction();
     }
 
@@ -393,7 +414,8 @@ class MBusinessModel extends PersistentObject {
      * @param string $attribute
      * @param mixed $value
      */
-    public function set($attribute, $value) {
+    public function set($attribute, $value)
+    {
         $method = 'set' . $attribute;
         $this->$method($value);
     }
@@ -403,7 +425,8 @@ class MBusinessModel extends PersistentObject {
      * @param string $attribute
      * @return mixed
      */
-    public function get($attribute) {
+    public function get($attribute)
+    {
         $method = 'get' . $attribute;
         return $this->$method();
     }
@@ -414,7 +437,8 @@ class MBusinessModel extends PersistentObject {
      * @param integer $id
      * @throws EPersistentManagerException
      */
-    public function setAssociationId($associationName, $id) {
+    public function setAssociationId($associationName, $id)
+    {
         $classMap = $this->getClassMap();
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
@@ -442,7 +466,8 @@ class MBusinessModel extends PersistentObject {
      * Retorna um ValueObject com atributos com valores planos (tipo simples).
      * @return \stdClass
      */
-    public function getData() {
+    public function getData()
+    {
         $data = new stdClass();
         $attributes = $this->getAttributesMap();
         foreach ($attributes as $attribute => $definition) {
@@ -499,7 +524,8 @@ class MBusinessModel extends PersistentObject {
         return $diff;
     }
 
-    private function getDiffKeys(array $original, array $actual) {
+    private function getDiffKeys(array $original, array $actual)
+    {
         $diff = array_merge(
             array_diff_assoc($actual, $original),
             array_diff_assoc($original, $actual)
@@ -512,11 +538,13 @@ class MBusinessModel extends PersistentObject {
      * Retorna os dados originais do model, independente
      * se como o setData influenciou esses campos.
      */
-    public function getOriginalData() {
+    public function getOriginalData()
+    {
         return $this->_originalData ?: new \stdClass();
     }
 
-    protected function getOriginalAttributeValue($attribute) {
+    protected function getOriginalAttributeValue($attribute)
+    {
         foreach ($this->getDiffData() as $attributeDiff) {
             if ($attributeDiff['key'] == $attribute) {
                 return $attributeDiff['original'];
@@ -525,7 +553,8 @@ class MBusinessModel extends PersistentObject {
         throw new EModelException("The attribute {$attribute} was not changed!");
     }
 
-    public function attributeWasChanged($attribute) {
+    public function attributeWasChanged($attribute)
+    {
         try {
             $originalAttributeValue = $this->getOriginalAttributeValue($attribute);
             return isset($originalAttributeValue);
@@ -538,7 +567,8 @@ class MBusinessModel extends PersistentObject {
      * Recebe um ValueObject com valores planos e inicializa os atributos do Model.
      * @param object $data
      */
-    public function setData($data, $role = 'default') {
+    public function setData($data, $role = 'default')
+    {
         if (is_null($data)) {
             return;
         }
@@ -548,12 +578,12 @@ class MBusinessModel extends PersistentObject {
         }
 
         if (is_null($role)) {
-            $role= 'default';
+            $role = 'default';
         }
 
         $attributes = $this->getAttributesMap();
         foreach ($attributes as $attribute => $definition) {
-            if(isset($data[$attribute])) {
+            if (isset($data[$attribute])) {
                 $this->checkAttrMutability($attribute, $role);
                 $value = $data[$attribute];
                 $type = $definition['type'];
@@ -569,7 +599,8 @@ class MBusinessModel extends PersistentObject {
         }
     }
 
-    private function checkAttrMutability($attribute, $role = 'default') {
+    private function checkAttrMutability($attribute, $role = 'default')
+    {
         $this->validateRole($role);
         if ($this->isImmutable($attribute, $role)) {
             $message = "O atributo {$attribute} não pode ser alterado pelo role {$role}";
@@ -577,7 +608,8 @@ class MBusinessModel extends PersistentObject {
         }
     }
 
-    private function isImmutable($attribute, $role) {
+    private function isImmutable($attribute, $role)
+    {
         return !$this->isWhiteListed($attribute, $role) || $this->isBlackListed($attribute, $role);
     }
 
@@ -587,7 +619,8 @@ class MBusinessModel extends PersistentObject {
      * @param $role
      * @throws Exception
      */
-    private function validateRole($role) {
+    private function validateRole($role)
+    {
         if ($role === 'default') {
             return;
         }
@@ -596,25 +629,28 @@ class MBusinessModel extends PersistentObject {
         $whitelist = $this->getConfig('whitelist');
 
         if (!array_key_exists($role, $blacklist) &&
-            !array_key_exists($role, $whitelist)) {
+            !array_key_exists($role, $whitelist)
+        ) {
             throw new \ESecurityException(
                 "O role {$role} não foi definido nas configurações da classe " . get_class($this)
             );
         }
     }
 
-    private function isWhiteListed($attribute, $role) {
+    private function isWhiteListed($attribute, $role)
+    {
         $whitelist = $this->getConfig('whitelist');
 
         if (empty($whitelist[$role])) {
-           return true;
+            return true;
         } else {
-           return in_array($attribute, $whitelist[$role]);
+            return in_array($attribute, $whitelist[$role]);
         }
 
     }
 
-    private function isBlackListed($attribute, $role) {
+    private function isBlackListed($attribute, $role)
+    {
         $blacklist = $this->getConfig('blacklist');
         if (empty($blacklist[$role])) {
             return false;
@@ -628,7 +664,8 @@ class MBusinessModel extends PersistentObject {
      * @param $configName
      * @return array
      */
-    private function getConfig($configName) {
+    private function getConfig($configName)
+    {
         if (!isset($this->config()[$configName])) {
             return [];
         }
@@ -637,11 +674,12 @@ class MBusinessModel extends PersistentObject {
 
 
     /**
-     * Validação dos valores de atributos com base em $config[validators]. 
+     * Validação dos valores de atributos com base em $config[validators].
      * $exception indica se deve ser disparada uma exceção em caso de falha.
      * @param boolean $exception
      */
-    public function validate($exception = true) {
+    public function validate($exception = true)
+    {
         if ($this->_proxyModel) {
             return;
         }
@@ -649,12 +687,14 @@ class MBusinessModel extends PersistentObject {
         return $validator->validateModel($this, $exception);
     }
 
-    public static function getAllAttributes() {
+    public static function getAllAttributes()
+    {
         $allAttributes = static::ORMMap()['attributes'];
         return array_keys($allAttributes);
     }
 
-    public function setOriginalData() {
+    public function setOriginalData()
+    {
         $this->_originalData = $this->getData();
     }
 

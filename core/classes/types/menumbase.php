@@ -1,5 +1,5 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -117,14 +117,15 @@ abstract class MEnumBase
     }
 
     /**
-    * Verifica se o valor numérico fornecido pertence a lista
-    * do ENUM.
-    * Para que isso funcione, os valores numéricos tem que ser 1,2,4,8,16,32,64,128,256,.....
-    * Info extra: http://php.net/manual/en/language.operators.bitwise.php
-    * Retorna verdadeiro se o $statusatual estiver contido no $statusfornecido
-    */
-    public static function hasValueBitwise($statusAtual,$statusFornecido){
-        return ($statusAtual & $statusFornecido)>0;
+     * Verifica se o valor numérico fornecido pertence a lista
+     * do ENUM.
+     * Para que isso funcione, os valores numéricos tem que ser 1,2,4,8,16,32,64,128,256,.....
+     * Info extra: http://php.net/manual/en/language.operators.bitwise.php
+     * Retorna verdadeiro se o $statusatual estiver contido no $statusfornecido
+     */
+    public static function hasValueBitwise($statusAtual, $statusFornecido)
+    {
+        return ($statusAtual & $statusFornecido) > 0;
     }
 
 }

@@ -1,39 +1,43 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class MDataValidator {
+class MDataValidator
+{
 
     /**
-     * @var array $validators           an array of validator objects
+     * @var array $validators an array of validator objects
      */
     private $validators = array();
     private $toValidate = array();
 
-    public function __construct($toValidate = array()) {
+    public function __construct($toValidate = array())
+    {
         $this->toValidate = $toValidate;
     }
 
     /**
      * Get a validator instance for the passed $name
      *
-     * @param  string   $name  Name of the validator or the validator class name
+     * @param  string $name Name of the validator or the validator class name
      * @return Doctrine_Validator_Interface $validator
      */
-    public function getValidator($name) {
+    public function getValidator($name)
+    {
         if (!isset($this->validators[$name])) {
             $class = 'Doctrine_Validator_' . ucwords(strtolower($name));
             if (class_exists($class)) {
@@ -47,7 +51,8 @@ class MDataValidator {
         return $this->validators[$name];
     }
 
-    public function validate($object, $exception = true) {
+    public function validate($object, $exception = true)
+    {
         $errors = '';
         $result = true;
         foreach ($this->toValidate as $name => $constraints) {
@@ -76,7 +81,8 @@ class MDataValidator {
         return true;
     }
 
-    public function validateModel($object, $exception = true) {
+    public function validateModel($object, $exception = true)
+    {
         $attributes = $object->getAttributesMap();
         $errors = '';
         $result = true;
@@ -105,8 +111,8 @@ class MDataValidator {
                     $v->args = $args;
                     $ok = $v->validate($value);
                     if (!$ok) {
-                        $fieldDescription  =  $config['fieldDescription'][$name] ? : $name;
-                        $msg = (Manager::getMessage("{$validator}", [$fieldDescription, $args, $value]) ? : $validator);
+                        $fieldDescription = $config['fieldDescription'][$name] ?: $name;
+                        $msg = (Manager::getMessage("{$validator}", [$fieldDescription, $args, $value]) ?: $validator);
                         $errors .= "<br>- $fieldDescription $msg";
                     }
                     $result &= $ok;
@@ -129,7 +135,8 @@ class MDataValidator {
      * @param  Doctrine_Record $record
      * @return void
      */
-    public function validateRecord(Doctrine_Record $record) {
+    public function validateRecord(Doctrine_Record $record)
+    {
         $table = $record->getTable();
 
         // if record is transient all fields will be validated
@@ -144,12 +151,13 @@ class MDataValidator {
     /**
      * Validates the length of a field.
      *
-     * @param  string  $value         Value to validate
-     * @param  string  $type          Type of field being validated
-     * @param  string  $maximumLength Maximum length allowed for the column
+     * @param  string $value Value to validate
+     * @param  string $type Type of field being validated
+     * @param  string $maximumLength Maximum length allowed for the column
      * @return boolean $success       True/false for whether the value passed validation
      */
-    public function validateLength($value, $type, $maximumLength) {
+    public function validateLength($value, $type, $maximumLength)
+    {
         if ($maximumLength === null) {
             return true;
         }
@@ -183,10 +191,11 @@ class MDataValidator {
     /**
      * Get length of passed string. Will use multibyte character functions if they exist
      *
-     * @param string $string 
+     * @param string $string
      * @return integer $length
      */
-    public function getStringLength($string) {
+    public function getStringLength($string)
+    {
         if (function_exists('mb_strlen')) {
             return mb_strlen($string, 'utf8');
         } else {
@@ -199,18 +208,20 @@ class MDataValidator {
      *
      * @return boolean True/false for whether or not this validate instance has error
      */
-    public function hasErrors() {
+    public function hasErrors()
+    {
         return (count($this->stack) > 0);
     }
 
     /**
      * Validate the type of the passed variable
      *
-     * @param  mixed  $var   Variable to validate
-     * @param  string $type  Type of the variable expected
+     * @param  mixed $var Variable to validate
+     * @param  string $type Type of the variable expected
      * @return boolean
      */
-    public function isValidType($var, $type) {
+    public function isValidType($var, $type)
+    {
         if (($var === null) || ($var === '')) {
             return true;
         }
@@ -221,7 +232,7 @@ class MDataValidator {
             case 'decimal':
                 return $this->validateNumeric($var);
             case 'integer':
-                return ((string) $var) == strval(round(floatval($var)));
+                return ((string)$var) == strval(round(floatval($var)));
             case 'string':
             case 'text':
             case 'clob':
@@ -259,9 +270,10 @@ class MDataValidator {
 
     }
 
-    private function validateNumeric($var) {
+    private function validateNumeric($var)
+    {
         $LocaleInfo = localeconv();
-        $var = str_replace($LocaleInfo["mon_decimal_point"] , ".", $var);
+        $var = str_replace($LocaleInfo["mon_decimal_point"], ".", $var);
         return is_numeric($var);
     }
 

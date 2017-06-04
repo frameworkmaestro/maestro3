@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -20,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MResponse {
+class MResponse
+{
 
     private $mimeType = array(
         'ai' => 'application/postscript', 'aif' => 'audio/x-aiff',
@@ -89,7 +89,8 @@ class MResponse {
     public $direct;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->contentType = "";
         $this->contentLength = "";
         $this->contentDisposition = "";
@@ -105,7 +106,8 @@ class MResponse {
      * @param name Header name case-insensitive
      * @return the header value as a String
      */
-    public function getHeader($name) {
+    public function getHeader($name)
+    {
         return $this->headers->get($name);
     }
 
@@ -114,11 +116,13 @@ class MResponse {
      * @param name Header name
      * @param value Header value
      */
-    public function setHeader($name, $value) {
+    public function setHeader($name, $value)
+    {
         $this->headers->add($value, $name);
     }
 
-    public function setContentTypeIfNotSet($contentType) {
+    public function setContentTypeIfNotSet($contentType)
+    {
         if ($this->contentType == '') {
             $this->contentType = $contentType;
         }
@@ -130,11 +134,13 @@ class MResponse {
      * @param value
      * @param duration Ex: 3d
      */
-    public function setCookie($name, $value, $expire=0, $path='', $domain='', $secure=false, $httpOnly=false) {
+    public function setCookie($name, $value, $expire = 0, $path = '', $domain = '', $secure = false, $httpOnly = false)
+    {
         setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
-    public function __down() {
+    public function __down()
+    {
         $this->contentType = "application/save";
         $this->contentLength = "";
         $this->contentDisposition = "";
@@ -143,27 +149,33 @@ class MResponse {
         $this->fileNameDown = "";
     }
 
-    public function setContentType($value) {
+    public function setContentType($value)
+    {
         $this->contentType = $value;
     }
 
-    public function _setContentLength() {
+    public function _setContentLength()
+    {
         $this->contentLength = filesize($this->fileName);
     }
 
-    public function setContentLength($value) {
+    public function setContentLength($value)
+    {
         $this->contentLength = $value;
     }
 
-    function setContentDisposition($value) {
+    function setContentDisposition($value)
+    {
         $this->contentDisposition = $value;
     }
 
-    public function setContentTransferEncoding($value) {
+    public function setContentTransferEncoding($value)
+    {
         $this->contentTransferEncoding = $value;
     }
 
-    public function getMimeType($fileName) {
+    public function getMimeType($fileName)
+    {
         $path_parts = pathinfo($fileName);
         $mime = $this->mimeType[$path_parts['extension']];
         $type = $mime ? $mime : "application/octet-stream";
@@ -181,9 +193,10 @@ class MResponse {
      *
      * @param object $result
      * @param boolean $return
-     * @return string 
+     * @return string
      */
-    public function sendResponse($result, $return = false) {
+    public function sendResponse($result, $return = false)
+    {
         if ($this->alreadyFlushed) {
             return;
         }
@@ -208,7 +221,8 @@ class MResponse {
         }
     }
 
-    private function setResponseCode() {
+    private function setResponseCode()
+    {
         /* Em algumas situações, como falha de autenticação e erro interno ,
          * o código 200 não representa a situação real.  */
         if (http_response_code() == MStatusCode::OK) {
@@ -216,11 +230,12 @@ class MResponse {
         }
     }
 
-    public function sendStream($result) {
+    public function sendStream($result)
+    {
         $filePath = $result->getFilePath();
         if ($filePath != '') {
             if (file_exists($filePath)) {
-                $fileName = $result->getFileName() ? : $this->baseName;
+                $fileName = $result->getFileName() ?: $this->baseName;
                 $this->_setContentLength();
                 header('Expires: 0');
                 header('Pragma: public');
@@ -239,7 +254,7 @@ class MResponse {
                 fclose($fp);
             }
         } else {
-            $fileName = $result->getFileName() ? : 'download';
+            $fileName = $result->getFileName() ?: 'download';
             $stream = $result->getStream();
             if ($fileName != 'raw') {
                 $this->contentLength = strlen($stream);
@@ -260,24 +275,24 @@ class MResponse {
         exit;
     }
 
-    public function prepareFlush() {
+    public function prepareFlush()
+    {
         $this->alreadyFlushed = true;
         header("Cache-Control: no-cache");
-        for ($i = 0; $i < ob_get_level(); $i++) { 
-            ob_end_flush(); 
+        for ($i = 0; $i < ob_get_level(); $i++) {
+            ob_end_flush();
         }
-        ob_implicit_flush(1);        
+        ob_implicit_flush(1);
         ob_start();
-        echo str_repeat(" ", 1024), "\n";        
+        echo str_repeat(" ", 1024), "\n";
     }
-    
-    public function sendFlush($output) {
+
+    public function sendFlush($output)
+    {
         echo $output;
         ob_end_flush();
         ob_flush();
-        flush(); 
+        flush();
     }
 
 }
-
-?>

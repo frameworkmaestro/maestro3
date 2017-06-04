@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,7 +18,7 @@
 /**
  * Classe principal do framework.
  * Manager é um façade para várias classes utilitárias e de serviços do framework.
- * 
+ *
  * @category    Maestro
  * @package     Core
  * @version     3.0
@@ -65,7 +64,8 @@ define('FETCH_NUM', \PDO::FETCH_NUM);
 
 require_once 'classloader.php';
 
-class Manager {
+class Manager
+{
     /*
      * Extensão dos arquivos de código.
      */
@@ -238,8 +238,9 @@ class Manager {
      * Construtor.
      * Construtor da classe Manager.
      */
-    public function __construct() {
-        
+    public function __construct()
+    {
+
     }
 
     /**
@@ -249,7 +250,8 @@ class Manager {
      * @returns (object) Instance of Manager class
      *
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance == NULL) {
             self::$instance = new Manager();
         }
@@ -258,13 +260,14 @@ class Manager {
 
     /**
      * Inicialização do Framework.
-     * Método chamado pelo FrontPage (index.php) para inicializar os atributos 
+     * Método chamado pelo FrontPage (index.php) para inicializar os atributos
      * da classe Manager e registrar os Autoloaders.
      * @param string $configFile
      * @param string $basePath
      * @param string $app
      */
-    public static function init($configFile = '', $basePath = '', $app = '') {
+    public static function init($configFile = '', $basePath = '', $app = '')
+    {
         $m = Manager::getInstance();
         $m->basePath = $basePath;
         $m->appsPath = $basePath . '/apps';
@@ -300,19 +303,22 @@ class Manager {
      * @param string $param
      * @return object
      */
-    private function getObject($class, $param = NULL) {
-        if (is_null(self::$instance->$class) ) {
+    private function getObject($class, $param = NULL)
+    {
+        if (is_null(self::$instance->$class)) {
             $className = 'M' . $class;
             self::$instance->$class = new $className($param);
         }
         return self::$instance->$class;
     }
 
-    public function __get($name) {
+    public function __get($name)
+    {
         return isset(Manager::$$name) ? Manager::$$name : null;
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         if (property_exists('Manager', $name)) {
             Manager::$$name = $value;
         } else {
@@ -324,7 +330,8 @@ class Manager {
      * Retorna o path base do Framework.
      * @return string
      */
-    public static function getHome() {
+    public static function getHome()
+    {
         return self::$instance->basePath;
     }
 
@@ -332,7 +339,8 @@ class Manager {
      * Retorna o path absoluto de $relative.
      * @return string
      */
-    public static function getAbsolutePath($relative = NULL) {
+    public static function getAbsolutePath($relative = NULL)
+    {
         $path = self::$instance->getHome();
         if ($relative) {
             $path .= '/' . $relative;
@@ -344,7 +352,8 @@ class Manager {
      * Retorna o path da classe $class.
      * @return string
      */
-    public static function getClassPath($class = '') {
+    public static function getClassPath($class = '')
+    {
         $path = self::$instance->classPath;
         if ($class) {
             $path .= '/' . $class;
@@ -356,7 +365,8 @@ class Manager {
      * Retorna o path do arquivo de configuração $conf.
      * @return string
      */
-    public static function getConfPath($conf = '') {
+    public static function getConfPath($conf = '')
+    {
         $path = self::$instance->confPath;
         if ($conf) {
             $path .= '/' . $conf;
@@ -368,13 +378,14 @@ class Manager {
      * Retorna o path de um arquivo público.
      * @return string
      */
-    public static function getPublicPath($app = '', $module = '', $file = '') {
+    public static function getPublicPath($app = '', $module = '', $file = '')
+    {
         if ($app) {
             $path = self::$instance->appsPath . '/' . $app;
             if ($module) {
                 $path .= '/modules/' . $module;
             }
-            $path .= Manager::getOptions('srcPath') . '/public';
+            $path .= '/public';
         } else {
             $path = self::$instance->publicPath;
         }
@@ -388,7 +399,8 @@ class Manager {
      * Retorna o path do tema $theme.
      * @return string
      */
-    public static function getThemePath($theme = '') {
+    public static function getThemePath($theme = '')
+    {
         $path = self::$instance->themePath;
         if ($path == '') {
             $path = self::getPublicPath(self::getApp(), '', 'themes/' . self::getTheme());
@@ -404,10 +416,11 @@ class Manager {
     }
 
     /**
-     * Retorna o path do módulo/arquivo ($module/$file) na aplicação em execução. 
+     * Retorna o path do módulo/arquivo ($module/$file) na aplicação em execução.
      * @return string
      */
-    public static function getAppPath($file = '', $module = '', $app = '') {
+    public static function getAppPath($file = '', $module = '', $app = '')
+    {
         if ($app) {
             $path = self::$instance->appsPath . '/' . $app;
         } else {
@@ -424,10 +437,11 @@ class Manager {
     }
 
     /**
-     * Retorna o path do módulo/arquivo ($module/$file) na aplicação em execução. 
+     * Retorna o path do módulo/arquivo ($module/$file) na aplicação em execução.
      * @return string
      */
-    public static function getModulePath($module, $file) {
+    public static function getModulePath($module, $file)
+    {
         return self::$instance->getAppPath($file, $module);
     }
 
@@ -435,7 +449,8 @@ class Manager {
      * Retorna o path Core do Framework.
      * @return string
      */
-    public static function getFrameworkPath($file = '') {
+    public static function getFrameworkPath($file = '')
+    {
         $path = self::$instance->getHome() . '/core';
         if ($file) {
             $path .= '/' . $file;
@@ -444,13 +459,14 @@ class Manager {
     }
 
     /**
-     * Retorna o path do arquivo $file na área Var. $session indica se arquivo 
+     * Retorna o path do arquivo $file na área Var. $session indica se arquivo
      * será acessível apenas durante a sessão em que foi criado.
      * @param string $file
      * @param boolean $session
      * @return string
      */
-    public static function getFilesPath($file = '', $session = false) {
+    public static function getFilesPath($file = '', $session = false)
+    {
         $path = self::$instance->getHome() . '/core/var/files';
         if ($file) {
             if ($session) {
@@ -467,12 +483,13 @@ class Manager {
      * Registra uma nova classe de Autoloader.
      * O novo Autoloader será colocado antes de "autoload" e depois dos outros
      * autoloaders já existentes.
-     * 
+     *
      * @param string $namespace Namespace usado pela classe.
      * @param string $includePath Path das classes que será carregadas.
      * @param boolean $append
      */
-    public static function registerAutoloader($namespace, $includePath, $append = false) {
+    public static function registerAutoloader($namespace, $includePath, $append = false)
+    {
         $classLoader = new ClassLoader($namespace, $includePath);
         self::$namespacePaths[$namespace] = $includePath;
         $array = array($classLoader, 'loadClass');
@@ -490,7 +507,8 @@ class Manager {
      * Adiciona path para classes que são carregadas via Autoloader.
      * @param string $includePath
      */
-    public static function addAutoloadPath($includePath) {
+    public static function addAutoloadPath($includePath)
+    {
         $path = realpath($includePath);
         if ($path) {
             self::$autoloadPaths[] = $path;
@@ -502,7 +520,8 @@ class Manager {
      * @param type $className Nome da classe.
      * @param type $classPath Path da classe.
      */
-    public static function addAutoloadClass($className, $classPath) {
+    public static function addAutoloadClass($className, $classPath)
+    {
         if (file_exists($classPath)) {
             self::$instance->autoload[$className] = $classPath;
         }
@@ -513,7 +532,8 @@ class Manager {
      * @param string $className Nome da classe.
      * @return type
      */
-    public static function autoload($className) {
+    public static function autoload($className)
+    {
         $class = strtolower($className);
         $file = self::$instance->autoload[$class];
         if ($file != '') {
@@ -545,7 +565,8 @@ class Manager {
     /**
      * Processa a requisição feita via browser. Executado pelo FrontPage (index.php).
      */
-    public static function processRequest($return = false) {
+    public static function processRequest($return = false)
+    {
         self::$instance->initialize();
         return self::$instance->handler($return);
     }
@@ -554,7 +575,8 @@ class Manager {
      * Processa a requisição feita via browser após a inicialização do Framework,
      * delegando a execução para o FrontController.
      */
-    public static function handler($return = false) {
+    public static function handler($return = false)
+    {
         self::$instance->controller->handlerRequest();
         return self::$instance->controller->handlerResponse($return);
     }
@@ -563,9 +585,10 @@ class Manager {
      * Inicialização básica do Framework.
      * Inicializa "variáveis globais", sessão, log e FrontController.
      */
-    public static function initialize() {
+    public static function initialize()
+    {
         if (self::$instance->java = ($_SERVER["SERVER_SOFTWARE"] == "JavaBridge")) {
-            require_once (self::$instance->home . "/java/Java.inc");
+            require_once(self::$instance->home . "/java/Java.inc");
             self::$instance->javaContext = java_context();
             self::$instance->javaServletContext = java_context()->getServletContext();
         }
@@ -586,7 +609,8 @@ class Manager {
      * Carrega configurações a partir de um arquivo conf.php.
      * @param string $configFile
      */
-    public function loadConf($configFile) {
+    public function loadConf($configFile)
+    {
         $conf = require($configFile);
         self::$conf = MUtil::arrayMergeOverwrite(self::$conf, $conf);
     }
@@ -595,7 +619,8 @@ class Manager {
      * Carrega ações a partir de um arquivo actions.php.
      * @param string $actionsFile
      */
-    public function loadActions($actionsFile) {
+    public function loadActions($actionsFile)
+    {
         if (file_exists($actionsFile)) {
             $actions = require($actionsFile);
             self::$actions = MUtil::arrayMergeOverwrite(self::$actions, $actions);
@@ -606,7 +631,8 @@ class Manager {
      * Carrega definições para Autoload de classes.
      * @param string $autoloadFile
      */
-    public function loadAutoload($autoloadFile) {
+    public function loadAutoload($autoloadFile)
+    {
         $autoload = require($autoloadFile);
         self::$instance->autoload = array_merge(self::$instance->autoload, $autoload);
     }
@@ -614,35 +640,40 @@ class Manager {
     /**
      * Retorna o nome a aplicação em execução.
      */
-    public static function getApp() {
+    public static function getApp()
+    {
         return self::getContext()->app;
     }
 
     /**
      * Retorna o nome do módulo em execução.
      */
-    public static function getModule() {
+    public static function getModule()
+    {
         return self::getContext()->module;
     }
 
     /**
      * Retorna o nome do controller em execução.
      */
-    public static function getCurrentController() {
+    public static function getCurrentController()
+    {
         return self::$instance->controller->getController();
     }
 
     /**
      * Retorna o nome da action em execução.
      */
-    public static function getCurrentAction() {
+    public static function getCurrentAction()
+    {
         return self::$instance->controller->getAction();
     }
 
     /**
      * Retorna o objeto DTO (variável $data)
      */
-    public static function getData($attribute = NULL) {
+    public static function getData($attribute = NULL)
+    {
         $data = self::$instance->data;
         if ($attribute != NULL) {
             $data = $data->$attribute;
@@ -653,14 +684,16 @@ class Manager {
     /**
      * Atualiza o objeto DTO (variável $data)
      */
-    public static function setData($value) {
+    public static function setData($value)
+    {
         self::$instance->data = $value;
     }
 
     /**
      * Retorna o objeto MRequest (instanciado no FrontController).
      */
-    public static function getRequest() {
+    public static function getRequest()
+    {
         return self::$instance->controller->request;
     }
 
@@ -668,7 +701,8 @@ class Manager {
      * Retorna o nome da aplicação/módulo de administração do Framework.
      * @return string
      */
-    public static function getMAD() {
+    public static function getMAD()
+    {
         return self::$instance->mad;
     }
 
@@ -676,7 +710,8 @@ class Manager {
      * Retorna o objeto FrontController.
      * @return type
      */
-    public static function getFrontController() {
+    public static function getFrontController()
+    {
         return self::$instance->controller;
     }
 
@@ -685,7 +720,8 @@ class Manager {
      *
      * @return (bool) True se for uma chamada Ajax.
      */
-    public static function isAjaxCall() {
+    public static function isAjaxCall()
+    {
         return !is_null(self::getRequest()) && self::getRequest()->isAjax();
     }
 
@@ -694,7 +730,8 @@ class Manager {
      *
      * @return (bool) True if is is an Ajax event call, otherwise False.
      */
-    public static function isAjaxEvent() {
+    public static function isAjaxEvent()
+    {
         return self::$instance->getRequest()->isAjaxEvent();
     }
 
@@ -703,33 +740,39 @@ class Manager {
      *
      * @return (bool) True if it is a dynamic file download.
      */
-    public static function isDownload() {
+    public static function isDownload()
+    {
         return self::$instance->getRequest()->isDownload();
     }
 
-    public static function SPI() {
+    public static function SPI()
+    {
         return MUtil::getBooleanValue(self::$instance->getOptions('SPI'));
     }
 
     /*
      * Retorna 1 se o servidor está em modo de desenvolvimento
      */
-    public static function DEV() {
+    public static function DEV()
+    {
         return (self::$instance->getOptions('mode') == 'DEV');
     }
 
     /*
      * Retorna 1 se o servidor está em modo de producao
      */
-    public static function PROD() {
+    public static function PROD()
+    {
         return (self::$instance->getOptions('mode') == 'PROD');
     }
 
-    public static function HOMOLOG() {
+    public static function HOMOLOG()
+    {
         return (self::$instance->getOptions('homolog') === true);
     }
 
-    public static function errorHandler($errno, $errstr, $errfile, $errline) {
+    public static function errorHandler($errno, $errstr, $errfile, $errline)
+    {
         $codes = self::$instance->getConf('logs.errorCodes');
 
         if (self::supressWarning($errno, $errstr)) {
@@ -746,13 +789,15 @@ class Manager {
      * ao fim dos erros E_STRICT.
      * Ver: http://stackoverflow.com/questions/36079651/silence-declaration-should-be-compatible-warnings-in-php-7
      */
-    private static function supressWarning($errno, $errstr) {
+    private static function supressWarning($errno, $errstr)
+    {
         return PHP_MAJOR_VERSION >= 7
             && $errno == 2
             && strpos($errstr, 'Declaration of') === 0;
     }
 
-    public function getPathOfAlias($alias) {
+    public function getPathOfAlias($alias)
+    {
         $path = $alias;
         if ($alias == 'application') {
             $path = 'apps/' . self::$instance->getApp();
@@ -763,7 +808,8 @@ class Manager {
         return $path;
     }
 
-    public static function getNamespacePath($namespace) {
+    public static function getNamespacePath($namespace)
+    {
         $path = self::getHome();
         $tokens = explode('::', $namespace);
         foreach ($tokens as $token) {
@@ -772,7 +818,8 @@ class Manager {
         return $path;
     }
 
-    public static function getNamespaceAlias($namespace) {
+    public static function getNamespaceAlias($namespace)
+    {
         $path = str_replace(self::$namespaceSeparator, DIRECTORY_SEPARATOR, $namespace);
         $tokens = explode(DIRECTORY_SEPARATOR, $path);
         if (is_array($tokens)) {
@@ -786,7 +833,7 @@ class Manager {
                         $pathinfo = pathinfo($file);
                         $alias = str_replace('.' . $pathinfo['extension'], '', $pathinfo['filename']);
                         $original = str_replace('*', '', $namespace) . $alias;
-                        
+
                         if (!array_key_exists($original, self::$instance->classAlias)) {
                             class_alias($original, $alias);
                             self::$instance->classAlias[$original] = $alias;
@@ -802,12 +849,14 @@ class Manager {
         }
     }
 
-    public static function existsNS($namespace) {
+    public static function existsNS($namespace)
+    {
         $file = self::$instance->getNamespacePath($namespace);
         return file_exists($file);
     }
 
-    public static function import($namespace, $class = '', $extension = '.php') {
+    public static function import($namespace, $class = '', $extension = '.php')
+    {
         $result = null;
         if (self::$instance->import[$namespace]) {
             $result = self::$instance->import[$namespace];
@@ -829,7 +878,7 @@ class Manager {
                         }
                     }
                 } else {
-                    $path .= ( $pathinfo['extension'] == '' ? $extension : '');
+                    $path .= ($pathinfo['extension'] == '' ? $extension : '');
                     if ($result = file_exists($path)) {
                         $class = ($class != '') ? $class : $pathinfo['basename'];
                         self::$instance->autoload[strtolower($class)] = $path;
@@ -847,7 +896,8 @@ class Manager {
         return $result;
     }
 
-    public static function getConf($key) {
+    public static function getConf($key)
+    {
         $k = explode('.', $key);
         $conf = self::$conf;
 
@@ -861,7 +911,8 @@ class Manager {
         return $conf;
     }
 
-    public static function getActions($action = '') {
+    public static function getActions($action = '')
+    {
         if ($action != '') {
             $actions = self::getAction($action);
             return $actions[ACTION_ACTIONS];
@@ -870,7 +921,8 @@ class Manager {
         }
     }
 
-    public static function getAction($action) {
+    public static function getAction($action)
+    {
         $actions = self::$actions;
         $k = explode('.', $action);
         $actions = $actions[$k[0]];
@@ -880,15 +932,18 @@ class Manager {
         return $actions;
     }
 
-    public static function getOptions($key) {
+    public static function getOptions($key)
+    {
         return isset(self::$conf['options'][$key]) ? self::$conf['options'][$key] : '';
     }
 
-    public static function getParams($key) {
+    public static function getParams($key)
+    {
         return isset(self::$conf['params'][$key]) ? self::$conf['params'][$key] : '';
     }
 
-    public static function setConf($key, $value) {
+    public static function setConf($key, $value)
+    {
         $k = explode('.', $key);
         $n = count($k);
         if ($n == 1) {
@@ -907,13 +962,14 @@ class Manager {
      * Complete Description.
      *
      * @param $cond (tipo) desc
-     * @param $msg' (tipo) desc
-     * @param $goto='' (tipo) desc
+     * @param $msg ' (tipo) desc
+     * @param $goto ='' (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function assert($cond, $msg = '', $goto = '') {
+    public static function assert($cond, $msg = '', $goto = '')
+    {
         if ($cond == false) {
             self::$instance->logMessage('[ERROR]' . $msg);
 
@@ -930,7 +986,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function setDispatcher($url) {
+    public static function setDispatcher($url)
+    {
         self::$instance->dispatch = $url;
     }
 
@@ -941,7 +998,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getContext() {
+    public static function getContext()
+    {
         return self::$instance->controller->getContext();
     }
 
@@ -952,7 +1010,8 @@ class Manager {
      * @returns MSession desc
      *
      */
-    public static function getSession() {
+    public static function getSession()
+    {
         return self::$instance->session;
     }
 
@@ -963,13 +1022,14 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getAuth() {
+    public static function getAuth()
+    {
         if (is_null(self::$instance->auth)) {
             $class = strtolower(self::$conf['login']['class']);
             if ($class == NULL) {
                 $class = "mauthdb";
             }
-            if (!( self::$instance->import('security::' . $class, $class) )) {
+            if (!(self::$instance->import('security::' . $class, $class))) {
                 self::$instance->import('modules::' . self::$conf['login']['module'] . '::classes::' . $class, $class, self::$instance->php);
             }
             self::$instance->auth = new $class();
@@ -984,12 +1044,13 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getPerms() {
+    public static function getPerms()
+    {
         if (is_null(self::$instance->perms)) {
             $class = strtolower(self::$conf['login']['perms']);
 
             if ($class) {
-                if (!( self::$instance->import('security::' . $class, $class) )) {
+                if (!(self::$instance->import('security::' . $class, $class))) {
                     self::$instance->import('modules::' . self::$conf['login']['module'] . '::classes::' . $class, $class, self::$instance->php);
                 }
                 return self::$instance->perms = new $class();
@@ -1006,7 +1067,8 @@ class Manager {
      * @returns \MLogin
      *
      */
-    public static function getLogin() {
+    public static function getLogin()
+    {
         return self::$instance->getAuth()->getLogin();
     }
 
@@ -1025,7 +1087,8 @@ class Manager {
      * @returns MPage
      *
      */
-    public static function getPage() {
+    public static function getPage()
+    {
         return self::$instance->getObject('page');
     }
 
@@ -1036,7 +1099,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getAjax() {
+    public static function getAjax()
+    {
         return self::$ajax;
     }
 
@@ -1047,7 +1111,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getCache() {
+    public static function getCache()
+    {
         if (!self::$instance->cache) {
             if (isset(self::$instance->conf['cache']['type'])) {
                 self::$instance->cache = new MCache(self::$instance->conf['cache']['type']);
@@ -1064,35 +1129,42 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getResult() {
+    public static function getResult()
+    {
         return self::$instance->controller->result;
     }
 
-    public static function getMessage($key, $parameters = array()) {
+    public static function getMessage($key, $parameters = array())
+    {
         return self::$msg->get($key, $parameters);
     }
 
-    public static function getBaseURL($absolute = false) {
+    public static function getBaseURL($absolute = false)
+    {
         return $absolute ? self::$instance->getRequest()->getBaseURL(true) : self::$instance->baseURL;
     }
 
-    public static function getAppURL($app = '', $file = '', $absolute = false) {
-        $app = ($app ? : self::$instance->getApp());
+    public static function getAppURL($app = '', $file = '', $absolute = false)
+    {
+        $app = ($app ?: self::$instance->getApp());
 //        return $appURL = self::$instance->getBaseURL($absolute) . (self::$instance->java ? '' : '/index.php') . '/' . $app . ($file ? '/' . $file : '');
         return $appURL = self::$instance->getBaseURL($absolute) . '/index.php' . '/' . $app . ($file ? '/' . $file : '');
     }
 
-    public static function getStaticURL($app = '', $file = '', $absolute = false) {
-        $app = ($app ? : self::$instance->getApp());
+    public static function getStaticURL($app = '', $file = '', $absolute = false)
+    {
+        $app = ($app ?: self::$instance->getApp());
 //        return self::$instance->getBaseURL($absolute) . (self::$instance->java ? '' : '/apps') . '/' . $app . '/public' . ($file ? '/' . $file : '');
         return self::$instance->getBaseURL($absolute) . '/apps' . '/' . $app . '/public' . ($file ? '/' . $file : '');
     }
 
-    public static function getDownloadURL($controller = '', $file = '', $inline = false, $absolute = true) {
+    public static function getDownloadURL($controller = '', $file = '', $inline = false, $absolute = true)
+    {
         return self::$instance->getAppURL('core/download', $controller . '/' . ($inline ? 'inline' : 'save') . '/' . $file, $absolute);
     }
 
-    public static function getURL($action = 'main/main', $args = array()) {
+    public static function getURL($action = 'main/main', $args = array())
+    {
         if (strtoupper(substr($action, 0, 4)) == 'HTTP') {
             return $action;
         }
@@ -1117,7 +1189,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getAbsoluteURL($rel, $module = NULL) {
+    public static function getAbsoluteURL($rel, $module = NULL)
+    {
         $url = self::$instance->getBaseURL(true);
         if ($module) {
             $url .= '/modules/' . $module;
@@ -1140,13 +1213,14 @@ class Manager {
      *
      * @param $rel (tipo) desc
      * @param $name (tipo) desc
-     * @param $default=NULL (tipo) desc
-     * @param $module=NULL (tipo) desc
+     * @param $default =NULL (tipo) desc
+     * @param $module =NULL (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function getThemeURL($file = '') {
+    public static function getThemeURL($file = '')
+    {
         if (substr($file, 0, 1) == '/') {
             return $file;
         }
@@ -1168,7 +1242,8 @@ class Manager {
      * @returns (string) URL address
      *
      */
-    public static function getCurrentURL($parametrized = false) { //static
+    public static function getCurrentURL($parametrized = false)
+    { //static
         if (!($url = self::$instance->getRequest()->getURL())) {
             //$url = self::$instance->baseURL . (self::$instance->java ? '' : '/' . self::$instance->getConf('options.dispatch'));
             $url = self::$instance->baseURL . '/' . self::$instance->getConf('options.dispatch');
@@ -1188,9 +1263,9 @@ class Manager {
     /**
      * @todo TRANSLATION
      * Retorna
-     * O metodo _REQUEST provÃª uma forma simples e rÃ¡pida para se ter acesso Ã s 
+     * O metodo _REQUEST provÃª uma forma simples e rÃ¡pida para se ter acesso Ã s
      * variÃ¡veis, alÃ©m de garantir a compatibilidade com versÃµes futuras do PHP.
-     * Utilizando comandos PHP, seria necessÃ¡rio utilizar $_REQUEST, $_GET, $_POST 
+     * Utilizando comandos PHP, seria necessÃ¡rio utilizar $_REQUEST, $_GET, $_POST
      * ou global ao passo este mÃ©todo possibilita, alÃ©m da busca num, a busca em
      * todas as informacoes.
      * Caso vocÃª queira obter apenas o valor da variÃ¡veis provenientes de
@@ -1199,15 +1274,16 @@ class Manager {
      *
      * @param (mixed) $vars String ou array: variÃ¡veis das quais se deseja obter o valor
      * @param (string) $from De onde obter os dados. Pode ser 'GET', 'POST',
-     *                       'SESSION', 'REQUEST' alÃ©m do padrÃ£o 'ALL' que 
+     *                       'SESSION', 'REQUEST' alÃ©m do padrÃ£o 'ALL' que
      *                       retorna todos os dados.
-     * @param (string) $order Onde pesquisar primeiro POST ou GET. Por padrÃ£o a 
+     * @param (string) $order Onde pesquisar primeiro POST ou GET. Por padrÃ£o a
      *                        pesquisa Ã© feita de acordo com a configuraÃ§Ã£o do php.ini .
      *                        Para forÃ§ar a ordem, informe "PG" ou "GP" (P=post, G=get)
      *
      * @return (array) Os valores das variÃ¡veis solicitadas
      */
-    public static function _REQUEST($vars, $from = 'ALL', $order = '') {
+    public static function _REQUEST($vars, $from = 'ALL', $order = '')
+    {
         if (is_array($vars)) {
             foreach ($vars as $v) {
                 $values[$v] = self::_REQUEST($v, $from);
@@ -1248,7 +1324,7 @@ class Manager {
 
                 // If we still didn't have the value
                 // let's try in the global scope
-                if ((!isset($value) ) && ( ( strpos($vars, '[') ) === false)) {
+                if ((!isset($value)) && ((strpos($vars, '[')) === false)) {
                     $value = $_GLOBALS["$vars"];
                 }
 
@@ -1279,23 +1355,28 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getSysTime($format = 'd/m/Y H:i:s') {
+    public static function getSysTime($format = 'd/m/Y H:i:s')
+    {
         return date($format);
     }
 
-    public static function getSysDate($format = 'd/m/Y') {
+    public static function getSysDate($format = 'd/m/Y')
+    {
         return date($format);
     }
 
-    public static function date($value, $format = '') {
+    public static function date($value, $format = '')
+    {
         return new MDate($value, $format);
     }
 
-    public static function timestamp($value, $format = '') {
+    public static function timestamp($value, $format = '')
+    {
         return new MTimestamp($value, $format);
     }
 
-    public static function currency($value) {
+    public static function currency($value)
+    {
         return new MCurrency($value);
     }
 
@@ -1306,7 +1387,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function checkLogin($deny = true) {
+    public static function checkLogin($deny = true)
+    {
         $login = self::$instance->getAuth()->checkLogin();
         if (!$login && $deny) {
             self::storeURI();
@@ -1318,7 +1400,8 @@ class Manager {
     /**
      * Guarda a URI acessada na sessao.
      */
-    private static function storeURI() {
+    private static function storeURI()
+    {
         $request = self::getRequest();
         if ($request->getRequestType() == 'GET') {
             $session = self::getSession()->container('maestro');
@@ -1338,7 +1421,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function checkAccess($trans, $access, $deny = false) {
+    public static function checkAccess($trans, $access, $deny = false)
+    {
         return self::$instance->getObject('perms')->checkAccess($trans, $access, $deny);
     }
 
@@ -1349,7 +1433,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function isHostAllowed() {
+    public static function isHostAllowed()
+    {
         $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
         $returnValue = false;
 
@@ -1389,8 +1474,9 @@ class Manager {
     //     GetUI
     //     GetTheme
     //
-    public static function getDatabase($conf = NULL) {
-        $conf = $conf ? : 'maestro';
+    public static function getDatabase($conf = NULL)
+    {
+        $conf = $conf ?: 'maestro';
         if (isset(self::getInstance()->db[$conf])) {
             $db = self::getInstance()->db[$conf];
         } else {
@@ -1404,14 +1490,16 @@ class Manager {
         return $db;
     }
 
-    public static function setDatabase(\IDataBase $db, $conf) {
+    public static function setDatabase(\IDataBase $db, $conf)
+    {
         self::getInstance()->db[$conf] = $db;
     }
 
-    public static function getBusiness($module, $name = 'main', $data = NULL) {
+    public static function getBusiness($module, $name = 'main', $data = NULL)
+    {
         $class = 'Business' .
-                strtoupper(substr($module, 0, 1)) . substr($module, 1) .
-                strtoupper(substr($name, 0, 1)) . substr($name, 1);
+            strtoupper(substr($module, 0, 1)) . substr($module, 1) .
+            strtoupper(substr($name, 0, 1)) . substr($name, 1);
 
         $filename = self::getAppPath() . '/modules/' . $module . '/models/' . $name . '.class.php';
         if (!file_exists($filename)) {
@@ -1427,7 +1515,8 @@ class Manager {
         return $business;
     }
 
-    public function getModel($module, $name = 'main', $data = NULL) {
+    public function getModel($module, $name = 'main', $data = NULL)
+    {
         $filename = self::getAppPath() . '/modules/' . $module . '/models/' . $name . '.php';
         if (file_exists($filename)) {
             $model = $module . '\\models\\' . $name;
@@ -1437,7 +1526,8 @@ class Manager {
         }
     }
 
-    public static function getModelMAD($name = 'main', $data = NULL) {
+    public static function getModelMAD($name = 'main', $data = NULL)
+    {
         $module = self::$conf['mad']['module'];
         $name = self::$conf['mad'][$name];
         $configFile = self::$instance->getModulePath($module, '/conf/conf.php');
@@ -1446,15 +1536,18 @@ class Manager {
         return self::getModel($module, $name, $data);
     }
 
-    public static function getUI() {
+    public static function getUI()
+    {
         return self::$instance->getObject('ui');
     }
 
-    public static function getTheme() {
+    public static function getTheme()
+    {
         return self::$conf['theme']['name'];
     }
 
-    public static function setTheme($theme) {
+    public static function setTheme($theme)
+    {
         self::$conf['theme']['name'] = $theme;
         $path = self::getPublicPath(self::$instance->getApp(), '', 'themes/' . $theme);
         if (!is_dir($path)) {
@@ -1464,23 +1557,25 @@ class Manager {
     }
 
 
-
-    public static function getLocale() {
+    public static function getLocale()
+    {
         return self::$conf['options']['locale'][0];
     }
 
     // get the class name of painter
-    public static function getPainter() {
+    public static function getPainter()
+    {
         if (is_null(self::$instance->painter)) {
             self::$instance->painter = "M" . self::$instance->getOptions('painter') . "Painter";
         }
-        $painter = self::$instance->painter ? : 'MHtmlPainter';
+        $painter = self::$instance->painter ?: 'MHtmlPainter';
         return new $painter;
     }
 
-    public static function getController($app, $module, $controller, $context = null) {
+    public static function getController($app, $module, $controller, $context = null)
+    {
         $class = "{$controller}Controller";
-        $ctx = $context ? : self::getContext();
+        $ctx = $context ?: self::getContext();
         $namespace = $ctx->getNameSpace($app, $module, $class);
         mtrace('namespace = ' . $namespace);
         self::$instance->import($namespace);
@@ -1505,7 +1600,8 @@ class Manager {
         return $c;
     }
 
-    public static function serviceExists($app, $module, $service) {
+    public static function serviceExists($app, $module, $service)
+    {
         $class = "{$service}Service";
         $namespace = self::getContext()->getNameSpace($app, $module, $class, 'services');
         return self::$instance->import($namespace) !== false;
@@ -1518,7 +1614,8 @@ class Manager {
         return static::getService($app, $module, $service);
     }
 
-    public static function getService($app, $module, $service) {
+    public static function getService($app, $module, $service)
+    {
         $class = "{$service}Service";
         if (self::$instance->controller->container) {
             $namespace = ($module ?: $app) . "\\services\\" . $class;
@@ -1544,7 +1641,8 @@ class Manager {
         return $s;
     }
 
-    public static function getAPIService($app, $module, $api, $system, $service) {
+    public static function getAPIService($app, $module, $api, $system, $service)
+    {
         $class = "$api/{$service}Service";
         //$namespace = self::getContext()->getNameSpace($app, $module, $service, $api);
         //mtrace('namespace = ' . $namespace);
@@ -1559,7 +1657,7 @@ class Manager {
             mtrace('namespace for container = ' . $namespace);
             $s = self::$instance->controller->container->get($namespace);
         } else {
-        //    $s = new $class();
+            //    $s = new $class();
         }
         $s->setApplication($app);
         $s->setModule($module);
@@ -1568,11 +1666,13 @@ class Manager {
         return $s;
     }
 
-    public static function getControllers() {
+    public static function getControllers()
+    {
         return self::$instance->controllers;
     }
 
-    public static function getView($app, $module, $controller, $view) {
+    public static function getView($app, $module, $controller, $view)
+    {
         self::$instance->view = new MView($app, $module, $controller, $view);
         self::$instance->view->init();
         return self::$instance->view;
@@ -1591,16 +1691,17 @@ class Manager {
      *     Question
      *     Prompt
      *
-     * @param $msg' (tipo) desc
-     * @param $goto='' (tipo) desc
-     * @param $caption='' (tipo) desc
-     * @param $event='' (tipo) desc
-     * @param $halt= (tipo) desc
+     * @param $msg ' (tipo) desc
+     * @param $goto ='' (tipo) desc
+     * @param $caption ='' (tipo) desc
+     * @param $event ='' (tipo) desc
+     * @param $halt = (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function error($msg = '', $goto = '', $caption = '', $event = '', $halt = true) {
+    public static function error($msg = '', $goto = '', $caption = '', $event = '', $halt = true)
+    {
         self::$instance->prompt(MPrompt::error($msg, $goto, $caption, $event), $halt);
     }
 
@@ -1609,14 +1710,15 @@ class Manager {
      * Complete Description.
      *
      * @param $msg (tipo) desc
-     * @param $goto' (tipo) desc
-     * @param $event='' (tipo) desc
-     * @param $halt= (tipo) desc
+     * @param $goto ' (tipo) desc
+     * @param $event ='' (tipo) desc
+     * @param $halt = (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function information($msg, $goto = '', $event = '', $halt = true) {
+    public static function information($msg, $goto = '', $event = '', $halt = true)
+    {
         self::$instance->prompt(MPrompt::information($msg, $goto, $event), $halt);
     }
 
@@ -1625,16 +1727,17 @@ class Manager {
      * Complete Description.
      *
      * @param $msg (tipo) desc
-     * @param $gotoOK' (tipo) desc
-     * @param $gotoCancel='' (tipo) desc
-     * @param $eventOk='' (tipo) desc
-     * @param $eventCancel='' (tipo) desc
-     * @param $halt= (tipo) desc
+     * @param $gotoOK ' (tipo) desc
+     * @param $gotoCancel ='' (tipo) desc
+     * @param $eventOk ='' (tipo) desc
+     * @param $eventCancel ='' (tipo) desc
+     * @param $halt = (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function confirmation($msg, $gotoOK = '', $gotoCancel = '', $eventOk = '', $eventCancel = '', $halt = true) {
+    public static function confirmation($msg, $gotoOK = '', $gotoCancel = '', $eventOk = '', $eventCancel = '', $halt = true)
+    {
         self::$instance->prompt(MPrompt::confirmation($msg, $gotoOK, $gotoCancel, $eventOk, $eventCancel), $halt);
     }
 
@@ -1643,16 +1746,17 @@ class Manager {
      * Complete Description.
      *
      * @param $msg (tipo) desc
-     * @param $gotoYes' (tipo) desc
-     * @param $gotoNo='' (tipo) desc
-     * @param $eventYes='' (tipo) desc
-     * @param $eventNo='' (tipo) desc
-     * @param $halt= (tipo) desc
+     * @param $gotoYes ' (tipo) desc
+     * @param $gotoNo ='' (tipo) desc
+     * @param $eventYes ='' (tipo) desc
+     * @param $eventNo ='' (tipo) desc
+     * @param $halt = (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function question($msg, $gotoYes = '', $gotoNo = '', $eventYes = '', $eventNo = '', $halt = true) {
+    public static function question($msg, $gotoYes = '', $gotoNo = '', $eventYes = '', $eventNo = '', $halt = true)
+    {
         self::$instance->prompt(MPrompt::question($msg, $gotoYes, $gotoNo, $eventYes, $eventNo), $halt);
     }
 
@@ -1666,7 +1770,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function prompt($prompt, $halt = true) {
+    public static function prompt($prompt, $halt = true)
+    {
         self::$instance->getPage()->prompt($prompt);
     }
 
@@ -1682,11 +1787,13 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function setLog($logname) {
+    public static function setLog($logname)
+    {
         self::$instance->getObject('log')->setLog($logname);
     }
 
-    public static function getLog() {
+    public static function getLog()
+    {
         return self::$instance->getObject('log');
     }
 
@@ -1696,12 +1803,13 @@ class Manager {
      *
      * @param $sql (tipo) desc
      * @param $force (tipo) desc
-     * @param $conf= (tipo) desc
+     * @param $conf = (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function logSQL($sql, $force = false, $conf = '?') {
+    public static function logSQL($sql, $force = false, $conf = '?')
+    {
         self::$instance->getObject('log')->logSQL($sql, $force, $conf);
     }
 
@@ -1715,14 +1823,16 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function logError($error, $conf = 'maestro') {
+    public static function logError($error, $conf = 'maestro')
+    {
         self::$instance->getObject('log')->logError($error, $conf);
     }
 
     /**
      * Mensagem de erro padrão para o caso da chamada de uma funcao obsoleta.
      */
-    public static function logDeprecated($message = '', $throwsExceptionToDevs = false) {
+    public static function logDeprecated($message = '', $throwsExceptionToDevs = false)
+    {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         $deprecated = next($trace);
         $caller = next($trace);
@@ -1730,8 +1840,8 @@ class Manager {
         $callerSignature = "{$caller['class']}::{$caller['function']}()";
 
         $error = "[DEPRECATED] Chamada a funcao obsoleta $deprecatedSignature " .
-                "a partir de $callerSignature em {$deprecated['file']} " .
-                "linha {$deprecated['line']}";
+            "a partir de $callerSignature em {$deprecated['file']} " .
+            "linha {$deprecated['line']}";
 
         self::logError($error);
 
@@ -1747,7 +1857,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function profileTime() {
+    public static function profileTime()
+    {
         return self::$instance->getObject('profile')->profileTime();
     }
 
@@ -1760,7 +1871,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function profileEnter($name) {
+    public static function profileEnter($name)
+    {
         return self::$instance->getObject('profile')->profileEnter($name);
     }
 
@@ -1773,7 +1885,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function profileExit($name) {
+    public static function profileExit($name)
+    {
         return self::$instance->getObject('profile')->profileExit($name);
     }
 
@@ -1784,7 +1897,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function profileDump() {
+    public static function profileDump()
+    {
         return self::$instance->getObject('profile')->profileDump();
     }
 
@@ -1795,7 +1909,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function getProfileDump() {
+    public static function getProfileDump()
+    {
         return self::$instance->getObject('profile')->getProfileDump();
     }
 
@@ -1805,13 +1920,14 @@ class Manager {
      *
      * @param $var (tipo) desc
      * @param $file (tipo) desc
-     * @param $line=false (tipo) desc
-     * @param $info=false (tipo) desc
+     * @param $line =false (tipo) desc
+     * @param $info =false (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function dump($var, $file = false, $line = false, $info = false) {
+    public static function dump($var, $file = false, $line = false, $info = false)
+    {
         return self::$instance->getObject('dump')->dump($var, $file, $line, $info);
     }
 
@@ -1822,11 +1938,13 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function isLogging() {
+    public static function isLogging()
+    {
         return self::$instance->getObject('log')->isLogging();
     }
 
-    public static function isLogged() {
+    public static function isLogged()
+    {
         return self::$instance->getAuth()->isLogged();
     }
 
@@ -1839,7 +1957,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function logMessage($msg) {
+    public static function logMessage($msg)
+    {
         return self::$instance->getObject('log')->logMessage($msg);
     }
 
@@ -1852,7 +1971,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function deprecate($msg) {
+    public static function deprecate($msg)
+    {
         self::$instance->logMessage('[DEPRECATED]' . $msg);
     }
 
@@ -1862,12 +1982,13 @@ class Manager {
      *
      * @param $msg (tipo) desc
      * @param $file (tipo) desc
-     * @param $line=0 (tipo) desc
+     * @param $line =0 (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function trace($msg, $file = false, $line = 0) {
+    public static function trace($msg, $file = false, $line = 0)
+    {
         return self::$instance->getObject('trace')->trace($msg, $file, $line);
     }
 
@@ -1878,7 +1999,8 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function traceDump($msg, $file = false, $line = 0, $tag = null) {
+    public static function traceDump($msg, $file = false, $line = 0, $tag = null)
+    {
         return self::$instance->getObject('trace')->traceDump($msg, $file, $line, $tag);
     }
 
@@ -1889,31 +2011,35 @@ class Manager {
      * @returns (tipo) desc
      *
      */
-    public static function traceStack() {
+    public static function traceStack()
+    {
         return self::$instance->getObject('trace')->traceStack();
     }
 
-    public static function version() {
+    public static function version()
+    {
         return MAESTRO_VERSION;
     }
 
-    public static function author() {
+    public static function author()
+    {
         return MAESTRO_AUTHOR;
     }
 
-    public static function getTracerStatus() {
+    public static function getTracerStatus()
+    {
 
         $tracerStatus = self::getConf('logs.level');
         switch ($tracerStatus) {
             case '0': {
-                    return 'Inativo';
-                }
+                return 'Inativo';
+            }
             case '1': {
-                    return 'Status 1';
-                }
+                return 'Status 1';
+            }
             case '2': {
-                    return 'Ativo em ' . self::getConf('logs.peer') . ":" . self::getConf('logs.port');
-                }
+                return 'Ativo em ' . self::getConf('logs.peer') . ":" . self::getConf('logs.port');
+            }
         }
     }
 
@@ -1922,12 +2048,13 @@ class Manager {
      * Complete Description.
      *
      * @param $dir (tipo) desc
-     * @param $typed' (tipo) desc
+     * @param $typed ' (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public static function listFiles($dir, $type = 'd') {
+    public static function listFiles($dir, $type = 'd')
+    {
         $result = '';
         if (is_dir($dir)) {
             $thisdir = dir($dir);
@@ -1968,7 +2095,8 @@ class Manager {
      * @param string $dir
      * @return bool
      */
-    public static function saveFile($module = '', $filename = '', $dir = 'html/files/') {
+    public static function saveFile($module = '', $filename = '', $dir = 'html/files/')
+    {
         if (empty($filename)) {
             return false;
         }
@@ -1978,13 +2106,14 @@ class Manager {
     }
 
     /**
-     * Retorna uma string aleatória de 24 caracteres. Essa string será única 
+     * Retorna uma string aleatória de 24 caracteres. Essa string será única
      * durante toda a sessão.
-     * 
+     *
      * @param bool $create Se true cria uma chave nova se ela não existir.
      * @return string
      */
-    public static function getSessionToken($create = true) {
+    public static function getSessionToken($create = true)
+    {
         $container = self::getSession()->container('sessionKey');
         if (!$container->key && $create) {
             $container->key = \MSSL::randomString(24);
@@ -1998,7 +2127,7 @@ class Manager {
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $map = require($vendorDir . '/composer/autoload_classmap.php');
         $newMap = "<?php\n// autoload_manager.php @generated by Manager::postAutoloadDump running as a Composer script\n\nreturn array(\n";
-        foreach($map as $className => $file) {
+        foreach ($map as $className => $file) {
             if (strpos($className, "\\") === false) {
                 if (strpos($className, "_") === false) {
                     $className = strtolower($className);

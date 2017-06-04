@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -22,7 +21,8 @@
  */
 define('PAGE_ISPOSTBACK', '__ISPOSTBACK');
 
-class MPage extends MComponent {
+class MPage extends MComponent
+{
 
     /**
      * Layout is a HTML template to decorate views. Default is 'base'.
@@ -104,7 +104,7 @@ class MPage extends MComponent {
 
     /**
      * Theme name
-     * @var type 
+     * @var type
      */
     public $theme;
 
@@ -116,39 +116,42 @@ class MPage extends MComponent {
 
     /**
      * CSS code to include on page.
-     * @var string 
+     * @var string
      */
     public $styleSheetCode;
-    
+
     /**
      * Page title.
      * @var string Title to diplay on page header.
      */
     public $title;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct('page' . uniqid());
         $this->scripts = new MScripts($this->name);
         $this->state = new MState($this->name);
         $this->action = Manager::getRequest()->getURL();
         $this->actionChanged = false;
-        $this->layout = mrequest('__LAYOUT')? : 'default';
+        $this->layout = mrequest('__LAYOUT') ?: 'default';
         $this->fileUpload = mrequest('__ISFILEUPLOAD') == 'yes';
         $this->content = new MPageContent();
-        $template = mrequest('__TEMPLATE') ? : (Manager::getConf('theme.template')? : 'index');
-        $this->setTemplateName($template);
+        $template = mrequest('__TEMPLATE') ?: (Manager::getConf('theme.template') ?: 'index');
         $this->setTemplate();
+        $this->setTemplateName($template);
         $this->theme = Manager::$conf['theme']['name'];
         $this->title = Manager::getConf('name');
         $this->styleSheetCode = '';
         ob_start();
     }
 
-    public function getLayout() {
+    public function getLayout()
+    {
         return $this->layout;
     }
 
-    public function setLayout($layout) {
+    public function setLayout($layout)
+    {
         $this->layout = $layout;
     }
 
@@ -159,7 +162,8 @@ class MPage extends MComponent {
     /**
      * Define template and template variables
      */
-    public function setTemplate() {
+    public function setTemplate()
+    {
         $path = Manager::getThemePath();
         $this->template = new MTemplate($path);
         $this->template->context('manager', Manager::getInstance());
@@ -169,38 +173,49 @@ class MPage extends MComponent {
         $this->template->context('template', $this->template);
     }
 
-    public function getTemplate() {
+    public function getTemplate()
+    {
         return $this->template;
     }
 
-    public function getTemplateName() {
+    public function getTemplateName()
+    {
         return $this->templateName;
     }
 
-    public function setTemplateName($name) {
-        $this->templateName = $name;
+    public function setTemplateName($name)
+    {
+        $path = dirname($name);
+        if ($path !== '') {
+            $this->template->setPath($path);
+        }
+        $this->templateName = basename($name);
     }
 
     /**
      * is* methods
      */
-    public function isPostBack() {
+    public function isPostBack()
+    {
         return Manager::getRequest()->isPostBack();
     }
 
-    public function isWindow() {
+    public function isWindow()
+    {
         return ($this->layout == 'window');
     }
 
     /**
      * Action methods
      */
-    function setAction($action) {
+    function setAction($action)
+    {
         $this->action = $action;
         $this->actionChanged = true;
     }
 
-    public function getAction() {
+    public function getAction()
+    {
         return $this->action;
     }
 
@@ -208,14 +223,16 @@ class MPage extends MComponent {
       CSS Styles
      */
 
-    public function addStyleSheet($fileName) {
+    public function addStyleSheet($fileName)
+    {
         $file = Manager::getFrameworkPath('var/files/' . basename($fileName));
         copy($fileName, $file);
         $url = Manager::getDownloadURL('cache', basename($fileName), true);
         $this->onLoad("dojo.create(\"link\", {href:'{$url}', type:'text/css', rel:'stylesheet'}, document.getElementsByTagName('head')[0]);");
     }
 
-    public function addStyleSheetCode($code) {
+    public function addStyleSheetCode($code)
+    {
         if (Manager::isAjaxCall()) {
             $fileName = md5($code) . '.css';
             $file = Manager::getFrameworkPath('var/files/' . $fileName);
@@ -231,90 +248,111 @@ class MPage extends MComponent {
       Scripts
      */
 
-    public function addScript($url, $module = null) {
+    public function addScript($url, $module = null)
+    {
         $this->scripts->addScript($url, $module);
     }
 
-    public function addScriptURL($url) {
+    public function addScriptURL($url)
+    {
         $this->scripts->addScriptURL($url);
     }
 
-    public function insertScript($url) {
+    public function insertScript($url)
+    {
         $this->scripts->insertScript($url);
     }
 
-    public function addDojoRequire($dojoModule) {
+    public function addDojoRequire($dojoModule)
+    {
         $dojoModule = str_replace('.', '/', $dojoModule);
         $dojoModule = str_replace('Manager', 'manager', $dojoModule);
         $this->scripts->jsCode->insert("require([\"{$dojoModule}\"]);");
     }
 
-    public function addExtRequire($module) {
+    public function addExtRequire($module)
+    {
         $this->scripts->jsCode->insert("Ext.require(\"{$module}\");");
     }
 
-    public function getScripts() {
+    public function getScripts()
+    {
         return $this->scripts->scripts;
     }
 
-    public function getCustomScripts() {
+    public function getCustomScripts()
+    {
         return $this->scripts->customScripts;
     }
 
-    public function getOnLoad() {
+    public function getOnLoad()
+    {
         return $this->scripts->onload;
     }
 
-    public function getOnError() {
+    public function getOnError()
+    {
         return $this->scripts->onerror;
     }
 
-    public function getOnSubmit() {
+    public function getOnSubmit()
+    {
         return $this->scripts->onsubmit;
     }
 
-    public function getOnUnLoad() {
+    public function getOnUnLoad()
+    {
         return $this->scripts->onunload;
     }
 
-    public function getOnFocus() {
+    public function getOnFocus()
+    {
         return $this->scripts->onfocus;
     }
 
-    public function getJsCode() {
+    public function getJsCode()
+    {
         return $this->scripts->jsCode;
     }
 
-    public function onSubmit($jsCode, $formId) {
+    public function onSubmit($jsCode, $formId)
+    {
         $this->scripts->addOnSubmit($jsCode, $formId);
     }
 
-    public function onLoad($jsCode) {
+    public function onLoad($jsCode)
+    {
         $this->scripts->onload->add($jsCode);
     }
 
-    public function onUnLoad($jsCode) {
+    public function onUnLoad($jsCode)
+    {
         $this->scripts->onunload->add($jsCode);
     }
 
-    public function onError($jsCode) {
+    public function onError($jsCode)
+    {
         $this->scripts->onerror->add($jsCode);
     }
 
-    public function onFocus($jsCode) {
+    public function onFocus($jsCode)
+    {
         $this->scripts->onfocus->add($jsCode);
     }
 
-    public function addJsCode($jsCode) {
+    public function addJsCode($jsCode)
+    {
         $this->scripts->jsCode->add($jsCode);
     }
 
-    public function addJsFile($fileName) {
+    public function addJsFile($fileName)
+    {
         $jsCode = file_get_contents($fileName);
         $this->scripts->jsCode->add($jsCode);
     }
 
-    public function registerEvent($event) {
+    public function registerEvent($event)
+    {
         $this->scripts->events->add($event);
     }
 
@@ -323,7 +361,8 @@ class MPage extends MComponent {
      */
 
     // it extends the manager->request to include $state
-    public function request($vars, $component_name = '', $from = 'ALL') {
+    public function request($vars, $component_name = '', $from = 'ALL')
+    {
         $value = '';
         if (($vars != '')) {
             $value = mrequest($vars, $from);
@@ -338,19 +377,23 @@ class MPage extends MComponent {
         return $value;
     }
 
-    public function setViewState($var, $value, $component_name = '') {
+    public function setViewState($var, $value, $component_name = '')
+    {
         $this->state->set($var, $value, $component_name);
     }
 
-    public function getViewState($var, $component_name = '') {
+    public function getViewState($var, $component_name = '')
+    {
         return $this->state->get($var, $component_name);
     }
 
-    public function loadViewState() {
+    public function loadViewState()
+    {
         $this->state->loadViewState();
     }
 
-    public function saveViewState() {
+    public function saveViewState()
+    {
         $this->state->saveViewState();
     }
 
@@ -359,11 +402,13 @@ class MPage extends MComponent {
      */
     // Set a value for a client element, using DOM
     // This method use a javascript code that is execute on response
-    public function setElementValue($element, $value) {
+    public function setElementValue($element, $value)
+    {
         $this->onLoad("manager.getElementById('{$element}').value = '{$value}';");
     }
 
-    public function copyElementValue($element1, $element2) {
+    public function copyElementValue($element1, $element2)
+    {
         $this->onLoad("manager.getElementById('{$element1}').value = manager.getElementById('{$element2}').value;");
     }
 
@@ -371,11 +416,13 @@ class MPage extends MComponent {
      * Properties
      */
 
-    public function setTitle($value) {
+    public function setTitle($value)
+    {
         $this->property->title = $value;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->property->title;
     }
 
@@ -383,23 +430,28 @@ class MPage extends MComponent {
       Response related methods
      */
 
-    public function redirect($url) {
+    public function redirect($url)
+    {
         $this->redirectTo = $url;
     }
 
-    public function window($url) {
+    public function window($url)
+    {
         $this->window = $url;
     }
 
-    public function binary($stream) {
+    public function binary($stream)
+    {
         $this->binary = $stream;
     }
 
-    public function download($fileName) {
+    public function download($fileName)
+    {
         $this->download = $fileName;
     }
 
-    public function prompt($prompt) {
+    public function prompt($prompt)
+    {
         $this->prompt = $prompt;
     }
 
@@ -407,21 +459,24 @@ class MPage extends MComponent {
       Token
      */
 
-    public function getTokenId() {
+    public function getTokenId()
+    {
         Manager::getSession()->set('__MAESTROTOKENID', md5(uniqid()));
         $tokenId = Manager::useToken ? Manager::getSession()->get('__MAESTROTOKENID') : '';
         //mdump('getting token id = ' . $tokenId);
         return "manager.page.tokenId = '{$tokenId}';";
     }
 
-    public function sendTokenId() {
+    public function sendTokenId()
+    {
         $this->onload($this->getTokenId());
     }
 
     /**
      * Generate methods
      */
-    public function generate($element = 'content') {
+    public function generate($element = 'content')
+    {
         $html = '';
         if ($element == 'content') {
             $html = $this->generateContent() . $this->generateStyleSheetCode() . $this->generateScripts();
@@ -432,23 +487,27 @@ class MPage extends MComponent {
         return $html;
     }
 
-    public function generateStyleSheetCode() {
+    public function generateStyleSheetCode()
+    {
         //mdump('='. $this->styleSheetCode);
         $code = ($this->styleSheetCode != '') ? "<style type=\"text/css\">" . $this->styleSheetCode . "\n</style>\n" : '';
         return $code;
     }
 
-    public function generateScripts() {
+    public function generateScripts()
+    {
         return $this->scripts->generate($this->getName());
     }
 
-    public function fetch($template = '') {
-        $template = $template ? : $this->getTemplateName();
+    public function fetch($template = '')
+    {
+        $template = $template ?: $this->getTemplateName();
         $html = $template != '' ? $this->template->fetch($template . '.html') : $this->generate();
         return $html;
     }
 
-    public function render($template = '') {
+    public function render($template = '')
+    {
         $html = $this->fetch($template);
         if ($ob = ob_get_clean()) {
             $html = $ob . $html;
@@ -460,12 +519,14 @@ class MPage extends MComponent {
      * Content
      */
     // get the array of controls from content
-    public function getContent($key = NULL) {
+    public function getContent($key = NULL)
+    {
         return ($key !== NULL ? $this->content->getControl($key) : $this->content->getControls());
     }
 
     // set the content
-    public function setContent($content) {
+    public function setContent($content)
+    {
         if (is_string($content)) {
             $this->content->setInner($content);
         } else {
@@ -474,11 +535,13 @@ class MPage extends MComponent {
         }
     }
 
-    public function clearContent() {
+    public function clearContent()
+    {
         $this->content->clearControls();
     }
 
-    public function addContent($content, $key = NULL) {
+    public function addContent($content, $key = NULL)
+    {
         if ($key !== NULL) {
             $this->content->insertControl($content, $key);
         } else {
@@ -486,15 +549,18 @@ class MPage extends MComponent {
         }
     }
 
-    public function appendContent($content) {
+    public function appendContent($content)
+    {
         $this->addContent($content);
     }
 
-    public function insertContent($content) {
+    public function insertContent($content)
+    {
         $this->content->insertControl($content, 0);
     }
 
-    public function generateContent() {
+    public function generateContent()
+    {
         $this->content->generateInner();
         $html = $this->generateToString($this->content->getInner());
         return $html;
@@ -521,5 +587,3 @@ class MPage extends MComponent {
     }
 
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -17,7 +17,8 @@
 
 namespace database;
 
-class MQuery {
+class MQuery
+{
     /**
      * The result dataset (an numeric-indexed array of rows x fields).
      */
@@ -55,19 +56,22 @@ class MQuery {
 
     private $linguistic = false;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->eof = $this->bof = true;
         $this->result = array();
         $this->fetched = false;
         $this->row = -1;
-        $this->fetchStyle = \Manager::getOptions('fetchStyle') ? : \FETCH_NUM;
+        $this->fetchStyle = \Manager::getOptions('fetchStyle') ?: \FETCH_NUM;
     }
 
-    public function ignoreAccentuation() {
+    public function ignoreAccentuation()
+    {
         $this->linguistic = true;
     }
 
-    public function count() {
+    public function count()
+    {
         $this->enableLinguisticSearch(true);
         $select = $this->msql->select()->getCommand();
         $msql = new MSQL('count(*) as CNT', "({$select}) countQuery");
@@ -76,8 +80,9 @@ class MQuery {
         return $result[0][0];
     }
 
-    public function fetchAll($fetchStyle = 0) {
-        $this->fetchStyle = $fetchStyle ? : $this->fetchStyle;
+    public function fetchAll($fetchStyle = 0)
+    {
+        $this->fetchStyle = $fetchStyle ?: $this->fetchStyle;
         if (!$this->msql->stmt) {
             $this->msql->select();
         }
@@ -102,7 +107,8 @@ class MQuery {
         return $this->result;
     }
 
-    private function enableLinguisticSearch($value) {
+    private function enableLinguisticSearch($value)
+    {
         /**
          * Só posso desabilitar linguistic por alguém que o habilitou previamente. Isso evita que a chamada a "count"
          * desabilite o recurso no banco.
@@ -112,14 +118,16 @@ class MQuery {
         }
     }
 
-    private function processErrors() {
+    private function processErrors()
+    {
         $error = $this->msql->stmt->errorCode();
         if ($error && ($error != '00000')) {
             throw new \Exception($this->msql->stmt->errorInfo());
         }
     }
 
-    public function fetchObject() {
+    public function fetchObject()
+    {
         if (!$this->msql->stmt) {
             $this->msql->select();
         }
@@ -129,11 +137,13 @@ class MQuery {
         return $this->result;
     }
 
-    public function setDb($db) {
+    public function setDb($db)
+    {
         $this->db = $db;
     }
 
-    public function setSQL(MSQL $msql) {
+    public function setSQL(MSQL $msql)
+    {
         $this->msql = $msql;
         if (!$this->msql->db) {
             $this->msql->db = $this->db;
@@ -141,7 +151,8 @@ class MQuery {
         return $this;
     }
 
-    public function getCommand() {
+    public function getCommand()
+    {
         if (!$this->msql->stmt) {
             $this->msql->select();
             $this->sql = $this->msql->getCommand();
@@ -149,42 +160,48 @@ class MQuery {
         return $this->sql;
     }
 
-    public function setCommand($sqlCommand) {
+    public function setCommand($sqlCommand)
+    {
         $this->msql->setCommand($sqlCommand);
         return $this;
     }
 
-    public function setRange() {
+    public function setRange()
+    {
         $numargs = func_num_args();
         if ($numargs == 1) {
             $range = func_get_arg(0);
         } elseif ($numargs == 2) {
-            $range = new \MRange(func_get_arg(0),func_get_arg(1));
+            $range = new \MRange(func_get_arg(0), func_get_arg(1));
         }
         $this->msql->setRange($range);
         $this->resetCommand();
         return $this;
     }
 
-    public function setParameters($parameters = NULL) {
+    public function setParameters($parameters = NULL)
+    {
         $this->msql->setParameters($parameters);
         $this->resetCommand();
         return $this;
     }
 
-    private function resetCommand() {
+    private function resetCommand()
+    {
         $this->msql->select();
         $this->sql = $this->msql->getCommand();
         return $this;
     }
 
-    private function _setMetadata() {
+    private function _setMetadata()
+    {
         $platform = $this->db->getPlatform();
         $this->metadata = $platform->getMetadata($this->msql->stmt);
         $this->columnCount = $this->metadata['columnCount'];
     }
 
-    public function getCSV($fileName = '', $separator =';') {
+    public function getCSV($fileName = '', $separator = ';')
+    {
         if ($this->result) {
             $csvdump = new MCSVDump($separator);
             $csvdump->dump($this->result, $fileName);
@@ -192,21 +209,24 @@ class MQuery {
         }
     }
 
-    public function movePrev() {
+    public function movePrev()
+    {
         if ($this->bof = (--$this->row < 0)) {
             $this->row = 0;
         }
         return $this->bof;
     }
 
-    public function moveNext() {
+    public function moveNext()
+    {
         if ($this->eof = (++$this->row >= $this->rowCount)) {
             $this->row = $this->rowCount - 1;
         }
         return $this->eof;
     }
 
-    public function moveTo($row) {
+    public function moveTo($row)
+    {
         $inRange = (!$this->eof) && (($row < $this->rowCount) && ($row > -1));
         if ($inRange) {
             $this->row = $row;
@@ -215,54 +235,66 @@ class MQuery {
         return $inRange;
     }
 
-    public function moveFirst() {
+    public function moveFirst()
+    {
         return $this->moveTo(0);
     }
 
-    public function moveLast() {
+    public function moveLast()
+    {
         return $this->moveTo($this->rowCount - 1);
     }
 
-    public function getRowCount() {
+    public function getRowCount()
+    {
         return $this->rowCount;
     }
 
-    public function getColumnCount() {
+    public function getColumnCount()
+    {
         return $this->columnCount;
     }
 
-    public function getColumnName($colNumber) {
+    public function getColumnName($colNumber)
+    {
         return $this->metadata['fieldname'][$colNumber];
     }
 
-    public function getColumnNames() {
+    public function getColumnNames()
+    {
         return $this->metadata['fieldname'];
     }
 
-    public function getColumnNumber($colName) {
+    public function getColumnNumber($colName)
+    {
         return $this->metadata['fieldpos'][strtoupper($colName)];
     }
 
-    public function getValue($colName) {
+    public function getValue($colName)
+    {
         $result = $this->result[$this->row][$this->metadata['fieldpos'][strtoupper($colName)]];
         return $result;
     }
 
-    public function fields($fieldName) {
+    public function fields($fieldName)
+    {
         $result = $this->result[$this->row][$this->metadata['fieldpos'][strtoupper($fieldName)]];
         return $result;
     }
 
-    public function getRowValues() {
+    public function getRowValues()
+    {
         return $this->result[$this->row];
     }
 
-    public function getRowObject() {
+    public function getRowObject()
+    {
         $data = new \stdClass();
         return $this->setRowObject($data);
     }
 
-    public function SetRowObject($object, $fieldNames = null) {
+    public function SetRowObject($object, $fieldNames = null)
+    {
         if (is_null($fieldNames)) {
             $fieldNames = $this->metadata['fieldname'];
         }
@@ -272,13 +304,14 @@ class MQuery {
             for ($j = 0; $j < count($metaFieldNames); $j++) {
                 if (strtoupper($fieldName) == $metaFieldNames[$j]) {
                     $object->$fieldName = $this->result[$this->row][$j];
-                }    
+                }
             }
         }
         return $object;
     }
 
-    public function getFieldValues() {
+    public function getFieldValues()
+    {
         $fieldValues = array();
         for ($i = 0; $i < $this->columnCount; $i++) {
             $fieldValues[$this->metadata['fieldname'][$i]] = $this->result[$this->row][$i];
@@ -286,29 +319,34 @@ class MQuery {
         return $fieldValues;
     }
 
-    public function eof() {
+    public function eof()
+    {
         return (($this->eof) or ($this->rowCount == 0));
     }
 
-    public function bof() {
+    public function bof()
+    {
         return (($this->bof) or ($this->rowCount == 0));
     }
 
-    public function getResult($fetchStyle = 0){
+    public function getResult($fetchStyle = 0)
+    {
         if (!$this->result) {
             $this->result = $this->fetchAll($fetchStyle);
         }
         return $this->result;
     }
 
-    public function uniqueResult(){
+    public function uniqueResult()
+    {
         if (!$this->result) {
             $this->result = $this->fetchAll();
         }
         return array_shift($this->result[0]);
     }
 
-    public function chunkResult($key = 0, $value = 1, $showKeyValue = false) {
+    public function chunkResult($key = 0, $value = 1, $showKeyValue = false)
+    {
         $newResult = array();
         if ($rs = $this->getResult()) {
             foreach ($rs as $row) {
@@ -320,7 +358,8 @@ class MQuery {
         return $newResult;
     }
 
-    public function storeResult($key = 0, $value = 1) {
+    public function storeResult($key = 0, $value = 1)
+    {
         $store = new \stdClass();
         $store->identifier = 'idTable';
         $store->label = 'name';
@@ -336,7 +375,8 @@ class MQuery {
     }
 
 
-    public function chunkResultMany($key, $values, $type = 'S', $separator = '') {
+    public function chunkResultMany($key, $values, $type = 'S', $separator = '')
+    {
         // type= 'S' : string, otherwise array
         $newResult = array();
         if ($rs = $this->getResult()) {
@@ -362,7 +402,8 @@ class MQuery {
         }
     }
 
-    public function treeResult($group, $node) {
+    public function treeResult($group, $node)
+    {
         $tree = array();
         if ($rs = $this->getResult()) {
             $tree = array();
@@ -383,7 +424,8 @@ class MQuery {
         return $tree;
     }
 
-    public function asXML($root = 'root', $node = 'node') {
+    public function asXML($root = 'root', $node = 'node')
+    {
         $xml = "<$root>";
         $this->moveFirst();
         while (!$this->eof) {
@@ -399,7 +441,8 @@ class MQuery {
         return $xml;
     }
 
-    public function asObjectArray($fields = null) {
+    public function asObjectArray($fields = null)
+    {
         $this->getResult();
         $fieldNames = is_null($fields) ? null : explode(',', $fields);
         $data = array();
@@ -413,11 +456,13 @@ class MQuery {
         return $data;
     }
 
-    public function asJSON($fields = null) {
+    public function asJSON($fields = null)
+    {
         return \MJSON::encode($this->asObjectArray($fields));
     }
 
-    public function asCSV($showColumnName = false){
+    public function asCSV($showColumnName = false)
+    {
         $this->getResult();
         $result = $this->result;
         if ($showColumnName) {
@@ -437,13 +482,12 @@ class MQuery {
      * Calcula o hash baseado na estrutura da consulta SQL.
      * @return string
      */
-    public function hash() {
+    public function hash()
+    {
         $sql = $this->getCommand();
         $parameters = json_encode($this->msql->parameters);
-        $sha = sha1($sql.$parameters);
+        $sha = sha1($sql . $parameters);
         return strtoupper(base_convert($sha, 16, 36));
     }
 
 }
-
-?>

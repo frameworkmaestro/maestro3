@@ -1,33 +1,31 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
 /**
  * MAjax.
- * Tratamento das respostas às requisições Ajax. Define um objeto base (que pode 
+ * Tratamento das respostas às requisições Ajax. Define um objeto base (que pode
  * ser composto por outros objetos) e gera a resposta (Texto, XML ou JSON) a partir
  * deste objeto.
  */
-
 class MAjax extends MComponent
 {
 
     /**
-     * Versão do XML. 
+     * Versão do XML.
      * @var string
      */
     public $version = '1.0';
@@ -58,10 +56,11 @@ class MAjax extends MComponent
         $this->setEncoding($inputEncoding);
         // maestro2: por default, o tipo de resposta é aquele solicitado na requisição HTTP
         // $this->setResponseType(Manager::getRequest()->getFormat());
-        $this->setResponseType($_REQUEST['ajaxResponseType'] ? : 'TXT');
+        $this->setResponseType($_REQUEST['ajaxResponseType'] ?: 'TXT');
     }
 
-    public function initialize($inputEncoding = 'UTF-8') {
+    public function initialize($inputEncoding = 'UTF-8')
+    {
         $this->setEncoding($inputEncoding);
     }
 
@@ -99,7 +98,7 @@ class MAjax extends MComponent
             case 'XML':
                 header('Content-type:  text/xml; charset=' . $charset);
                 $data = '<?xml version="1.0" encoding="' . $charset . '"?>'
-                        . MAjaxTransformer::toXML($this);
+                    . MAjaxTransformer::toXML($this);
                 return $data;
                 break;
 
@@ -122,7 +121,7 @@ class MAjax extends MComponent
 
     public function setEncoding($encoding)
     {
-        $this->inputEncoding = strtoupper((string) $encoding);
+        $this->inputEncoding = strtoupper((string)$encoding);
     }
 
     public function getEncoding()
@@ -166,7 +165,7 @@ class MAjax extends MComponent
     public function setResponseType($value)
     {
         if (isset($value)) {
-            $this->responseType = htmlentities(strip_tags(strtoupper((string) $value)));
+            $this->responseType = htmlentities(strip_tags(strtoupper((string)$value)));
         }
     }
 
@@ -205,7 +204,7 @@ class MAjaxTransformer
             $returnValue .= MAjaxTransformer::toXML($composite);
         }
         $returnValue .= MAjaxTransformer::encode($node->getData(), $node->getEncoding())
-                . '</' . $node->get_name() . '>';
+            . '</' . $node->get_name() . '>';
 
         return $returnValue;
     }
@@ -295,8 +294,8 @@ class MAjaxTransformer
      * decodes a (nested) array of data from UTF-8 into the configured character set
      *
      * @access   public
-     * @param    array     $data         data to convert
-     * @param    string    $encoding     character encoding
+     * @param    array $data data to convert
+     * @param    string $encoding character encoding
      * @return   array
      */
     static public function decodeArray($data, $encoding)
@@ -318,7 +317,7 @@ class MAjaxTransformer
     /**
      * Determina o conjunto de caracters da saída, baseado no conjunto de caracteres da entrada.
      *
-     * @param    string    $encoding     character encoding
+     * @param    string $encoding character encoding
      * @return   string
      */
     static public function findOutputCharset($encoding)

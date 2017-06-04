@@ -1,17 +1,16 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,12 +18,14 @@
 /**
  * This holds a set of controls for page content.
  */
-class MPageContent extends MComponent {
+class MPageContent extends MComponent
+{
 
     protected $controls;
     protected $inner;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->controls = new MObjectList();
         $this->inner = '';
     }
@@ -33,14 +34,16 @@ class MPageContent extends MComponent {
      * The clone method.
      * It is used to clone controls, avoiding references to same controls.
      */
-    public function __clone() {
+    public function __clone()
+    {
         $this->controls = clone $this->controls;
     }
 
     //
     // Controls
     //
-    protected function _addControl($control, $pos = 0, $op = 'add') {
+    protected function _addControl($control, $pos = 0, $op = 'add')
+    {
         if (is_null($control)) {
             return;
         } elseif (is_array($control)) {
@@ -63,19 +66,23 @@ class MPageContent extends MComponent {
         }
     }
 
-    public function addControl($control, $pos = NULL) {
+    public function addControl($control, $pos = NULL)
+    {
         $this->_addControl($control, $pos);
     }
 
-    public function insertControl($control, $pos = 0) {
+    public function insertControl($control, $pos = 0)
+    {
         $this->_addControl($control, $pos, 'ins');
     }
 
-    public function setControl($control, $pos = 0) {
+    public function setControl($control, $pos = 0)
+    {
         $this->_addControl($control, $pos, 'set');
     }
 
-    public function setControls($controls) {
+    public function setControls($controls)
+    {
         if (is_array($controls)) {
             $this->clearControls();
             foreach ($controls as $c) {
@@ -86,15 +93,18 @@ class MPageContent extends MComponent {
         }
     }
 
-    public function getControls() {
+    public function getControls()
+    {
         return $this->controls->items;
     }
 
-    public function getControl($pos) {
+    public function getControl($pos)
+    {
         return $this->controls->get($pos);
     }
 
-    public function findControlById($id) {
+    public function findControlById($id)
+    {
         $k = NULL;
         $controls = $this->controls->items;
         foreach ($controls as $control) {
@@ -109,23 +119,28 @@ class MPageContent extends MComponent {
         return $k;
     }
 
-    public function clearControls() {
+    public function clearControls()
+    {
         $this->controls->clear();
     }
 
-    public function hasItems() {
+    public function hasItems()
+    {
         return $this->controls->hasItems();
     }
 
-    public function setInner($text) {
+    public function setInner($text)
+    {
         $this->inner = $text;
     }
 
-    public function getInner() {
+    public function getInner()
+    {
         return $this->inner;
     }
 
-    public function generateInner() {
+    public function generateInner()
+    {
         if ($this->inner == '') {
             if ($this->controls->hasItems()) {
                 $this->inner = $this->controls->items;

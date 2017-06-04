@@ -1,27 +1,27 @@
 <?php
-
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
 /**
-  A URL tem o seguinte formato:
-  http://host.domain[:port]/(path/)(index.php)(app/)[(module/)](controller/)(action/)(id/)?querystring.
-  Arquivos são acessados diretamente, já que o Maestro é instalado em uma pasta acessível pelo servidor web
+ * A URL tem o seguinte formato:
+ * http://host.domain[:port]/(path/)(index.php)(app/)[(module/)](controller/)(action/)(id/)?querystring.
+ * Arquivos são acessados diretamente, já que o Maestro é instalado em uma pasta acessível pelo servidor web
  */
-class MContext {
+class MContext
+{
 
     /**
      * Current application
@@ -103,7 +103,7 @@ class MContext {
 
     /**
      *
-     * @param type $request 
+     * @param type $request
      */
     public $actionPath;
 
@@ -113,7 +113,8 @@ class MContext {
      */
     private $url;
 
-    public function __construct($request) {
+    public function __construct($request)
+    {
         $this->isCore = false;
         if (is_string($request)) {
             $path = $request;
@@ -222,7 +223,7 @@ class MContext {
             throw new ENotFoundException(_M("App: [%s], Module: [%s], Controller: [%s] : Not found!", array($this->app, $this->module, $ctlr)));
         }
 
-        $this->action = ($part ? : ($component == '' ? 'main' : ''));
+        $this->action = ($part ?: ($component == '' ? 'main' : ''));
         $this->actionTokens[0] = $this->controller;
         $this->actionTokens[1] = $this->action;
 
@@ -232,7 +233,7 @@ class MContext {
                 $this->actionTokens[$i + 2] = $this->vars[$pathParts[$i]] = $pathParts[$i];
             }
         }
-        $this->id = $this->vars['item'] ? : $this->actionTokens[2];
+        $this->id = $this->vars['item'] ?: $this->actionTokens[2];
         if ($this->id !== '') {
             $_REQUEST['id'] = $this->id;
         }
@@ -249,82 +250,100 @@ class MContext {
         mtrace('Context id: ' . $this->id);
     }
 
-    public function getURL() {
+    public function getURL()
+    {
         return $this->url;
     }
 
-    public function getApp() {
+    public function getApp()
+    {
         return $this->app;
     }
 
-    public function getModule() {
+    public function getModule()
+    {
         return $this->module;
     }
 
-    public function getController() {
+    public function getController()
+    {
         return $this->controller;
     }
 
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
-    public function getSystem() {
+    public function getSystem()
+    {
         return $this->system;
     }
 
-    public function getComponent() {
+    public function getComponent()
+    {
         return $this->component;
     }
 
-    public function getAPI() {
+    public function getAPI()
+    {
         return $this->api;
     }
 
-    public function getType() {
-        return ($this->controller ? 'controller' : ($this->api ? 'api' : ($this->service ? 'service' : ($this->component ? 'component' : '' ))));
+    public function getType()
+    {
+        return ($this->controller ? 'controller' : ($this->api ? 'api' : ($this->service ? 'service' : ($this->component ? 'component' : ''))));
     }
 
-    public function getAction() {
+    public function getAction()
+    {
         return $this->action;
     }
 
-    public function getControllerAction() {
+    public function getControllerAction()
+    {
         return $this->controller . '.' . $this->action;
     }
 
-    public function getNamespace($app, $module = '', $class = '', $type = 'controllers') {
+    public function getNamespace($app, $module = '', $class = '', $type = 'controllers')
+    {
         $ns = $this->isCore ? 'core::' : '';
         $ns .= 'apps::' . $app . '::';
-        $ns .= (Manager::getOptions('srcPath') ? substr(Manager::getOptions('srcPath'),1) . '::' : '');
+        $ns .= (Manager::getOptions('srcPath') ? substr(Manager::getOptions('srcPath'), 1) . '::' : '');
         $ns .= ($module ? 'modules::' . $module . '::' : '');
-        $ns .= (Manager::getConf("srcPath.{$module}") ? substr(Manager::getConf("srcPath.{$module}"),1) . '::' : '');
+        $ns .= (Manager::getConf("srcPath.{$module}") ? substr(Manager::getConf("srcPath.{$module}"), 1) . '::' : '');
         $ns .= $type . '::' . $class;
         return $ns;
     }
 
-    public function get($name) {
+    public function get($name)
+    {
         return $this->vars[$name];
     }
 
-    public function getVar($name) {
+    public function getVar($name)
+    {
         return $this->vars[$name];
     }
 
-    public function getVars() {
+    public function getVars()
+    {
         return $this->vars;
     }
 
-    public function setStartup($value) {
+    public function setStartup($value)
+    {
         $this->startup = $value;
     }
 
-    public function shiftAction() {
+    public function shiftAction()
+    {
         $action = $this->currentToken < count($this->actionTokens) ? $this->actionTokens[$this->currentToken++] : NULL;
         return $action;
     }
 
-    public function pushAction($action) {
+    public function pushAction($action)
+    {
         $this->actionPath = $action;
         $this->actionTokens = explode(':', $action);
         $this->currentToken = 0;
@@ -333,7 +352,8 @@ class MContext {
         }
     }
 
-    public function buildURL($action = '', $parameters = array()) {
+    public function buildURL($action = '', $parameters = array())
+    {
         //mtrace('buildURL = ' . $action);
         //mtrace($parameters);
         $app = Manager::getApp();
@@ -385,5 +405,3 @@ class MContext {
     }
 
 }
-
-?>

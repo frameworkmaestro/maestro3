@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -19,7 +19,8 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MDump extends MService {
+class MDump extends MService
+{
 
     /**
      * Attribute Description.
@@ -38,7 +39,8 @@ class MDump extends MService {
      * @returns (tipo) desc
      *
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->log = $this->manager->log;
     }
@@ -50,7 +52,8 @@ class MDump extends MService {
      * @returns (tipo) desc
      *
      */
-    public function get() {
+    public function get()
+    {
         return $this->dump;
     }
 
@@ -61,7 +64,8 @@ class MDump extends MService {
      * @returns (tipo) desc
      *
      */
-    public function usesDump() {
+    public function usesDump()
+    {
         $uses = $this->manager->uses;
 
         if ($uses) {
@@ -78,7 +82,7 @@ class MDump extends MService {
             }
 
             $html .= "<tr><td align=\"right\">Total:</td><td align=\"right\">&nbsp;$total&nbsp;bytes</td></tr>\n"
-                    . "</table>\n";
+                . "</table>\n";
         }
 
         return $html;
@@ -94,13 +98,14 @@ class MDump extends MService {
      *
      * @param $var (tipo) desc
      * @param $file (tipo) desc
-     * @param $line=false (tipo) desc
-     * @param $info=false (tipo) desc
+     * @param $line =false (tipo) desc
+     * @param $info =false (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
-    public function dump($var, $file = false, $line = false, $info = false) {
+    public function dump($var, $file = false, $line = false, $info = false)
+    {
         global $REMOTE_ADDR;
 
         $dump = false;
@@ -132,14 +137,12 @@ class MDump extends MService {
             $this->log->logMessage("[VARDUMP]file:$file:$line:$info");
         } else {
             $this->log->logMessage(
-                    '[DEPRECATED] Deprecated usage of $Manager->dump(): Filename and line number are missing -- use $Manager->dump($var,__FILE__,__LINE__) instead.');
+                '[DEPRECATED] Deprecated usage of $Manager->dump(): Filename and line number are missing -- use $Manager->dump($var,__FILE__,__LINE__) instead.');
         }
 
-        foreach (explode("\n", $ob)as $line) {
+        foreach (explode("\n", $ob) as $line) {
             $this->log->logMessage('[VARDUMP]' . $line);
         }
     }
 
 }
-
-?>

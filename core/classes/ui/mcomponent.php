@@ -1,22 +1,23 @@
 <?php
 
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-abstract class MComponent {
+abstract class MComponent
+{
 
     /**
      * Objeto que armazena as propriedades do componente.
@@ -43,14 +44,16 @@ abstract class MComponent {
      */
     public $manager;
 
-    public function __construct($name = NULL) {
+    public function __construct($name = NULL)
+    {
         $this->property = new stdClass();
         $this->property->className = strtolower(get_class($this));
         $this->property->name = $name;
         $this->manager = Manager::getInstance();
     }
 
-    public function __get($property) {
+    public function __get($property)
+    {
         if (method_exists($this, ($method = 'get' . $property))) {
             return $this->$method();
         } else {
@@ -58,7 +61,8 @@ abstract class MComponent {
         }
     }
 
-    public function __set($property, $value) {
+    public function __set($property, $value)
+    {
         if (is_callable($value)) {
             $this->$property = $value;
         } elseif (method_exists($this, ($method = 'set' . $property))) {
@@ -69,7 +73,8 @@ abstract class MComponent {
         }
     }
 
-    function __call($name, $args) {
+    function __call($name, $args)
+    {
         if (isset($this->$name)) {
             $args[] = $this;
             call_user_func_array($this->$name, $args);
@@ -82,72 +87,89 @@ abstract class MComponent {
      * The clone method.
      * It is used to clone controls, avoiding references to same attributes, styles and controls.
      */
-    public function __clone() {
+    public function __clone()
+    {
         $this->property = clone $this->property;
     }
 
-    public function getProperties() {
+    public function getProperties()
+    {
         return $this->property;
     }
 
-    public function setClassName($name) {
+    public function setClassName($name)
+    {
         $this->property->className = $name;
     }
 
-    public function getClassName() {
+    public function getClassName()
+    {
         return $this->property->className;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->property->name = $name;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->property->name;
     }
 
-    public function getUI() {
+    public function getUI()
+    {
         return Manager::getUI();
     }
 
-    public function getPage() {
+    public function getPage()
+    {
         return Manager::getPage();
     }
 
-    public function setRender($value) {
+    public function setRender($value)
+    {
         $this->render = $value;
     }
 
-    public function getRender() {
+    public function getRender()
+    {
         return $this->render;
     }
 
-    public function getPainter() {
+    public function getPainter()
+    {
         return Manager::getPainter();
     }
 
-    public function setView(MView $view) {
+    public function setView(MView $view)
+    {
         $this->view = $view;
         $this->data = $this->view->data;
     }
 
-    public function getView() {
-        return $this->view ? : NULL;
+    public function getView()
+    {
+        return $this->view ?: NULL;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
 
-    public function getController() {
+    public function getController()
+    {
         return ($this->view ? $this->view->controller : NULL);
     }
 
-    public function getService($service, $module = '') {
+    public function getService($service, $module = '')
+    {
         $controller = $this->getController();
         $service = Manager::getService(Manager::getApp(), ($module == '' ? Manager::getModule() : $module), $service);
         $service->setData();
@@ -155,5 +177,3 @@ abstract class MComponent {
     }
 
 }
-
-?>

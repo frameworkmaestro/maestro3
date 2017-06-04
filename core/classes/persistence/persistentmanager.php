@@ -1,21 +1,23 @@
 <?php
-/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
+
+/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil, 
+ * Este programa é distribuído na esperança que possa ser  útil,
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
 
-class PersistentManager implements \IPersistentManager {
+class PersistentManager implements \IPersistentManager
+{
 
     static private $instance = NULL;
     static private $container = NULL;
@@ -26,7 +28,8 @@ class PersistentManager implements \IPersistentManager {
     private $locked = false;
     private $configLoader;
 
-    public static function getInstance($configLoader = 'PHP') {
+    public static function getInstance($configLoader = 'PHP')
+    {
         if (self::$instance == NULL) {
             $manager = self::$instance = new PersistentManager();
             self::$container = Manager::getInstance();
@@ -35,15 +38,18 @@ class PersistentManager implements \IPersistentManager {
         return self::$instance;
     }
 
-    public function setConfigLoader($configLoader='PHP') {
+    public function setConfigLoader($configLoader = 'PHP')
+    {
         $this->configLoader = ($configLoader == 'PHP') ? new PHPConfigLoader($this) : new XMLConfigLoader($this);
     }
 
-    public function getConfigLoader() {
+    public function getConfigLoader()
+    {
         return $this->configLoader;
     }
 
-    public function addClassMap($name, $classMap) {
+    public function addClassMap($name, $classMap)
+    {
         $this->classMaps[$name] = $classMap;
     }
 
@@ -52,7 +58,8 @@ class PersistentManager implements \IPersistentManager {
      * @param string $mapClassName
      * @return ClassMap
      */
-    public function getClassMap($className, $mapClassName = '') {
+    public function getClassMap($className, $mapClassName = '')
+    {
         $classMap = $this->classMaps[$className];
         if (!$classMap) {
             $classMap = $this->configLoader->getClassMap($className, $mapClassName);
@@ -61,15 +68,18 @@ class PersistentManager implements \IPersistentManager {
         return $classMap;
     }
 
-    public function getConverter($name) {
+    public function getConverter($name)
+    {
         return $this->converters[$name];
     }
 
-    public function putConverter($name, $converter) {
+    public function putConverter($name, $converter)
+    {
         $this->converters[$name] = $converter;
     }
 
-    private function logger(&$commands, ClassMap $classMap, PersistentObject $object, $operation) {
+    private function logger(&$commands, ClassMap $classMap, PersistentObject $object, $operation)
+    {
         $logger = $classMap->getDb()->getORMLogger();
         if ($object->logIsEnabled() && $logger) {
             $description = $object->getLogDescription();
@@ -78,7 +88,8 @@ class PersistentManager implements \IPersistentManager {
         }
     }
 
-    private function execute(database\MDatabase $db, $commands) {
+    private function execute(database\MDatabase $db, $commands)
+    {
         if (!is_array($commands)) {
             $commands = array($commands);
         }
@@ -89,25 +100,29 @@ class PersistentManager implements \IPersistentManager {
      * Retrieve Object
      *
      */
-    public function retrieveObject(PersistentObject $object) {
+    public function retrieveObject(PersistentObject $object)
+    {
         $classMap = $object->getClassMap();
         $this->_retrieveObject($object, $classMap);
     }
 
-    private function _retrieveObject(PersistentObject $object, ClassMap $classMap) {
+    private function _retrieveObject(PersistentObject $object, ClassMap $classMap)
+    {
         $statement = $classMap->getSelectSqlFor($object);
         $query = $classMap->getDb()->getQuery($statement);
         $this->retrieveObjectFromCacheOrQuery($object, $classMap, $query);
         $this->_retrieveAssociations($object, $classMap);
     }
 
-    public function retrieveObjectFromCriteria(PersistentObject $object, PersistentCriteria $criteria, $parameters=NULL) {
+    public function retrieveObjectFromCriteria(PersistentObject $object, PersistentCriteria $criteria, $parameters = NULL)
+    {
         $classMap = $object->getClassMap();
         $query = $this->processCriteriaQuery($criteria, $parameters, $classMap->getDb(), FALSE);
         $this->retrieveObjectFromQuery($object, $query);
     }
 
-    public function retrieveObjectFromQuery(PersistentObject $object, Database\MQuery $query) {
+    public function retrieveObjectFromQuery(PersistentObject $object, Database\MQuery $query)
+    {
         $classMap = $object->getClassMap();
         $classMap->retrieveObject($object, $query);
         $this->_retrieveAssociations($object, $classMap);
@@ -117,12 +132,14 @@ class PersistentManager implements \IPersistentManager {
      * Retrieve Associations
      *
      */
-    public function retrieveAssociations(PersistentObject $object) {
+    public function retrieveAssociations(PersistentObject $object)
+    {
         $classMap = $object->getClassMap();
         $this->_retrieveAssociations($object, $classMap);
     }
 
-    public function _retrieveAssociations(PersistentObject $object, ClassMap $classMap) {
+    public function _retrieveAssociations(PersistentObject $object, ClassMap $classMap)
+    {
         if ($classMap->getSuperClassMap() != NULL) {
             $this->_retrieveAssociations($object, $classMap->getSuperClassMap());
         }
@@ -135,12 +152,14 @@ class PersistentManager implements \IPersistentManager {
         }
     }
 
-    public function retrieveAssociation(PersistentObject $object, $associationName) {
+    public function retrieveAssociation(PersistentObject $object, $associationName)
+    {
         $classMap = $object->getClassMap();
         $this->_retrieveAssociation($object, $associationName, $classMap);
     }
 
-    private function _retrieveAssociation(PersistentObject $object, $associationName, ClassMap $classMap) {
+    private function _retrieveAssociation(PersistentObject $object, $associationName, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -148,7 +167,8 @@ class PersistentManager implements \IPersistentManager {
         $this->__retrieveAssociation($object, $associationMap, $classMap);
     }
 
-    private function __retrieveAssociation(PersistentObject $object, AssociationMap $associationMap, ClassMap $classMap) {
+    private function __retrieveAssociation(PersistentObject $object, AssociationMap $associationMap, ClassMap $classMap)
+    {
         $orderAttributes = $associationMap->getOrderAttributes();
         $criteria = $associationMap->getCriteria($orderAttributes);
         $criteriaParameters = $associationMap->getCriteriaParameters($object);
@@ -166,14 +186,16 @@ class PersistentManager implements \IPersistentManager {
         $object->set($associationMap->getName(), $association);
     }
 
-    private function loadSingleAssociation(ClassMap $classMap, $id, \database\MQuery $query) {
+    private function loadSingleAssociation(ClassMap $classMap, $id, \database\MQuery $query)
+    {
         $association = $classMap->getObject();
         $association->set($association->getPKName(), $id);
         $this->retrieveObjectFromCacheOrQuery($association, $classMap, $query);
         return $association;
     }
 
-    private function retrieveObjectFromCacheOrQuery(PersistentObject $object, ClassMap $classMap, \database\MQuery $query) {
+    private function retrieveObjectFromCacheOrQuery(PersistentObject $object, ClassMap $classMap, \database\MQuery $query)
+    {
         $cacheManager = CacheManager::getInstance();
         $useCache = $cacheManager->isCacheable($object) && $cacheManager->cacheIsEnabled();
         $cacheMiss = true;
@@ -191,12 +213,14 @@ class PersistentManager implements \IPersistentManager {
         }
     }
 
-    public function retrieveAssociationAsCursor(PersistentObject $object, $target) {
+    public function retrieveAssociationAsCursor(PersistentObject $object, $target)
+    {
         $classMap = $object->getClassMap();
         $this->_retrieveAssociationAsCursor($object, $target, $classMap);
     }
 
-    private function _retrieveAssociationAsCursor(PersistentObject $object, $associationName, ClassMap $classMap) {
+    private function _retrieveAssociationAsCursor(PersistentObject $object, $associationName, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -208,7 +232,8 @@ class PersistentManager implements \IPersistentManager {
         $object->set($associationMap->getName(), $cursor);
     }
 
-    public function saveObject(PersistentObject $object) {
+    public function saveObject(PersistentObject $object)
+    {
         $object->validate();
         $classMap = $object->getClassMap();
         $commands = array();
@@ -221,7 +246,8 @@ class PersistentManager implements \IPersistentManager {
         $this->deleteFromCache($object);
     }
 
-    private function _saveObject(PersistentObject $object, ClassMap $classMap, &$commands) {
+    private function _saveObject(PersistentObject $object, ClassMap $classMap, &$commands)
+    {
         if ($classMap->getSuperClassMap() != NULL) {
             $isPersistent = $object->isPersistent();
             $this->_saveObject($object, $classMap->getSuperClassMap(), $commands);
@@ -242,7 +268,7 @@ class PersistentManager implements \IPersistentManager {
             $commands[] = $cmd;
         }
         $this->logger($commands, $classMap, $object, $operation);
-        
+
         $mmCmd = array();
 
         $associationMaps = $classMap->getAssociationMaps();
@@ -258,7 +284,8 @@ class PersistentManager implements \IPersistentManager {
         $object->setPersistent(true);
     }
 
-    public function saveObjectRaw(PersistentObject $object) {
+    public function saveObjectRaw(PersistentObject $object)
+    {
         $object->validate();
         $classMap = $object->getClassMap();
         $commands = array();
@@ -266,7 +293,8 @@ class PersistentManager implements \IPersistentManager {
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _saveObjectRaw(PersistentObject $object, ClassMap $classMap, &$commands) {
+    private function _saveObjectRaw(PersistentObject $object, ClassMap $classMap, &$commands)
+    {
         if ($object->isPersistent()) {
             $statement = $classMap->getUpdateSqlFor($object);
             $commands[] = $statement->update();
@@ -282,14 +310,16 @@ class PersistentManager implements \IPersistentManager {
      * Save Associations
      *
      */
-    public function saveAssociation(PersistentObject $object, $associationName) {
+    public function saveAssociation(PersistentObject $object, $associationName)
+    {
         $classMap = $object->getClassMap();
         $commands = array();
         $this->_saveAssociation($object, $associationName, $commands, $classMap);
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _saveAssociation(PersistentObject $object, $associationName, &$commands, ClassMap $classMap) {
+    private function _saveAssociation(PersistentObject $object, $associationName, &$commands, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -297,7 +327,8 @@ class PersistentManager implements \IPersistentManager {
         $this->__saveAssociation($object, $associationMap, $commands, $classMap, $id);
     }
 
-    private function __saveAssociation(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap) {
+    private function __saveAssociation(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap)
+    {
         $toAttributeMap = $associationMap->getToAttributeMap();
         $fromAttributeMap = $associationMap->getFromAttributeMap();
         if ($associationMap->getCardinality() == 'oneToOne') {
@@ -341,7 +372,8 @@ class PersistentManager implements \IPersistentManager {
         }
     }
 
-    public function saveAssociationById(PersistentObject $object, $associationName, $id) {
+    public function saveAssociationById(PersistentObject $object, $associationName, $id)
+    {
         $object->retrieveAssociation($associationName);
         $associationIds = MUtil::parseArray($object->{'get' . $associationName}()->getId());
         //$ids = array_unique(array_merge($associationIds, MUtil::parseArray($id)));
@@ -352,7 +384,8 @@ class PersistentManager implements \IPersistentManager {
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _saveAssociationById(PersistentObject $object, $associationName, &$commands, ClassMap $classMap, $id) {
+    private function _saveAssociationById(PersistentObject $object, $associationName, &$commands, ClassMap $classMap, $id)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -360,7 +393,8 @@ class PersistentManager implements \IPersistentManager {
         $this->__saveAssociationById($object, $associationMap, $commands, $classMap, $id);
     }
 
-    private function __saveAssociationById(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap, $id) {
+    private function __saveAssociationById(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap, $id)
+    {
         $toAttributeMap = $associationMap->getToAttributeMap();
         $fromAttributeMap = $associationMap->getFromAttributeMap();
         $refObject = $associationMap->getToClassMap()->getObject();
@@ -384,24 +418,26 @@ class PersistentManager implements \IPersistentManager {
             $commands = array();
             // atualiza a tabela associativa (removendo e reinserindo os registros de associação)
             $aId = $id;
-            if(!is_array($id))
+            if (!is_array($id))
                 $aId = array($id);
-            
+
             if ($object->getId()) {
                 //$commands[] = $associationMap->getDeleteStatement($object);
                 $commands[] = $associationMap->getDeleteStatementId($object, $aId);
             }
-            foreach($aId as $idRef) {
+            foreach ($aId as $idRef) {
                 $commands[] = $associationMap->getInsertStatementId($object, $idRef);
             }
             //$commands[] = $associationMap->getInsertStatementId($object, $id);
         }
     }
+
     /**
      * Delete Object
      *
      */
-    public function deleteObject(PersistentObject $object) {
+    public function deleteObject(PersistentObject $object)
+    {
         $classMap = $object->getClassMap();
         $commands = array();
         $this->_deleteObject($object, $classMap, $commands);
@@ -409,7 +445,8 @@ class PersistentManager implements \IPersistentManager {
         $this->deleteFromCache($object);
     }
 
-    private function _deleteObject(PersistentObject $object, ClassMap $classMap, &$commands) {
+    private function _deleteObject(PersistentObject $object, ClassMap $classMap, &$commands)
+    {
         $mmCmd = array();
         $associationMaps = $classMap->getAssociationMaps();
         if (count($associationMaps)) {
@@ -433,7 +470,8 @@ class PersistentManager implements \IPersistentManager {
         $object->setPersistent(FALSE);
     }
 
-    private function deleteFromCache(PersistentObject $object) {
+    private function deleteFromCache(PersistentObject $object)
+    {
         CacheManager::getInstance()->delete($object);
     }
 
@@ -441,14 +479,16 @@ class PersistentManager implements \IPersistentManager {
      * Delete Associations
      *
      */
-    public function deleteAssociation(PersistentObject $object, $associationName) {
+    public function deleteAssociation(PersistentObject $object, $associationName)
+    {
         $classMap = $object->getClassMap();
         $commands = array();
         $this->_deleteAssociation($object, $associationName, $commands, $classMap);
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _deleteAssociation(PersistentObject $object, $associationName, &$commands, ClassMap $classMap) {
+    private function _deleteAssociation(PersistentObject $object, $associationName, &$commands, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -456,7 +496,8 @@ class PersistentManager implements \IPersistentManager {
         $this->__deleteAssociation($object, $associationMap, $commands, $classMap);
     }
 
-    private function __deleteAssociation(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap) {
+    private function __deleteAssociation(PersistentObject $object, AssociationMap $associationMap, &$commands, ClassMap $classMap)
+    {
         $toAttributeMap = $associationMap->getToAttributeMap();
         $fromAttributeMap = $associationMap->getFromAttributeMap();
         if ($associationMap->getCardinality() == 'oneToOne') {
@@ -495,14 +536,16 @@ class PersistentManager implements \IPersistentManager {
         $this->__retrieveAssociation($object, $associationMap, $classMap);
     }
 
-    public function deleteAssociationObject(PersistentObject $object, $associationName, PersistentObject $refObject) {
+    public function deleteAssociationObject(PersistentObject $object, $associationName, PersistentObject $refObject)
+    {
         $classMap = $object->getClassMap();
         $commands = array();
         $this->_deleteAssociationObject($object, $associationName, $refObject, $commands, $classMap);
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _deleteAssociationObject(PersistentObject $object, $associationName, PersistentObject $refObject, &$commands, ClassMap $classMap) {
+    private function _deleteAssociationObject(PersistentObject $object, $associationName, PersistentObject $refObject, &$commands, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -510,7 +553,8 @@ class PersistentManager implements \IPersistentManager {
         $this->__deleteAssociationObject($object, $associationMap, $refObject, $commands, $classMap);
     }
 
-    private function __deleteAssociationObject(PersistentObject $object, AssociationMap $associationMap, PersistentObject $refObject, &$commands, ClassMap $classMap) {
+    private function __deleteAssociationObject(PersistentObject $object, AssociationMap $associationMap, PersistentObject $refObject, &$commands, ClassMap $classMap)
+    {
         $toAttributeMap = $associationMap->getToAttributeMap();
         $fromAttributeMap = $associationMap->getFromAttributeMap();
         if (($associationMap->getCardinality() == 'oneToOne') || ($associationMap->getCardinality() == 'oneToMany')) {
@@ -536,14 +580,16 @@ class PersistentManager implements \IPersistentManager {
         $this->__retrieveAssociation($object, $associationMap, $classMap);
     }
 
-    public function deleteAssociationById(PersistentObject $object, $associationName, $id) {
+    public function deleteAssociationById(PersistentObject $object, $associationName, $id)
+    {
         $classMap = $object->getClassMap();
         $commands = array();
         $this->_deleteAssociationById($object, $associationName, $id, $commands, $classMap);
         $this->execute($classMap->getDb(), $commands);
     }
 
-    private function _deleteAssociationById(PersistentObject $object, $associationName, $id, &$commands, ClassMap $classMap) {
+    private function _deleteAssociationById(PersistentObject $object, $associationName, $id, &$commands, ClassMap $classMap)
+    {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
             throw new EPersistentManagerException("Association name [{$associationName}] not found.");
@@ -551,10 +597,11 @@ class PersistentManager implements \IPersistentManager {
         $this->__deleteAssociationById($object, $associationMap, $id, $commands, $classMap);
     }
 
-    private function __deleteAssociationById(PersistentObject $object, AssociationMap $associationMap, $id, &$commands, ClassMap $classMap) {
+    private function __deleteAssociationById(PersistentObject $object, AssociationMap $associationMap, $id, &$commands, ClassMap $classMap)
+    {
         $toAttributeMap = $associationMap->getToAttributeMap();
         $fromAttributeMap = $associationMap->getFromAttributeMap();
-        if (!is_array($id)){
+        if (!is_array($id)) {
             $id = array($id);
         }
         if ($associationMap->getCardinality() == 'oneToOne') {
@@ -581,7 +628,8 @@ class PersistentManager implements \IPersistentManager {
      * Process Criteria
      *
      */
-    private function processCriteriaQuery(PersistentCriteria $criteria, $parameters, database\MDatabase $db, $forProxy = FALSE) {
+    private function processCriteriaQuery(PersistentCriteria $criteria, $parameters, database\MDatabase $db, $forProxy = FALSE)
+    {
         $statement = $criteria->getSqlStatement($forProxy);
         $statement->setDb($db);
         $statement->setParameters($parameters);
@@ -589,13 +637,15 @@ class PersistentManager implements \IPersistentManager {
         return $query;
     }
 
-    private function processCriteriaCursor(PersistentCriteria $criteria, $parameters, database\MDatabase $db, $forProxy = FALSE) {
+    private function processCriteriaCursor(PersistentCriteria $criteria, $parameters, database\MDatabase $db, $forProxy = FALSE)
+    {
         $query = $this->processCriteriaQuery($criteria, $parameters, $db, $forProxy);
         $cursor = new Cursor($query, $criteria->getClassMap(), $forProxy, $this);
         return $cursor;
     }
 
-    public function processCriteriaDelete(DeleteCriteria $criteria, $parameters) {
+    public function processCriteriaDelete(DeleteCriteria $criteria, $parameters)
+    {
         $db = $criteria->getClassMap()->getDb();
         $statement = $criteria->getSqlStatement();
         $statement->setDb($db);
@@ -603,7 +653,8 @@ class PersistentManager implements \IPersistentManager {
         $this->execute($db, $statement->delete());
     }
 
-    public function processCriteriaUpdate(UpdateCriteria $criteria, $parameters) {
+    public function processCriteriaUpdate(UpdateCriteria $criteria, $parameters)
+    {
         $db = $criteria->getClassMap()->getDb();
         $statement = $criteria->getSqlStatement();
         $statement->setDb($db);
@@ -611,19 +662,22 @@ class PersistentManager implements \IPersistentManager {
         $this->execute($db, $statement->update());
     }
 
-    public function processCriteriaAsQuery(PersistentCriteria $criteria, $parameters) {
+    public function processCriteriaAsQuery(PersistentCriteria $criteria, $parameters)
+    {
         $db = $criteria->getClassMap()->getDb();
         $query = $this->processCriteriaQuery($criteria, $parameters, $db, FALSE);
         return $query;
     }
 
-    public function processCriteriaAsCursor(PersistentCriteria $criteria, $parameters) {
+    public function processCriteriaAsCursor(PersistentCriteria $criteria, $parameters)
+    {
         $db = $criteria->getClassMap()->getDb();
         $cursor = $this->processCriteriaCursor($criteria, $parameters, $db, FALSE);
         return $cursor;
     }
 
-    public function processCriteriaAsObjectArray(PersistentCriteria $criteria, $parameters) {
+    public function processCriteriaAsObjectArray(PersistentCriteria $criteria, $parameters)
+    {
         $db = $criteria->getClassMap()->getDb();
         $result = $this->processCriteriaQuery($criteria, $parameters, $db, FALSE)->getResult();
         $columns = $criteria->getColumnAttributes();
@@ -632,7 +686,7 @@ class PersistentManager implements \IPersistentManager {
             foreach ($result as $row) {
                 $object = new stdClass();
                 foreach ($columns as $key => $column) {
-                    $attribute = $criteria->getColumnAlias($column) ? : $column;
+                    $attribute = $criteria->getColumnAlias($column) ?: $column;
                     $object->$attribute = $row[$key];
                 }
                 $array[] = $object;
@@ -645,7 +699,8 @@ class PersistentManager implements \IPersistentManager {
      * Get Criteria
      *
      */
-    public static function getCriteria($className = '') {
+    public static function getCriteria($className = '')
+    {
         $criteria = NULL;
         if ($className != '') {
             $manager = PersistentManager::getInstance();
@@ -655,20 +710,23 @@ class PersistentManager implements \IPersistentManager {
         return $criteria;
     }
 
-    public function getRetrieveCriteria(PersistentObject $object, $command = '') {
+    public function getRetrieveCriteria(PersistentObject $object, $command = '')
+    {
         $classMap = $object->getClassMap();
         $criteria = new RetrieveCriteria($classMap, $command, $this);
         return $criteria;
     }
 
-    public function getDeleteCriteria(PersistentObject $object) {
+    public function getDeleteCriteria(PersistentObject $object)
+    {
         $classMap = $object->getClassMap();
         $criteria = new DeleteCriteria($classMap, $this);
         $criteria->setTransaction($object->getTransaction());
         return $criteria;
     }
 
-    public function getUpdateCriteria(PersistentObject $object) {
+    public function getUpdateCriteria(PersistentObject $object)
+    {
         $classMap = $object->getClassMap();
         $criteria = new UpdateCriteria($classMap, $this);
         $criteria->setTransaction($object->getTransaction());
@@ -682,7 +740,8 @@ class PersistentManager implements \IPersistentManager {
      * @param <type> $dbName
      * @return <type>
      */
-    public function getConnection($dbName) {
+    public function getConnection($dbName)
+    {
         if (($conn = $this->dbConnections[$dbName]) == NULL) {
             $conn = self::$container->getDatabase($dbName);
             $this->dbConnections[$dbName] = $conn;
@@ -695,7 +754,8 @@ class PersistentManager implements \IPersistentManager {
      *  Get Value of Attribute
      *
      */
-    public function getValue($object, $attribute) {
+    public function getValue($object, $attribute)
+    {
         $map = NULL;
         $cm = $object->getClassMap();
         $db = $this->getConnection($cm->getDatabaseName());
@@ -721,5 +781,3 @@ class PersistentManager implements \IPersistentManager {
     }
 
 }
-
-?>
