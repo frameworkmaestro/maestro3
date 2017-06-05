@@ -16,6 +16,11 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MNotFound.
+ * Retorna objeto JSON ou emite header(Location).
+ * Objeto JSON = {'id':'$pageName', 'type' : 'redirect', 'data' : '$url'}
+ */
 class MRedirect extends MResult
 {
 
@@ -31,13 +36,16 @@ class MRedirect extends MResult
 
     public function apply($request, $response)
     {
-        $response->status = MStatusCode::OK;
+        $response->setStatus(MStatusCode::OK);
         if (Manager::isAjaxCall()) {
-            $this->page->onLoad("manager.doRedirect('{$this->url}','');");
-            $json = new MRenderJSON();
-            $json->apply($request, $response);
+            $this->ajax->setResponseType('JSON');
+            $this->ajax->setId($this->page->getName());
+            $this->ajax->setType('redirect');
+            $this->ajax->setData($this->url);
+            $this->content = $this->ajax->returnJSON();
+            $response->setOut($this->content);
         } else {
-            header('Location:' . $this->url);
+            $response->setHeader('Location', 'Location:' . $this->url);
         }
     }
 

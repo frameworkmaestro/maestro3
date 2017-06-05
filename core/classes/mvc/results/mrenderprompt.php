@@ -16,24 +16,23 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MRenderPrompt.
+ * Retorna informação para renderização de um prompt no cliente.
+ * Objeto JSON = {'id':'$promptId', 'type' : 'prompt', 'data' : '$json'} : conteúdo é um objeto JSON com dados do prompt
+ */
 class MRenderPrompt extends MRenderJSON
 {
-
-    protected $ajax;
-    protected $page;
-    protected $content;
 
     public function __construct($prompt)
     {
         parent::__construct();
-        $this->ajax = Manager::getAjax();
-        $this->page = Manager::getPage();
         if ($this->ajax->isEmpty()) {
             $this->page->setName($prompt->getId());
             $this->page->setContent($prompt);
-            if (!$this->page->isPostBack()) {
-                $this->page->onLoad("manager.doPrompt('{$prompt->getId()}')");
-            }
+            //if (!$this->page->isPostBack()) {
+            //    $this->page->onLoad("manager.doPrompt('{$prompt->getId()}')");
+            //}
             $this->ajax->setId($this->page->getName());
             $this->ajax->setType('prompt');
             $this->ajax->setData($this->page->generate());
@@ -45,7 +44,7 @@ class MRenderPrompt extends MRenderJSON
     {
         $this->nocache($response);
         $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
-        $response->out = $this->content;
+        $response->setOut($this->content);
     }
 
 }

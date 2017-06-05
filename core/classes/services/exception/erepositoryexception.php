@@ -16,30 +16,13 @@
  * 02110-1301, USA.
  */
 
-class EPersistenceException extends Exception
+class ERepositoryException extends EMException
 {
-    public function __construct($msg)
+
+    public function __construct($msg = null, $code = 0)
     {
-        parent::__construct();
+        parent::__construct($msg, $code);
         $this->message = $msg;
     }
-}
 
-class EPersistentManagerFactoryException extends EPersistenceException
-{
-    public function __construct($msg)
-    {
-        $msg = "Error in PersistenManagerFactory: " . $msg;
-        parent::__construct($msg);
-    }
 }
-
-class EPersistentManagerException extends EPersistenceException
-{
-    public function __construct($msg)
-    {
-        $msg = "Error in PersistenFactory: " . $msg;
-        parent::__construct($msg);
-    }
-}
-

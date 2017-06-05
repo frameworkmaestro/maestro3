@@ -16,6 +16,12 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MRenderJSON.
+ * Retorna objeto JSON com o resultado do processamento.
+ * Objeto JSON = {'id':'$pageName', 'type' : 'page', 'data' : '$html'} : conteúdo é HTML
+ * Objeto JSON = {'id':'$pageName', 'type' : 'json', 'data' : '$json'} : conteúdo é um objeto JSON
+ */
 class MRenderJSON extends MResult
 {
 
@@ -30,7 +36,7 @@ class MRenderJSON extends MResult
                 $this->ajax->setData($data);
             } else {
                 $this->ajax->setResponseType('JSON');
-                $this->ajax->setId('');
+                $this->ajax->setId($this->page->getName());
                 $this->ajax->setType('json');
             }
             $this->content = $this->ajax->returnData();
@@ -51,7 +57,7 @@ class MRenderJSON extends MResult
         } else {
             $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
         }
-        $response->out = $this->content;
+        $response->setOut($this->content);
     }
 
 }

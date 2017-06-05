@@ -229,6 +229,10 @@ class MRequest
         }
     }
 
+    public function getFormat() {
+        return $this->format;
+    }
+
     /**
      * This request was sent by an Ajax framework.
      * (rely on the X-Requested-With header).

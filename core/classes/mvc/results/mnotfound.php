@@ -16,24 +16,31 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MNotFound.
+ * Retorna template preenchido com dados sobre o erro.
+ * Objeto JSON = {'id':'error', 'type' : 'page', 'data' : '$html'}
+ */
 class MNotFound extends MResult
 {
 
     public function apply($request, $response)
     {
-        $response->status = MStatusCode::NOT_FOUND;
-        $format = $request->format;
-        $response->setContentType($response->getMimeType("xx." + $format));
+        $response->setStatus(MStatusCode::NOT_FOUND);
+        $format = $request->getFormat();
         try {
             $template = new MTemplate();
             $template->context('result', $this);
             $errorHtml = MTemplateLocator::fetch($template, 'errors', '404.html');//$template->fetch("errors/{$language}/404.html");
             if ($request->isAjax()) {
-                $this->ajax->setResponse('html', $errorHtml);
-                $response->out = $this->ajax->returnData();
+                $this->ajax->setId('error');
+                $this->ajax->setType('page');
+                $this->ajax->setData($errorHtml);
+                $out = $this->ajax->returnData();
             } else {
-                $response->out = $errorHtml;
+                $out = $errorHtml;
             }
+            $response->setOut($out);
         } catch (EMException $e) {
 
         }

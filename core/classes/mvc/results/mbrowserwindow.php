@@ -16,6 +16,12 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MBowserWindow.
+ * Retorno para abrir nova janela do browser, numa requisição AJAX.
+ * MPage::window() contém a URL a ser carregada na nova janela.
+ * Objeto JSON = {'id':'$pagename', 'type' : 'window', 'data' : '$windowURL'}
+ */
 class MBrowserWindow extends MResult
 {
 
@@ -25,7 +31,7 @@ class MBrowserWindow extends MResult
         if ($this->ajax->isEmpty()) {
             $this->ajax->setId($this->page->getName());
             $this->ajax->setType('window');
-            $this->ajax->setData($this->page->window);
+            $this->ajax->setData($this->page->window());
         }
         $this->content = $this->ajax->returnData();
     }
@@ -33,7 +39,7 @@ class MBrowserWindow extends MResult
     public function apply($request, $response)
     {
         $this->nocache($response);
-        $response->out = $this->content;
+        $response->setOut($this->content);
     }
 
 

@@ -718,13 +718,3 @@ class MUtil
         return $text;
     }
 }
-
-class MDummy
-{
-
-}
-
-class MDataObject
-{
-
-}

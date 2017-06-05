@@ -162,7 +162,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__retrieveAssociation($object, $associationMap, $classMap);
     }
@@ -223,7 +223,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $orderAttributes = $associationMap->getOrderAttributes();
         $criteria = $associationMap->getCriteria($orderAttributes);
@@ -322,7 +322,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__saveAssociation($object, $associationMap, $commands, $classMap, $id);
     }
@@ -388,7 +388,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__saveAssociationById($object, $associationMap, $commands, $classMap, $id);
     }
@@ -491,7 +491,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__deleteAssociation($object, $associationMap, $commands, $classMap);
     }
@@ -548,7 +548,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__deleteAssociationObject($object, $associationMap, $refObject, $commands, $classMap);
     }
@@ -592,7 +592,7 @@ class PersistentManager implements \IPersistentManager
     {
         $associationMap = $classMap->getAssociationMap($associationName);
         if (is_null($associationMap)) {
-            throw new EPersistentManagerException("Association name [{$associationName}] not found.");
+            throw new EPersistentException("Association name [{$associationName}] not found.");
         }
         $this->__deleteAssociationById($object, $associationMap, $id, $commands, $classMap);
     }

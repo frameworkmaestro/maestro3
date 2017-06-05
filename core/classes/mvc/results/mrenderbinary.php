@@ -16,6 +16,10 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MRenderBinary.
+ * Retorna dados para download de arquivo. Tem tratamento específico na classe MResponse.
+ */
 class MRenderBinary extends MResult
 {
 

@@ -430,29 +430,44 @@ class MPage extends MComponent
       Response related methods
      */
 
-    public function redirect($url)
+    public function redirect($url = '')
     {
-        $this->redirectTo = $url;
+        if ($url != '') {
+            $this->redirectTo = $url;
+        }
+        return $this->redirectTo;
     }
 
-    public function window($url)
+    public function window($url = '')
     {
-        $this->window = $url;
+        if ($url != '') {
+            $this->window = $url;
+        }
+        return $this->window;
     }
 
-    public function binary($stream)
+    public function binary($stream = '')
     {
-        $this->binary = $stream;
+        if ($stream != '') {
+            $this->binary = $stream;
+        }
+        return $this->stream;
     }
 
-    public function download($fileName)
+    public function download($fileName = '')
     {
-        $this->download = $fileName;
+        if ($fileName != '') {
+            $this->download = $fileName;
+        }
+        return $this->download;
     }
 
-    public function prompt($prompt)
+    public function prompt($prompt = '')
     {
-        $this->prompt = $prompt;
+        if ($prompt != '') {
+            $this->prompt = $prompt;
+        }
+        return $this->prompt;
     }
 
     /*

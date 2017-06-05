@@ -19,47 +19,6 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MXMLTreeElement
-{
-}
-
-/**
- * Brief Class Description.
- * Complete Class Description.
- */
-class MXMLNode
-{
-    /**
-     * Attribute Description.
-     */
-    public $tag = '';
-
-    /**
-     * Attribute Description.
-     */
-    public $value = '';
-
-    /**
-     * Attribute Description.
-     */
-    public $class = '';
-
-    /**
-     * Attribute Description.
-     */
-    public $attrs;
-
-    /**
-     * Attribute Description.
-     */
-    public $properties = array();
-
-}
-
-/**
- * Brief Class Description.
- * Complete Class Description.
- */
 class MXMLTree
 {
     /**

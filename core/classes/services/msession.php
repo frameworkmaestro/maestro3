@@ -100,12 +100,3 @@ class MSession extends Zend\Session\SessionManager
     }
 
 }
-
-class MSessionContainer extends Zend\Session\Container
-{
-
-    public function exists($value)
-    {
-        return $this->offsetExists($value);
-    }
-}

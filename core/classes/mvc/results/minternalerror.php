@@ -16,6 +16,11 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MInternalError.
+ * Retorna template preenchido com dados sobre o erro.
+ * Objeto JSON = {'id':'error', 'type' : 'page', 'data' : '$html'}
+ */
 class MInternalError extends MResult
 {
 
@@ -29,14 +34,12 @@ class MInternalError extends MResult
 
     public function apply($request, $response)
     {
-        $response->status = MStatusCode::INTERNAL_ERROR;
-        $format = $request->format;
-        $response->setContentType($response->getMimeType("xx." + format));
-        mtracestack();
+        $response->setStatus(MStatusCode::INTERNAL_ERROR);
+        $format = $request->getFormat();
         try {
             $template = new MTemplate();
             $template->context('result', $this->exception);
-            $errorHtml = MTemplateLocator::fetch($template, 'errors', $response->status . "." . ($format == null ? "html" : $format));
+            $errorHtml = MTemplateLocator::fetch($template, 'errors', $response->getStatus() . "." . ($format == null ? "html" : $format));
 
             if ($request->isAjax() && ($format == "html")) {
                 if ($this->ajax->isEmpty()) {
@@ -44,10 +47,11 @@ class MInternalError extends MResult
                     $this->ajax->setType('page');
                     $this->ajax->setData($errorHtml);
                 }
-                $response->out = $this->ajax->returnData();
+                $out = $this->ajax->returnData();
             } else {
-                $response->out = $errorHtml;
+                $out = $errorHtml;
             }
+            $response->setOut($out);
         } catch (Exception $e) {
             throw new EMException($e);
         }

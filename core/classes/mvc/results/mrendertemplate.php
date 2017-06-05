@@ -16,10 +16,12 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MRenderTemplate.
+ * Retorna conteúdo HTML puro gerado a partir da renderização de um template.
+ */
 class MRenderTemplate extends MResult
 {
-
-    public $content;
 
     public function __construct($template, $parameters = array())
     {
@@ -29,7 +31,7 @@ class MRenderTemplate extends MResult
 
     public function apply($request, $response)
     {
-        $response->out = $this->content;
+        $response->setOut($this->content);
     }
 
 }

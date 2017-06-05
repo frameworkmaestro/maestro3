@@ -26,6 +26,8 @@ class MTemplateLocator
             $path = self::buildPath($folder, $file);
             if (self::appTemplateExists($path)) {
                 $template->engine->setTemplateDir(self::getAppTemplatePath());
+            } else {
+                $path = Manager::getPublicPath("templates/{$path}");
             }
             return $template->fetch($path);
         }

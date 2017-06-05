@@ -16,6 +16,12 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MBowserFile.
+ * Retorno para download de arquivo via browser, numa requisição AJAX.
+ * MPage::window() contém a URL do arquivo.
+ * Objeto JSON = {'id':'$filename', 'type' : 'file', 'data' : '$fileURL'}
+ */
 class MBrowserFile extends MResult
 {
 
@@ -25,7 +31,7 @@ class MBrowserFile extends MResult
         if ($this->ajax->isEmpty()) {
             $this->ajax->setId($file->getName());
             $this->ajax->setType('file');
-            $this->ajax->setData($this->page->window);
+            $this->ajax->setData($this->page->window());
         }
         $this->content = $this->ajax->returnData();
     }
@@ -33,7 +39,7 @@ class MBrowserFile extends MResult
     public function apply($request, $response)
     {
         $this->nocache($response);
-        $response->out = $this->content;
+        $response->setOut($this->content);
     }
 
 

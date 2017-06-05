@@ -16,18 +16,22 @@
  * 02110-1301, USA.
  */
 
-abstract class MResult extends ERuntimeException
+/**
+ * MResult.
+ * Classe abstrata, base para as classes de geração da resposta à requisição.
+ */
+abstract class MResult
 {
 
     protected $ajax;
     protected $page;
     protected $content;
 
-    public function __construct($description = '', $code = 0, $goTo = '')
+    public function __construct()
     {
-        parent::__construct($description);
         $this->ajax = Manager::getAjax();
         $this->page = Manager::getPage();
+        $this->content = null;
     }
 
     public abstract function apply($request, $response);

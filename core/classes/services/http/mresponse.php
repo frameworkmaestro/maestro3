@@ -128,6 +128,26 @@ class MResponse
         }
     }
 
+    public function setOut($content)
+    {
+        $this->out = $content;
+    }
+
+    public function getOut()
+    {
+        return $this->out;
+    }
+
+    public function setStatus($value)
+    {
+        $this->status = $value;
+    }
+
+    public function getStatus()
+    {
+        return $this->value;
+    }
+
     /**
      * Set a new cookie that will expire in (current) + duration
      * @param name
@@ -164,7 +184,7 @@ class MResponse
         $this->contentLength = $value;
     }
 
-    function setContentDisposition($value)
+    public function setContentDisposition($value)
     {
         $this->contentDisposition = $value;
     }
@@ -246,7 +266,7 @@ class MResponse
                 } else {
                     header("Content-Disposition: attachment; filename=" . $fileName);
                 }
-                header("Cache-Control: cache"); // HTTP/1.1 
+                header("Cache-Control: cache"); // HTTP/1.1
                 header("Content-Transfer-Encoding: binary");
 
                 $fp = fopen($filePath, "r");
@@ -267,7 +287,7 @@ class MResponse
                 } else {
                     header("Content-Disposition: attachment; filename=" . $fileName);
                 }
-                header("Cache-Control: cache"); // HTTP/1.1 
+                header("Cache-Control: cache"); // HTTP/1.1
                 header("Content-Transfer-Encoding: binary");
             }
             echo $stream;

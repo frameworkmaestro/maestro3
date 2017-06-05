@@ -16,6 +16,11 @@
  * 02110-1301, USA.
  */
 
+/**
+ * MRuntimeError.
+ * Retorna template preenchido com dados sobre o erro.
+ * Objeto JSON = {'id':'error', 'type' : 'page', 'data' : '$html'}
+ */
 class MRuntimeError extends MResult
 {
     protected $exception;
@@ -51,16 +56,16 @@ class MRuntimeError extends MResult
     private function setResponseStatusCode()
     {
         if ($this->exception instanceof ELoginException) {
-            $this->response->status = MStatusCode::UNAUTHORIZED;
+            $this->response->setStatus(MStatusCode::UNAUTHORIZED);
         } else {
-            $this->response->status = MStatusCode::INTERNAL_ERROR;
+            $this->response->setStatus(MStatusCode::INTERNAL_ERROR);
         }
     }
 
     private function setResponseOutput()
     {
         try {
-            $this->response->out = $this->getOutput();
+            $this->response->setOut($this->getOutput());
         } catch (EMException $e) {
         }
     }
