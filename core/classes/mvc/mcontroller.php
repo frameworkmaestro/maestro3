@@ -265,6 +265,7 @@ class MController
 
     public function renderPrompt($prompt)
     {
+        /*
         if (is_string($prompt)) {
             $args = func_get_args();
             $oPrompt = MPrompt::$prompt($args[1], $args[2], $args[3]);
@@ -277,6 +278,15 @@ class MController
             Manager::getPage()->onLoad("manager.doPrompt('{$oPrompt->getId()}')");
             $this->setResult(new MRenderPage($oPrompt));
         }
+        */
+        if (is_string($prompt)) {
+            $args = func_get_args();
+            $prompt = new mPromptData($prompt, $args[1], $args[2], $args[3]);
+        }
+        if (class_exists('MHandlerPrompt')) {
+            MHandlerPrompt::handler($prompt);
+        }
+        $this->setResult(new MRenderPrompt($prompt));
     }
 
     public function renderJSON($json = '')
@@ -316,7 +326,7 @@ class MController
             $this->getParameters($parameters);
             $this->setResult(new MRenderTemplate($template, $this->data));
         } else {
-            throw new ENotFoundException('Template ' . $templatename . ' was not found!');
+            throw new ENotFoundException('Template ' . $templateName . ' was not found!');
         }
     }
 

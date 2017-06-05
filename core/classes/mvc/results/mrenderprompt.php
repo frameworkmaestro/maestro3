@@ -24,18 +24,20 @@
 class MRenderPrompt extends MRenderJSON
 {
 
-    public function __construct($prompt)
+    public function __construct(MPromptData $prompt)
     {
         parent::__construct();
         if ($this->ajax->isEmpty()) {
-            $this->page->setName($prompt->getId());
-            $this->page->setContent($prompt);
-            //if (!$this->page->isPostBack()) {
-            //    $this->page->onLoad("manager.doPrompt('{$prompt->getId()}')");
-            //}
-            $this->ajax->setId($this->page->getName());
-            $this->ajax->setType('prompt');
-            $this->ajax->setData($this->page->generate());
+            $control = $prompt->getControl();
+            if ($control) { // renderiza com página
+                $this->page->setName($control->getId());
+                $this->page->setContent($control);
+                $this->ajax->setId($this->page->getName());
+                $this->ajax->setType('prompt');
+                $this->ajax->setData($this->page->generate());
+            } else { // renderiza como JSON
+                $this->ajax->setData($prompt);
+            }
         }
         $this->content = $this->ajax->returnData();
     }
