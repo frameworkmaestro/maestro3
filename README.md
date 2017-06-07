@@ -15,7 +15,7 @@ O Maestro é um framework PHP (>= 7.0) com suporte a MVC (Model-View-Controller)
 5 - Acessar app Guia (ex. ```http://localhost/maestro/index.php/guia/main```).
 
 
-###Para usar o JTrace:
+### Para usar o JTrace:
 
 1 - Alterar ```core/conf/conf.php```:
 
