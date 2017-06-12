@@ -559,6 +559,11 @@ class Manager
                     }
                 }
             }
+            mdump('autoload trying to create control : ' . $className);
+            //mtracestack();
+            $controlClass = create_function('', 'class ' . $className . ' extends MControl {}');
+            $controlClass();
+
         }
     }
 

@@ -137,8 +137,8 @@ class MPage extends MComponent
         $this->fileUpload = mrequest('__ISFILEUPLOAD') == 'yes';
         $this->content = new MPageContent();
         $template = mrequest('__TEMPLATE') ?: (Manager::getConf('theme.template') ?: 'index');
-        $this->setTemplate();
         $this->setTemplateName($template);
+        $this->setTemplate();
         $this->theme = Manager::$conf['theme']['name'];
         $this->title = Manager::getConf('name');
         $this->styleSheetCode = '';
@@ -185,10 +185,10 @@ class MPage extends MComponent
 
     public function setTemplateName($name)
     {
-        $path = dirname($name);
-        if ($path !== '') {
-            $this->template->setPath($path);
-        }
+        //$path = dirname($name);
+        //if ($path !== '') {
+        //    $this->template->setPath($path);
+        //}
         $this->templateName = basename($name);
     }
 

@@ -246,7 +246,7 @@ class MFrontController
             $this->addModuleMessages($module);
             // getting composer autoload
             $vendorAutoload = Manager::getAppPath("vendor/autoload.php", $module);
-            mdump($vendorAutoload);
+            //mdump($vendorAutoload);
             if (file_exists($vendorAutoload)) {
                 mdump('using module vendor');
                 require_once $vendorAutoload;
