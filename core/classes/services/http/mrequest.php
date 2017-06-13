@@ -144,7 +144,7 @@ class MRequest
         $this->method = $this->getRequestType();
         $this->domain = $this->getServerName();
         $this->remoteAddress = $this->getUserHostAddress();
-        $this->contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
+        $this->processContentType();
         $this->port = $this->getPort();
         $this->secure = $this->getIsSecureConnection();
         $this->headers = $_SERVER;
@@ -203,12 +203,12 @@ class MRequest
             return;
         }
 
-        if (strpos($accept, "application/xhtml") !== false || strpos($accept, "text/html") !== false || substr($accept, 0, 3) == "*/*") {
+        if ((strpos($accept, "application/xhtml") !== false) || (strpos($accept, "text/html") !== false) ){
             $this->format = "html";
             return;
         }
 
-        if (strpos($accept, "application/xml") !== false || strpos($accept, "text/xml") !== false) {
+        if ((strpos($accept, "application/xml") !== false) || (strpos($accept, "text/xml") !== false)) {
             $this->format = "xml";
             return;
         }
@@ -638,6 +638,15 @@ class MRequest
     }
 
     /**
+     * Returns the request type, such as GET, POST, HEAD, PUT, DELETE.
+     * @return string request type, such as GET, POST, HEAD, PUT, DELETE.
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
      * Returns whether this is a POST request.
      * @return boolean whether this is a POST request.
      */
@@ -861,6 +870,21 @@ class MRequest
             return $this->_preferredLanguage = false;
         }
         return $this->_preferredLanguage;
+    }
+
+    public function getContentType() {
+        return $this->contentType;
+    }
+
+    private function processContentType() {
+        $this->contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
+        if (strpos($this->contentType, "application/json") !== false) {
+            if ($this->getMethod() == 'POST')
+            {
+                $data = json_decode(file_get_contents("php://input"));
+                $_REQUEST = (array)$data;
+            }
+        }
     }
 
     public function __toString()

@@ -20,18 +20,19 @@
  * MBowserWindow.
  * Retorno para abrir nova janela do browser, numa requisição AJAX.
  * MPage::window() contém a URL a ser carregada na nova janela.
- * Objeto JSON = {'id':'$pagename', 'type' : 'window', 'data' : '$windowURL'}
+ * Objeto JSON = {'id':'window...', 'type' : 'window', 'data' : '$windowURL'}
  */
 class MBrowserWindow extends MResult
 {
 
-    public function __construct()
+    public function __construct($url = '')
     {
         parent::__construct();
         if ($this->ajax->isEmpty()) {
-            $this->ajax->setId($this->page->getName());
+            $id = 'window' . uniqid();
+            $this->ajax->setId($id);
             $this->ajax->setType('window');
-            $this->ajax->setData($this->page->window());
+            $this->ajax->setData($url);
         }
         $this->content = $this->ajax->returnData();
     }

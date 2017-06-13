@@ -24,7 +24,8 @@ class MFrontController
 
     static private $instance = NULL;
     public $context;
-    public $response;
+    private $request;
+    private $response;
     public $dumpping;
     public $conf;
     public $startup;
@@ -59,9 +60,9 @@ class MFrontController
         try {
             $this->context = new MContext($this->request);
             Manager::getInstance()->baseURL = $this->request->getBaseURL(false);
-            $app = $this->context->app;
+            $app = $this->context->getApp();
             Manager::getInstance()->app = $app;
-            $appPath = $this->context->isCore ? Manager::getInstance()->coreAppsPath : Manager::getInstance()->appsPath;
+            $appPath = $this->context->isCore() ? Manager::getInstance()->coreAppsPath : Manager::getInstance()->appsPath;
             Manager::getInstance()->appPath = $appPath . '/' . $app;
             $this->removeInputSlashes();
             $this->setData($data ?: $_REQUEST);
@@ -138,6 +139,16 @@ class MFrontController
         return Manager::getData();
     }
 
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
     public function setResult($result)
     {
         $this->result = $result;
@@ -177,14 +188,14 @@ class MFrontController
     {
         $this->dumpping = Manager::getOptions('dump');
         // if it is a AJAX call, initialize MAjax
-        if (Manager::isAjaxCall()) {
+        if ($this->context->isAjax()) {
             Manager::$ajax = new MAjax();
             Manager::$ajax->initialize(Manager::getOptions('charset'));
         }
         $this->addApplicationConf();
         $this->addApplicationActions();
         $this->addApplicationMessages();
-        Manager::getPage();
+        //Manager::getPage();
         $this->controllerAction = '';
         $this->forward = '';
     }
@@ -196,18 +207,18 @@ class MFrontController
 
         $vendorAutoload = Manager::getAppPath("vendor/autoload.php");
         if (file_exists($vendorAutoload)) {
-            mdump('using app vendor');
+            mtrace('using app vendor');
             require_once $vendorAutoload;
         }
         $containerFile = Manager::getAppPath('conf/container.php');
         if (file_exists($containerFile)) {
-            mdump('using app container');
+            mtrace('using app container');
             $this->addApplicationContainer();
         }
 
         $uiAutoload = Manager::getAppPath("ui/autoload.php");
         if (file_exists($uiAutoload)) {
-            mdump('using app ui: ' . $uiAutoload);
+            mtrace('using app ui: ' . $uiAutoload);
             Manager::loadAutoload($uiAutoload);
         }
 
@@ -246,14 +257,14 @@ class MFrontController
             $this->addModuleMessages($module);
             // getting composer autoload
             $vendorAutoload = Manager::getAppPath("vendor/autoload.php", $module);
-            //mdump($vendorAutoload);
+            //mtrace($vendorAutoload);
             if (file_exists($vendorAutoload)) {
-                mdump('using module vendor');
+                mtrace('using module vendor');
                 require_once $vendorAutoload;
                 // getting the modules's container
                 $this->addModuleContainer($module);
             } else { // manual register
-                mdump('using manual');
+                mtrace('using manual');
                 Manager::registerAutoloader($module, $appPath . '/modules/');
                 Manager::addAutoloadPath($appPath . "/modules/{$module}{$srcPath}/components");
             }
@@ -384,7 +395,7 @@ class MFrontController
                 $this->setResult(new MRenderPage());
             }
         } else {
-            throw new ERunTimeException(_M("App: [{$this->context->app}], Module: [{$this->context->module}], Component: [{$component}] not found!"));
+            throw new ERunTimeException(_M("App: [{$this->context->getApp()}], Module: [{$this->context->getModule()}], Component: [{$component}] not found!"));
         }
     }
 

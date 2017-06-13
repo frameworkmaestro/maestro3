@@ -17,31 +17,26 @@
  */
 
 /**
- * MBowserFile.
- * Retorno para download de arquivo via browser, numa requisição AJAX.
- * MPage::window() contém a URL do arquivo.
- * Objeto JSON = {'id':'$filename', 'type' : 'file', 'data' : '$fileURL'}
+ * MRenderPage.
+ * Retorna conteúdo HTML puro gerado a partir da renderização da página.
  */
-class MBrowserFile extends MResult
+class MRenderPage extends MResult
 {
 
-    public function __construct(MFile $file)
+    public function __construct($content = '')
     {
         parent::__construct();
-        if ($this->ajax->isEmpty()) {
-            $this->ajax->setId($file->getName());
-            $this->ajax->setType('file');
-            $this->ajax->setData($this->page->window());
-        }
-        $this->content = $this->ajax->returnData();
+        //if ($content != '') {
+        //    $this->page->setContent($content);
+        //}
+        //$this->content = $this->page->render();
+        $this->content = $content;
     }
 
     public function apply($request, $response)
     {
-        $this->nocache($response);
         $response->setOut($this->content);
+        $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
     }
 
-
 }
-

@@ -21,7 +21,7 @@
  * ser composto por outros objetos) e gera a resposta (Texto, XML ou JSON) a partir
  * deste objeto.
  */
-class MAjax extends MComponent
+class MAjax
 {
 
     /**
@@ -42,6 +42,8 @@ class MAjax extends MComponent
      */
     public $composites = array();
 
+    private $data;
+
     /**
      * Define a codificação de caracteres usada na geração da resposta.
      * @var string
@@ -50,18 +52,22 @@ class MAjax extends MComponent
 
     public function __construct($inputEncoding = 'UTF-8')
     {
-        parent::__construct();
-        $this->setName('ajaxResponse');
-        $this->setId('');
+        $this->data = '';
         $this->setEncoding($inputEncoding);
-        // maestro2: por default, o tipo de resposta é aquele solicitado na requisição HTTP
-        // $this->setResponseType(Manager::getRequest()->getFormat());
-        $this->setResponseType($_REQUEST['ajaxResponseType'] ?: 'TXT');
+        $this->setResponseType($_REQUEST['ajaxResponseType'] ?: (Manager::getContext()->getResultFormat() ?: 'TXT'));
     }
 
     public function initialize($inputEncoding = 'UTF-8')
     {
         $this->setEncoding($inputEncoding);
+    }
+
+    public function setData($data) {
+        $this->data = $data;
+    }
+
+    public function getData() {
+        return $this->data;
     }
 
     /**
@@ -84,7 +90,7 @@ class MAjax extends MComponent
             case 'OBJECT':
                 $data = MAjaxTransformer::toJSON($this);
                 $header = 'Content-type: application/json; ';
-                if (Manager::getPage()->fileUpload) {
+                if (Manager::getContext()->isFileUpload()) {
                     $newdata = "{\"base64\":\"" . base64_encode($data) . "\"}";
                     $data = "<html><body><textarea>$newdata</textarea></body></html>";
                     $header = 'Content-type: text/html; ';

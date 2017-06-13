@@ -28,16 +28,17 @@ class MRenderPrompt extends MRenderJSON
     {
         parent::__construct();
         if ($this->ajax->isEmpty()) {
-            $control = $prompt->getControl();
-            if ($control) { // renderiza com página
-                $this->page->setName($control->getId());
-                $this->page->setContent($control);
-                $this->ajax->setId($this->page->getName());
+            //$control = $prompt->getControl();
+            //if ($control) { // renderiza com página
+                //$this->page->setName($control->getId());
+                //$this->page->setContent($control);
+                //$this->ajax->setId($this->page->getName());
+                $this->ajax->setId($prompt->getId());
                 $this->ajax->setType('prompt');
-                $this->ajax->setData($this->page->generate());
-            } else { // renderiza como JSON
-                $this->ajax->setData($prompt);
-            }
+                $this->ajax->setData($prompt->getContent());
+            //} else { // renderiza como JSON
+            //    $this->ajax->setData($prompt);
+            //}
         }
         $this->content = $this->ajax->returnData();
     }
@@ -45,7 +46,8 @@ class MRenderPrompt extends MRenderJSON
     public function apply($request, $response)
     {
         $this->nocache($response);
-        $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
+        //$response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
+        $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
         $response->setOut($this->content);
     }
 

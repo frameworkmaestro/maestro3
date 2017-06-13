@@ -85,14 +85,19 @@ return array(
         )
     ),
     'cache' => array(
-        'type' => "php", // php, java, apc, memcache
+        'type' => "Redis", // php, java, apc, memcache
         'memcache' => array(
-            'host' => "127.0.0.1",
+            'host' => "200.131.19.161",
             'port' => "11211",
             'default.ttl' => 0
         ),
         'apc' => array(
             'default.ttl' => 0
+        ),
+        'Redis' => array(
+            'host' => 'localhost',
+            'port' => 6379,
+            'expirationDefault' => 60
         )
     ),
     'mailer' => array(

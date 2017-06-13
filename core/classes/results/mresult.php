@@ -24,13 +24,11 @@ abstract class MResult
 {
 
     protected $ajax;
-    protected $page;
     protected $content;
 
     public function __construct()
     {
         $this->ajax = Manager::getAjax();
-        $this->page = Manager::getPage();
         $this->content = null;
     }
 

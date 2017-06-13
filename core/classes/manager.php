@@ -29,7 +29,8 @@
 
 use Composer\Script\Event;
 
-define('MAESTRO_VERSION', 'Maestro 3.0');
+define('MAESTRO_NAME', 'Maestro 3.0');
+define('MAESTRO_VERSION', '3.0');
 define('MAESTRO_AUTHOR', 'Maestro Team');
 
 /**
@@ -245,7 +246,6 @@ class Manager
 
     /**
      * Cria (se não existe) e retorna a instância singleton da class Manager.
-     * Cria (se não existe) e retorna a instância singleton da class Manager.
      *
      * @returns (object) Instance of Manager class
      *
@@ -276,8 +276,6 @@ class Manager
         $m->confPath = $basePath . '/core/conf';
         $m->publicPath = $basePath . '/public';
         $m->classPath = $basePath . '/core/classes';
-        //$m->loadAutoload($m->getClassPath('autoload.php'));
-        //$m->loadAutoload($m->getClassPath('ui/autoload.php'));
         $m->loadAutoload($basePath . '/vendor/autoload_manager.php');
         $managerConfigFile = $m->confPath . '/conf.php';
         $m->loadConf($managerConfigFile);
@@ -285,15 +283,6 @@ class Manager
             $m->loadConf($managerConfigFile);
         }
         register_shutdown_function("shutdown");
-        // registra os Autoloaders das classes com namespaces
-        /*
-        Manager::registerAutoloader('manager', $m->classPath);
-        Manager::registerAutoloader('Doctrine', $m->classPath . '/database');
-        Manager::registerAutoloader('Zend', $m->classPath);
-        Manager::registerAutoloader('ProxyManager', $m->classPath);
-        Manager::registerAutoloader('DI', $m->classPath);
-        Manager::registerAutoloader('database', $m->classPath);
-        */
     }
 
     /**
@@ -481,8 +470,7 @@ class Manager
 
     /**
      * Registra uma nova classe de Autoloader.
-     * O novo Autoloader será colocado antes de "autoload" e depois dos outros
-     * autoloaders já existentes.
+     * O novo Autoloader será colocado antes do "manager::autoload" e depois dos outros autoloaders já existentes.
      *
      * @param string $namespace Namespace usado pela classe.
      * @param string $includePath Path das classes que será carregadas.
@@ -559,11 +547,6 @@ class Manager
                     }
                 }
             }
-            mdump('autoload trying to create control : ' . $className);
-            //mtracestack();
-            //$controlClass = create_function('', 'class ' . $className . ' extends MControl {}');
-            //$controlClass();
-
         }
     }
 
@@ -647,7 +630,7 @@ class Manager
      */
     public static function getApp()
     {
-        return self::getContext()->app;
+        return self::getContext()->getApp();
     }
 
     /**
@@ -655,7 +638,7 @@ class Manager
      */
     public static function getModule()
     {
-        return self::getContext()->module;
+        return self::getContext()->getModule();
     }
 
     /**
@@ -699,7 +682,7 @@ class Manager
      */
     public static function getRequest()
     {
-        return self::$instance->controller->request;
+        return self::$instance->controller->getRequest();
     }
 
     /**
@@ -977,7 +960,6 @@ class Manager
     {
         if ($cond == false) {
             self::$instance->logMessage('[ERROR]' . $msg);
-
             self::$instance->error($msg, $goto, _M('Fatal error'));
         }
     }
@@ -1678,7 +1660,11 @@ class Manager
 
     public static function getView($app, $module, $controller, $view)
     {
-        self::$instance->view = new MView($app, $module, $controller, $view);
+        if (class_exists('mview', true)) {
+            self::$instance->view = new MView($app, $module, $controller, $view);
+        } else {
+            self::$instance->view = new MBaseView($app, $module, $controller, $view);
+        }
         self::$instance->view->init();
         return self::$instance->view;
     }

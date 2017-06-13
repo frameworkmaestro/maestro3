@@ -24,64 +24,94 @@ class MContext
 {
 
     /**
-     * Current application
+     * Método HTTP
      * @var string
      */
-    public $isCore;
+    private $method;
+
+    /**
+     * HTTP ContentType
+     * @var string
+     */
+    private $contentType;
+
+    /**
+     * HTTP accepted results
+     * @var string
+     */
+    private $resultFormat;
+
+    /**
+     * Se é uma chamada Ajax
+     * @var string
+     */
+    private $isAjax;
 
     /**
      * Current application
      * @var string
      */
-    public $app;
+    private $isCore;
+
+    /**
+     * Is file Upload? (Maestro1)
+     * @var string
+     */
+    private $isFileUpload;
+
+    /**
+     * Current application
+     * @var string
+     */
+    private $app;
 
     /**
      * Current module path
      * @var string
      */
-    public $module;
+    private $module;
 
     /**
      * Current controller from path
      * @var string
      */
-    public $controller;
+    private $controller;
 
     /**
      * Current component from path
      * @var string
      */
-    public $component;
+    private $component;
 
     /**
      * Current service from path
      * @var string
      */
-    public $service;
+    private $service;
 
     /**
      * Current api from path
      * @var string
      */
-    public $api;
+    private $api;
 
     /**
      * Current action from path
      * @var string
      */
-    public $action;
+    private $action;
 
     /**
      * Variable "id", if it exists
      * @var string
      */
-    public $id;
+    private $id;
 
     /**
      * Array with actions, if there is two or more
      * @var array
      */
-    public $actionTokens;
+    private $actionTokens;
 
     /**
      * Current action from $actionTokens
@@ -93,19 +123,19 @@ class MContext
      * Variables passed on path and querystring
      * @var <type>
      */
-    public $vars;
+    private $vars;
 
     /**
      * MRequest object
      * @var MRequest
      */
-    public $request;
+    private $request;
 
     /**
      *
      * @param type $request
      */
-    public $actionPath;
+    private $actionPath;
 
     /**
      * Url
@@ -126,8 +156,12 @@ class MContext
             }
             $path = $this->request->getPathInfo();
             $this->url = $this->request->path;
+            $this->method = $this->request->getMethod();
+            $this->contentType = $this->request->getContentType();
+            $this->resultFormat = strtoupper($this->request->getFormat());
+            $this->isAjax = Manager::isAjaxCall();
         }
-        mtrace('Context path: ' . $path);
+        $this->isFileUpload = (mrequest('__ISFILEUPLOAD') == 'yes');
         $pathParts = explode('/', $path);
         $part = null;
         $component = '';
@@ -239,15 +273,50 @@ class MContext
         }
         Manager::getInstance()->application = $this->app;
 
-        mtrace('Context app: ' . $this->app);
-        mtrace('Context module: ' . $this->module);
-        mtrace('Context controller: ' . $this->controller);
-        mtrace('Context service: ' . $this->service);
-        mtrace('Context component: ' . $this->component);
-        mtrace('Context api: ' . $this->api);
-        mtrace('Context system: ' . $this->system);
-        mtrace('Context action: ' . $this->action);
-        mtrace('Context id: ' . $this->id);
+        mtrace('Context [[');
+        mtrace('path: ' . $path);
+        mtrace('method: ' . $this->method);
+        mtrace('app: ' . $this->app);
+        mtrace('module: ' . $this->module);
+        mtrace('handler: ' . $this->getType() . '::' . $this->getTypeName());
+        mtrace('action: ' . $this->action);
+        mtrace('id: ' . $this->id);
+        mtrace(']]');
+    }
+
+    public function isCore()
+    {
+        return $this->isCore;
+    }
+
+    public function isAjax()
+    {
+        return $this->isAjax;
+    }
+
+    public function isFileUpload()
+    {
+        return $this->isFileUpload;
+    }
+
+    public function isPost()
+    {
+        return ($this->method == 'POST');
+    }
+
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    public function getResultFormat()
+    {
+        return $this->resultFormat;
+    }
+
+    public function getContentType()
+    {
+        return $this->contentType;
     }
 
     public function getURL()
@@ -293,6 +362,11 @@ class MContext
     public function getType()
     {
         return ($this->controller ? 'controller' : ($this->api ? 'api' : ($this->service ? 'service' : ($this->component ? 'component' : ''))));
+    }
+
+    public function getTypeName()
+    {
+        return ($this->controller ?: ($this->api ? $this->service . " [{$this->system}]" : ($this->service ?: ($this->component ? : '?'))));
     }
 
     public function getAction()

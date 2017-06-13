@@ -86,7 +86,7 @@ class MController
 
     public function isPost()
     {
-        return \Manager::getRequest()->isPostBack();
+        return Manager::getContext()->isPost();
     }
 
     public function init()
@@ -109,13 +109,13 @@ class MController
         } else {
             try {
                 $this->action = $action;
-                if (MPage::isPostBack()) {
+                if ($this->isPost()) {
                     $actionPost = $action . 'Post';
                     if (method_exists($this, $actionPost)) {
                         $action = $actionPost;
                     }
                 }
-                mtrace('executing = ' . $action);
+                mtrace('executing action = ' . $action);
                 $method = new \ReflectionMethod(get_class($this), $action);
                 $params = $method->getParameters();
                 $values = array();
@@ -135,7 +135,7 @@ class MController
                     $this->setResult(new MRenderJSON(json_encode($result)));
                 }
             } catch (Exception $e) {
-                mdump('Controller::dispatch exception: ' . $e->getMessage());
+                mtrace('Controller::dispatch exception: ' . $e->getMessage());
                 if (\Manager::PROD()) {
                     $this->renderPrompt('error', $e->getMessage());
                 } else {
@@ -205,35 +205,6 @@ class MController
         return $this->data;
     }
 
-    private function getContent($controller, $view, $parameters = NULL)
-    {
-        if ($this->module != '') {
-            $path = Manager::getConf("srcPath.{$this->module}") . '/views/' . $controller . '/' . $view;
-        } else {
-            $path = Manager::getOptions('srcPath') . '/views/' . $controller . '/' . $view;
-        }
-
-        if (is_dir(Manager::getAppPath($path, $this->module))) {
-            $path .= '/' . $view;
-        }
-        if (file_exists($file = Manager::getAppPath($path . '.php', $this->module, $this->application))) { // try php view
-            mtrace('MController::getContent from ' . $file);
-            $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.xml', $this->module, $this->application))) { // php view not found, try xml view
-            mtrace('MController::getContent from ' . $file);
-            $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.js', $this->module, $this->application))) { // xml view not found, try js view
-            mtrace('MController::getContent from ' . $file);
-            $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.html', $this->module, $this->application))) { // js view not found, try html view
-            mtrace('MController::getContent from ' . $file);
-            $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.wiki', $this->module, $this->application))) { // html view not found, try wiki view
-            mtrace('MController::getContent from ' . $file);
-            $this->renderView($controller, $file, $parameters);
-        }
-    }
-
     private function getParameters($parameters = NULL)
     {
         if (!(is_object($parameters) || is_array($parameters))) {
@@ -251,70 +222,120 @@ class MController
         return $service;
     }
 
+    /**
+     * A partir do nome do controller e do nome da view, constrói o path completo do arquivo da view.
+     * Executa renderView para obter o conteúdo a ser passado para uma classe Result.
+     * @param $controller string Nome do controller
+     * @param $view string Nome da view
+     * @param null $parameters object Objeto Data
+     * @return string Conteudo a ser passado para uma classe Result
+     */
+    private function getContent($controller, $view, $parameters = NULL)
+    {
+        if ($this->module != '') {
+            $path = Manager::getConf("srcPath.{$this->module}") . '/views/' . $controller . '/' . $view;
+        } else {
+            $path = Manager::getOptions('srcPath') . '/views/' . $controller . '/' . $view;
+        }
+
+        if (is_dir(Manager::getAppPath($path, $this->module))) {
+            $path .= '/' . $view;
+        }
+        $content = '';
+        if (file_exists($file = Manager::getAppPath($path . '.php', $this->module, $this->application))) { // try php view
+            mtrace('MController::getContent from ' . $file);
+            $content = $this->renderView($controller, $file, $parameters);
+        } elseif (file_exists($file = Manager::getAppPath($path . '.xml', $this->module, $this->application))) { // php view not found, try xml view
+            mtrace('MController::getContent from ' . $file);
+            $content = $this->renderView($controller, $file, $parameters);
+        } elseif (file_exists($file = Manager::getAppPath($path . '.js', $this->module, $this->application))) { // xml view not found, try js view
+            mtrace('MController::getContent from ' . $file);
+            $content = $this->renderView($controller, $file, $parameters);
+        } elseif (file_exists($file = Manager::getAppPath($path . '.html', $this->module, $this->application))) { // js view not found, try html view
+            mtrace('MController::getContent from ' . $file);
+            $content = $this->renderView($controller, $file, $parameters);
+        } elseif (file_exists($file = Manager::getAppPath($path . '.wiki', $this->module, $this->application))) { // html view not found, try wiki view
+            mtrace('MController::getContent from ' . $file);
+            $content = $this->renderView($controller, $file, $parameters);
+        }
+        return $content;
+    }
+
+    /**
+     * Obtem o conteúdo da view e passa para uma classe Result:
+     * - MRenderJSON se for uma chamada Ajax
+     * - MRenderPage se for uma chamada não-Ajax (um GET via browser)
+     * @param string $viewName Nome da view. Se não informado, assume que é o nome da action.
+     * @param array $parameters Objeto Data.
+     */
+    public function render($viewName = '', $parameters = array())
+    {
+        $this->encryptData();
+        $content = $this->renderContent($viewName, $parameters);
+        if (Manager::isAjaxCall()) {
+            $this->setResult(new MRenderJSON($content));
+        } else {
+            $this->setResult(new MRenderPage($content));
+        }
+    }
+
+    /**
+     * Obtém o conteúdo da view.
+     * @param string $viewName Nome da view. Se não informado, assume que é o nome da action. Opcionalmente pode incluir o nome do controller no formato <controller>/<view>.
+     * @param array $parameters Objeto Data.
+     * @return string Conteúdo da View.
+     */
+    public function renderContent($viewName = '', $parameters = array())
+    {
+        $controller = strtolower($this->name);
+        $view = $viewName;
+        if ($view == '') {
+            $view = $this->action;
+        } else if (strpos($view, '/') !== false) {
+            $controller = substr($view, 0, strrpos($view, "/"));
+            $view = substr($view, strrpos($view, "/"));
+        }
+        $this->getParameters($parameters);
+        $content = $this->getContent($controller, $view, $this->data);
+        return $content;
+    }
+
+    /**
+     * Obtém o conteúdo da view a partir de uma aplicação. É esperado que a aplicação defina uma clase MView
+     * que estende de MBaseView, para processar o arquivo da view e retornar o contéudo a ser passado para
+     * uma classe Result.
+     * @param string $app Nome da aplicação.
+     * @param string $module Nome do módulo.
+     * @param string $controller Nome do controller.
+     * @param string $viewFile Arquivo da view.
+     * @param object $parameters Objeto data.
+     * @return string Conteúdo da View.
+     */
     public function renderAppView($app, $module, $controller, $viewFile, $parameters)
     {
         $view = Manager::getView($app, $module, $controller, $viewFile);
-        $view->setArgs($parameters);
-        $view->process($this, $parameters);
+        //$view->setArgs($parameters);
+        return $view->process($this, $parameters);
     }
 
+    /**
+     * Obtém o conteúdo da view para a aplicação/modulo corrente.
+     * @param string $controller Nome do controller.
+     * @param string $viewFile Arquivo da view.
+     * @param object $parameters Objeto data.
+     * @return string Conteúdo da View.
+     */
     public function renderView($controller, $viewFile, $parameters = array())
     {
-        $this->renderAppView($this->application, $this->module, $controller, $viewFile, $parameters);
+        return $this->renderAppView($this->application, $this->module, $controller, $viewFile, $parameters);
     }
 
-    public function renderPrompt($prompt)
-    {
-        /*
-        if (is_string($prompt)) {
-            $args = func_get_args();
-            $oPrompt = MPrompt::$prompt($args[1], $args[2], $args[3]);
-        } else {
-            $oPrompt = $prompt;
-        }
-        if (Manager::isAjaxCall()) {
-            $this->setResult(new MRenderPrompt($oPrompt));
-        } else {
-            Manager::getPage()->onLoad("manager.doPrompt('{$oPrompt->getId()}')");
-            $this->setResult(new MRenderPage($oPrompt));
-        }
-        */
-        if (is_string($prompt)) {
-            $args = func_get_args();
-            $prompt = new mPromptData($prompt, $args[1], $args[2], $args[3]);
-        }
-        if (class_exists('MHandlerPrompt')) {
-            MHandlerPrompt::handler($prompt);
-        }
-        $this->setResult(new MRenderPrompt($prompt));
-    }
-
-    public function renderJSON($json = '')
-    {
-        if (!Manager::isAjaxCall()) {
-            Manager::$ajax = new MAjax();
-            Manager::$ajax->initialize(Manager::getOptions('charset'));
-        }
-        $ajax = Manager::getAjax();
-        $ajax->setData($this->data);
-        $this->setResult(new MRenderJSON($json));
-    }
-
-    public function renderStream($stream)
-    {
-        $this->setResult(new MRenderBinary($stream, true, 'raw'));
-    }
-
-    public function renderBinary($stream, $fileName = '')
-    {
-        $this->setResult(new MRenderBinary($stream, true, $fileName));
-    }
-
-    public function renderDownload($file, $fileName = '')
-    {
-        $this->setResult(new MRenderBinary(null, false, $fileName, $file));
-    }
-
+    /**
+     * Instancia um template existente na pasta views e passa para a classe Result MRenderTemplate.
+     * @param string $templateName Nome do template.
+     * @param array $parameters Objeto Data.
+     * @throws ENotFoundException Caso o template não exista.
+     */
     public function renderTemplate($templateName, $parameters = array())
     {
         $controller = strtolower($this->name);
@@ -330,16 +351,49 @@ class MController
         }
     }
 
-    public function redirect($url)
+    /**
+     * Envia um objeto MPromptData para a classe Result MRenderPrompt. É esperado que a aplicação defina uma clase MView
+     * que estende de MBaseView, para pré-processar o objeto MPromptData e gerar seu conteúdo.
+     * @param string|object $type String com o tipo de prompt, ou um objeto que será processado pela aplicação para gerar o conteúdo do prompt.
+     * @param string $message Messagem do prompt.
+     * @param string $action1 Ação para o botão do prompt.
+     * @param string $action2 Ação para o botão do prompt.
+     * @throws ERuntimeException Caso o parâmetro type não seja um string ou objeto.
+     */
+    public function renderPrompt($type, $message = '', $action1 = '', $action2 = '')
     {
-        $this->setResult(new MRedirect(NULL, $url));
+        if (is_string($type)) {
+            $prompt = new MPromptData($type, $message, $action1, $action2);
+        } elseif (is_object($type)) {
+            $prompt = new MPromptData();
+            $prompt->setObject($type);
+        } else {
+            throw new ERuntimeException("Invalid parameter for MController::renderPrompt.");
+        }
+        $view = Manager::getView();
+        $view->processPrompt($prompt);
+        $this->setResult(new MRenderPrompt($prompt));
     }
 
-    public function notfound($msg)
+    /**
+     * Preenche o objeto MAjax com os dados do controller corrent (objeto Data) para seu usado pela classe Result MRenderJSON.
+     * @param string $json String JSON opcional.
+     */
+    public function renderJSON($json = '')
     {
-        $this->setResult(new MNotFound($msg));
+        if (!Manager::isAjaxCall()) {
+            Manager::$ajax = new MAjax();
+            Manager::$ajax->initialize(Manager::getOptions('charset'));
+        }
+        $ajax = Manager::getAjax();
+        $ajax->setData($this->data);
+        $this->setResult(new MRenderJSON($json));
     }
 
+    /**
+     * @param string $viewName
+     * @param array $parameters
+     */
     public function renderPartial($viewName = '', $parameters = array())
     {
         if (($view = $viewName) == '') {
@@ -350,60 +404,105 @@ class MController
         $this->getContent($controller, $view, $this->data);
     }
 
-    public function renderContent($viewName = '', $parameters = array())
-    {
-        $controller = strtolower($this->name);
-        $view = $viewName;
-        if ($view == '') {
-            $view = $this->action;
-        } else if (strpos($view, '/') !== false) {
-            $controller = substr($view, 0, strrpos($view, "/"));
-            $view = substr($view, strrpos($view, "/"));
-        }
-        $this->getParameters($parameters);
-        $this->getContent($controller, $view, $this->data);
-    }
-
-    public function renderFile(MFile $file)
-    {
-        Manager::getPage()->window($file->getURL());
-        $this->setResult(new MBrowserFile($file));
-    }
-
+    /**
+     * Processa o conteudo da view e abre nova janela/tab do browser através da classe Result MBrowserWindow.
+     * É esperado que a aplicação defina uma clase MView, que estende de MBaseView, que forneça a url a ser usada.
+     * @param string $viewName Nome da view.
+     * @param array $parameters Objeto Data.
+     */
     public function renderWindow($viewName = '', $parameters = array())
     {
         $this->renderContent($viewName, $parameters);
-        $this->setResult(new MBrowserWindow());
+        $view = Manager::getView();
+        $url = $view->processWindow();
+        $this->setResult(new MBrowserWindow($url));
     }
 
-    public function render($viewName = '', $parameters = array())
+    /**
+     * Download de arquivo via browser.
+     * @param MFile $file Arquivo a ser enviado para o browser.
+     */
+    public function renderFile(MFile $file)
     {
-        $this->encryptData();
-
-        $this->renderContent($viewName, $parameters);
-        if (Manager::isAjaxCall()) {
-            $this->setResult(new MRenderJSON());
-        } else {
-            $this->setResult(new MRenderPage());
-        }
+        //Manager::getPage()->window($file->getURL());
+        $this->setResult(new MBrowserFile($file));
     }
 
+    /**
+     * Renderiza um stream binário inline através da classe Result MRenderBinary.
+     * @param $stream Stream binário.
+     */
+    public function renderStream($stream)
+    {
+        $this->setResult(new MRenderBinary($stream, true, 'raw'));
+    }
+
+    /**
+     * Renderiza um stream binário inline através da classe Result MRenderBinary, opcionalmente usando um nome de arquivo.
+     * @param $stream Stream binário.
+     * @param string $fileName Nome do arquivo.
+     */
+    public function renderBinary($stream, $fileName = '')
+    {
+        $this->setResult(new MRenderBinary($stream, true, $fileName));
+    }
+
+    /**
+     * Download de arquivo através da classe Result MRenderBinary.
+     * @param string $filePath Path do arquivo para download.
+     * @param string $fileName Nome do arquivo a ser exibido para o usuário do browser.
+     */
+    public function renderDownload($filePath, $fileName = '')
+    {
+        $this->setResult(new MRenderBinary(null, false, $fileName, $filePath));
+    }
+
+    /**
+     * Prepara processo de envio via flush.
+     */
     public function prepareFlush()
     {
-        Manager::getFrontController()->response->prepareFlush();
+        Manager::getFrontController()->getResponse()->prepareFlush();
     }
 
+    /**
+     * Envia conteúdo para o browser via flush.
+     * @param $output Conteúdo a ser enviado.
+     */
     public function flush($output)
     {
-        Manager::getFrontController()->response->sendFlush($output);
+        Manager::getFrontController()->getResponse()->sendFlush($output);
     }
 
+    /**
+     * Envia conteúdo da view via flush.
+     * @param string $viewName Nome da view.
+     * @param array $parameters Objeto data.
+     */
     public function renderFlush($viewName = '', $parameters = array())
     {
         Manager::getPage()->clearContent();
         $this->renderContent($viewName, $parameters);
         $output = Manager::getPage()->generate();
         $this->flush($output);
+    }
+
+    /**
+     * Redireciona browser para outra URL.
+     * @param $url URL
+     */
+    public function redirect($url)
+    {
+        $this->setResult(new MRedirect(NULL, $url));
+    }
+
+    /**
+     * Renderiza erro de NotFound.
+     * @param $msg Mensagem a ser exibida.
+     */
+    public function notfound($msg)
+    {
+        $this->setResult(new MNotFound($msg));
     }
 
     protected function log($message, $operation = 'default')

@@ -29,6 +29,8 @@
       "core/classes/database",
       "core/classes/services",
       "core/classes/mvc",
+      "core/classes/results",
+      "core/classes/ddd",
       "core/classes/persistence",
       "core/classes/extensions",
       "core/classes/security",
