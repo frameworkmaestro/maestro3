@@ -424,7 +424,14 @@ class MFrontController
     public function addApplicationActions()
     {
         $actionsFile = Manager::getAppPath('conf/actions.php');
-        Manager::loadActions($actionsFile);
+        if (file_exists($actionsFile)) {
+            Manager::loadActions($actionsFile);
+        } else {
+            $actionsFile = Manager::getAppPath('conf/' . Manager::getConf('ui.actions'));
+            if (file_exists($actionsFile)) {
+                Manager::loadActions($actionsFile);
+            }
+        }
     }
 
     public function addApplicationContainer()

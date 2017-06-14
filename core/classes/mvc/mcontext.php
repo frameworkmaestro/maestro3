@@ -189,6 +189,30 @@ class MContext
             // check for controller/component/service
             $ctlr = $part;
             $controller = $service = $api = $system = '';
+            // first try via autoload
+            $vendorAutoload = Manager::getAppPath("vendor/autoload_manager.php", "", $this->app);
+            if (file_exists($vendorAutoload)) {
+                Manager::loadAutoload($vendorAutoload);
+                $ns = $this->app . '\\' . ($this->module ? $this->module . '\\' : '');
+                $try = $ns . 'controllers\\' . $part . 'controller';
+                if (class_exists($try)) {
+                    $controller = $part;
+                    $part = array_shift($pathParts);
+                } else {
+                    $try = $ns . 'services\\' . $part . 'service';
+                    if (class_exists($try)) {
+                        $service = $part;
+                        $part = array_shift($pathParts);
+                    } else {
+                        $try = $ns . 'components\\' . $part;
+                        if (class_exists($try)) {
+                            $component = $part;
+                            $part = array_shift($pathParts);
+                        }
+                    }
+                }
+            }
+            // then, try via namespaces
             while ($part && (($controller == '') && ($component == '') && ($service == ''))) {
                 $namespace = $this->getNamespace($this->app, $this->module, '', 'controllers');
                 $ns = $namespace . $part . 'Controller.php';
@@ -256,7 +280,6 @@ class MContext
         } else {
             throw new ENotFoundException(_M("App: [%s], Module: [%s], Controller: [%s] : Not found!", array($this->app, $this->module, $ctlr)));
         }
-
         $this->action = ($part ?: ($component == '' ? 'main' : ''));
         $this->actionTokens[0] = $this->controller;
         $this->actionTokens[1] = $this->action;

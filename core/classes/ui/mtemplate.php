@@ -19,7 +19,7 @@
  * Brief Class Description.
  * Complete Class Description.
  */
-class MTemplate extends MComponent
+class MTemplate //extends MComponent
 {
 
     public $engine;
@@ -30,7 +30,7 @@ class MTemplate extends MComponent
 
     public function __construct($path = '')
     {
-        parent::__construct();
+        //parent::__construct();
 
         $this->path = $path;
         //mdump('*template path = ' . $path);
