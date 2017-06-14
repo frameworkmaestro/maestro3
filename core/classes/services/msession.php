@@ -20,16 +20,27 @@ use Zend\Session;
 class MSession extends Zend\Session\SessionManager
 {
 
-    private $default;
+    private $container;
+
+    /**
+     * Cada app deve ter seu proprio container para a sessão.
+     * MSession constructor.
+     * @param string $app
+     */
+    public function __construct($app = '')
+    {
+        $container = $app ?: 'manager';
+        $this->container = $this->container($container);
+    }
 
     public function __get($var)
     {
-        return $this->default->$var;
+        return $this->container->$var;
     }
 
     public function __set($var, $value)
     {
-        $this->default->$var = $value;
+        $this->container->$var = $value;
     }
 
     public function init($sid = '')
@@ -39,9 +50,9 @@ class MSession extends Zend\Session\SessionManager
                 parent::setId($sid);
             }
             parent::start();
-            $this->default = $this->container('Manager');
-            if (!$this->default->timestamp) {
-                $this->default->timestamp = time();
+            //$this->default = $this->container('Manager');
+            if (!$this->container->timestamp) {
+                $this->container->timestamp = time();
             }
         } catch (EMException $e) {
             throw $e;
@@ -54,9 +65,9 @@ class MSession extends Zend\Session\SessionManager
         // If 0, we are not controling session
         if ($timeout != 0) {
             $timestamp = time();
-            $difftime = $timestamp - $this->default->timestamp;
+            $difftime = $timestamp - $this->container->timestamp;
             $this->timeout = ($difftime > ($timeout * 60));
-            $this->default->timestamp = $timestamp;
+            $this->container->timestamp = $timestamp;
             if ($this->timeout) {
                 $this->destroy();
                 if ($exception) {
@@ -76,12 +87,12 @@ class MSession extends Zend\Session\SessionManager
 
     public function get($var)
     {
-        return $this->default->$var;
+        return $this->container->$var;
     }
 
     public function set($var, $value)
     {
-        $this->default->$var = $value;
+        $this->container->$var = $value;
     }
 
     public function freeze()

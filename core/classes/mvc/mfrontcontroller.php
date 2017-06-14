@@ -58,17 +58,23 @@ class MFrontController
     public function handlerRequest($data = NULL)
     {
         try {
+            // inicializa o contexto
             $this->context = new MContext($this->request);
             Manager::getInstance()->baseURL = $this->request->getBaseURL(false);
             $app = $this->context->getApp();
             Manager::getInstance()->app = $app;
             $appPath = $this->context->isCore() ? Manager::getInstance()->coreAppsPath : Manager::getInstance()->appsPath;
             Manager::getInstance()->appPath = $appPath . '/' . $app;
+            // inicializa a sessão (por app)
+            Manager::getInstance()->setSession(new MSession($app));
+            Manager::getInstance()->getSession()->init(mrequest('sid'));
+            // trata dados
             $this->removeInputSlashes();
             $this->setData($data ?: $_REQUEST);
             mtrace('DTO Data:');
             mtrace($this->getData());
             $this->loadExtensions();
+            // cycle
             $this->init();
             do {
                 $this->prepare();

@@ -571,7 +571,7 @@ class Manager
 
     /**
      * Inicialização básica do Framework.
-     * Inicializa "variáveis globais", sessão, log e FrontController.
+     * Inicializa "variáveis globais", mensagens do framework, log e FrontController.
      */
     public static function initialize()
     {
@@ -581,8 +581,6 @@ class Manager
             self::$instance->javaServletContext = java_context()->getServletContext();
         }
         self::$instance->getObject('login');
-        self::$instance->session = new MSession();
-        self::$instance->session->init(mrequest('sid'));
         self::$msg = new MMessages(self::$instance->getOptions('language'));
         self::$msg->loadMessages();
         self::$instance->mode = self::$instance->getOptions("mode");
@@ -1002,6 +1000,17 @@ class Manager
         return self::$instance->session;
     }
 
+    /**
+     * Brief Description.
+     * Complete Description.
+     *
+     * @returns MSession desc
+     *
+     */
+    public static function setSession($session)
+    {
+        self::$instance->session = $session;
+    }
     /**
      * Brief Description.
      * Complete Description.

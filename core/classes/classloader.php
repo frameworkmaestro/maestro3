@@ -147,7 +147,9 @@ class ClassLoader
             $file = strtolower($file);
         }
         if (!file_exists($file)) {
-            mtracestack();
+            //mtracestack();
+            mtrace('ClassLoader: file doesnt exists - ' . $file);
+            return false;
         }
         require_once $file;
         return true;
