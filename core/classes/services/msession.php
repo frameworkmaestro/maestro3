@@ -20,6 +20,7 @@ use Zend\Session;
 class MSession extends Zend\Session\SessionManager
 {
 
+    private $app;
     private $container;
 
     /**
@@ -29,8 +30,8 @@ class MSession extends Zend\Session\SessionManager
      */
     public function __construct($app = '')
     {
-        $container = $app ?: 'manager';
-        $this->container = $this->container($container);
+        parent::__construct();
+        $this->app = $app ?: 'manager';
     }
 
     public function __get($var)
@@ -51,6 +52,7 @@ class MSession extends Zend\Session\SessionManager
             }
             parent::start();
             //$this->default = $this->container('Manager');
+            $this->container = $this->container($this->app);
             if (!$this->container->timestamp) {
                 $this->container->timestamp = time();
             }
