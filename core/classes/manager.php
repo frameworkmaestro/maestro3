@@ -1516,7 +1516,13 @@ class Manager
         $filename = self::getAppPath() . '/modules/' . $module . '/models/' . $name . '.php';
         if (file_exists($filename)) {
             $model = $module . '\\models\\' . $name;
-            return new $model($data);
+            if (class_exists($model)) {
+                return new $model($data);
+            } else {
+                $app = self::getApp();
+                $model = $app . '\\' . $module . '\\models\\' . $name;
+                return new $model($data);
+            }
         } else {
             return self::getBusiness($module, $name, $data);
         }
@@ -1612,6 +1618,13 @@ class Manager
     {
         $module = ($module) ?: static::getModule();
         $app = ($app) ?: static::getApp();
+        return static::getService($app, $module, $service);
+    }
+
+    public static function getAppService($service)
+    {
+        $module = '';
+        $app = static::getApp();
         return static::getService($app, $module, $service);
     }
 

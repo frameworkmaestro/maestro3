@@ -381,6 +381,52 @@ class MBusinessModel extends PersistentObject
     }
 
     /**
+     * Método auxiliar para montagem de grids de dados.
+     * Retorna objeto JSON relativo a um criteria ou um array de dados. Os atributos "page" (número da página, 0-based)
+     * e "rows" (número de linhas a serem retornadas) devem estar definidos em $this->data.
+     * @param basecriteria|array $source Fonte de dados.
+     * @param boolean $rowsOnly Se o JSON deve conter apenas os dados das linhas ou se deve conter também o total.
+     * @param integer total
+     * @return JSON object
+     */
+    public function gridDataAsJSON($source, $rowsOnly = false, $total = 0)
+    {
+        $data = Manager::getData();
+        $result = (object) [
+            'rows' => array(),
+            'total' => 0
+        ];
+        if ($source instanceof BaseCriteria) {
+            $criteria = $source;
+            $result->total = $criteria->asQuery()->count();
+            if ($data->page > 0) {
+                $criteria->range($data->page, $data->rows);
+            }
+            $source = $criteria->asQuery();
+        }
+        if ($source instanceof database\mquery) {
+            $result->rows = $source->asObjectArray();
+        } elseif (is_array($source)) {
+            $rows = array();
+            foreach ($source as $row) {
+                $r = new \StdClass();
+                foreach ($row as $c => $col) {
+                    $field = is_numeric($c) ? 'F' . $c : $c;
+                    $r->$field = "{$col}";
+                }
+                $rows[] = $r;
+            }
+            $result->rows = $rows;
+            $result->total = ($total != 0) ? $total : count($rows);
+        }
+        if ($rowsOnly) {
+            return MJSON::encode($result->rows);
+        } else {
+            return MJSON::encode($result);
+        }
+    }
+
+    /**
      * Novo OID, usado em operações de inserção.
      * @param string $idGenerator
      * @return integer
@@ -625,8 +671,8 @@ class MBusinessModel extends PersistentObject
             return;
         }
 
-        $blacklist = $this->getConfig('blacklist');
-        $whitelist = $this->getConfig('whitelist');
+        $blacklist = $this->_getConfig('blacklist');
+        $whitelist = $this->_getConfig('whitelist');
 
         if (!array_key_exists($role, $blacklist) &&
             !array_key_exists($role, $whitelist)
@@ -639,7 +685,7 @@ class MBusinessModel extends PersistentObject
 
     private function isWhiteListed($attribute, $role)
     {
-        $whitelist = $this->getConfig('whitelist');
+        $whitelist = $this->_getConfig('whitelist');
 
         if (empty($whitelist[$role])) {
             return true;
@@ -651,7 +697,7 @@ class MBusinessModel extends PersistentObject
 
     private function isBlackListed($attribute, $role)
     {
-        $blacklist = $this->getConfig('blacklist');
+        $blacklist = $this->_getConfig('blacklist');
         if (empty($blacklist[$role])) {
             return false;
         } else {
@@ -664,7 +710,7 @@ class MBusinessModel extends PersistentObject
      * @param $configName
      * @return array
      */
-    private function getConfig($configName)
+    private function _getConfig($configName)
     {
         if (!isset($this->config()[$configName])) {
             return [];
@@ -684,6 +730,7 @@ class MBusinessModel extends PersistentObject
             return;
         }
         $validator = new MDataValidator();
+        mtracestack();
         return $validator->validateModel($this, $exception);
     }
 

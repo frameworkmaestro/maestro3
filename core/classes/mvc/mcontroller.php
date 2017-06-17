@@ -273,7 +273,12 @@ class MController
         $this->encryptData();
         $content = $this->renderContent($viewName, $parameters);
         if (Manager::isAjaxCall()) {
-            $this->setResult(new MRenderJSON($content));
+            $type = strtoupper(Manager::getAjax()->getResponseType());
+            if (($type != 'JSON') || (Manager::getContext()->isFileUpload())) {
+                $this->setResult(new MRenderText($content));
+            } else {
+                $this->setResult(new MRenderJSON($content));
+            }
         } else {
             $this->setResult(new MRenderPage($content));
         }
@@ -315,7 +320,8 @@ class MController
     {
         $view = Manager::getView($app, $module, $controller, $viewFile);
         //$view->setArgs($parameters);
-        return $view->process($this, $parameters);
+        $content = $view->process($this, $parameters);
+        return $content;
     }
 
     /**
@@ -493,7 +499,9 @@ class MController
      */
     public function redirect($url)
     {
-        $this->setResult(new MRedirect(NULL, $url));
+        $view = Manager::getView();
+        $content = $view->processRedirect($url);
+        $this->setResult(new MRedirect(NULL, $content));
     }
 
     /**

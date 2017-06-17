@@ -17,46 +17,24 @@
  */
 
 /**
- * MNotFound.
- * Retorna template preenchido com dados sobre o erro.
- * Objeto JSON = {'id':'error', 'type' : 'page', 'data' : '$html'}
+ * MRenderText.
+ * Retorna um texto (e.g. html) com o resultado do processamento de uma chamada Ajax.
  */
-class MNotFound extends MResult
+class MRenderText extends MResult
 {
 
-    private $message;
-
-    public function __construct($message = '')
+    public function __construct($content = '')
     {
+        mtrace('Executing MRenderTEXT');
         parent::__construct();
-        $this->message = $message;
-    }
-
-    public function getMessage()
-    {
-        return $this->message;
+        $this->content = $content;
     }
 
     public function apply($request, $response)
     {
-        $response->setStatus(MStatusCode::NOT_FOUND);
-        $format = $request->getFormat();
-        try {
-            $template = new MTemplate();
-            $template->context('result', $this);
-            $errorHtml = MTemplateLocator::fetch($template, 'errors', '404.html');//$template->fetch("errors/{$language}/404.html");
-            if ($request->isAjax()) {
-                $this->ajax->setId('error');
-                $this->ajax->setType('page');
-                $this->ajax->setData($errorHtml);
-                $out = $this->ajax->returnData();
-            } else {
-                $out = $errorHtml;
-            }
-            $response->setOut($out);
-        } catch (EMException $e) {
-
-        }
+        $this->nocache($response);
+        $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
+        $response->setOut($this->content);
     }
-}
 
+}

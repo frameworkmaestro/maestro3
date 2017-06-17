@@ -51,21 +51,29 @@ class MLogin
         return $this->login == $user->getLogin();
     }
 
-    public function setUser(PersistentObject $user)
-    {
+    public function setUser($user) {
         $this->login = $user->getLogin();
-        $this->setProfile($user, $user->getProfile());
+        if (method_exists($user,'getForRegisterLogin')) {
+            $user->getForRegisterLogin();
+        }
+        if (method_exists($user,'getProfile')) {
+            $this->profile = $user->getProfile();
+        }
+        $this->name = $user->getName();
+        $this->idUser = $user->getId();
+        $this->setGroups($user->getArrayGroups());
+        $this->setRights($user->getRights());
         $this->weakPass = $user->weakPassword();
         $this->weakPass = false;
     }
 
-    public function setProfile($user, $profile)
-    {
-        $this->profile = $profile;
-        $this->name = $user->getName();
-        $this->idUser = $user->getId();
-        $this->setGroups($user->getArrayGroups($profile));
-        $this->setRights($user->getRights($profile));
+    public function getUser() {
+        if ($this->idUser) {
+            $user = Manager::getModelMAD('user');
+            $user->getById($this->idUser);
+            return $user;
+        }
+        return NULL;
     }
 
     public function getLogin()
@@ -161,11 +169,6 @@ class MLogin
     {
         $group = 'ADMIN' . strtoupper($module);
         return array_key_exists($group, $this->groups);
-    }
-
-    public function getUser()
-    {
-        return Manager::getModelMAD('user', $this->idUser);
     }
 
 }

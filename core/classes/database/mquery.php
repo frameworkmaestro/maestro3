@@ -59,7 +59,7 @@ class MQuery
     public function __construct()
     {
         $this->eof = $this->bof = true;
-        $this->result = array();
+        $this->result = null;
         $this->fetched = false;
         $this->row = -1;
         $this->fetchStyle = \Manager::getOptions('fetchStyle') ?: \FETCH_NUM;
@@ -77,7 +77,7 @@ class MQuery
         $msql = new MSQL('count(*) as CNT', "({$select}) countQuery");
         $msql->parameters = $this->msql->parameters;
         $result = $this->db->query($msql);
-        return $result[0][0];
+        return ($this->fetchStyle == \FETCH_ASSOC) ? $result[0]['CNT'] : $result[0][0] ;
     }
 
     public function fetchAll($fetchStyle = 0)
@@ -97,13 +97,12 @@ class MQuery
             $this->eof = $this->bof = false;
             $this->fetched = true;
         } else {
-            $this->result = NULL;
+            $this->result = [];
             $this->row = -1;
             $this->eof = $this->bof = true;
             $this->fetched = false;
         }
         $this->processErrors();
-
         return $this->result;
     }
 
@@ -296,14 +295,21 @@ class MQuery
     public function SetRowObject($object, $fieldNames = null)
     {
         if (is_null($fieldNames)) {
-            $fieldNames = $this->metadata['fieldname'];
+            if ($this->fetchStyle == \FETCH_ASSOC) {
+                $fieldNames = array_keys($this->result[0]);
+            } else {
+                $fieldNames = $this->metadata['fieldname'];
+            }
         }
-        $metaFieldNames = $this->metadata['fieldname'];
-        for ($i = 0; $i < count($fieldNames); $i++) {
-            $fieldName = $fieldNames[$i];
-            for ($j = 0; $j < count($metaFieldNames); $j++) {
-                if (strtoupper($fieldName) == $metaFieldNames[$j]) {
-                    $object->$fieldName = $this->result[$this->row][$j];
+        if ($this->fetchStyle == \FETCH_ASSOC) {
+            foreach ($fieldNames as $fieldName) {
+                $object->$fieldName = $this->result[$this->row][$fieldName];
+            }
+        } else {
+            for ($i = 0; $i < count($fieldNames); $i++) {
+                $fieldName = $fieldNames[$i];
+                if (strtoupper($fieldName) == strtoupper($fieldNames[$i])) {
+                    $object->$fieldName = $this->result[$this->row][$i];
                 }
             }
         }

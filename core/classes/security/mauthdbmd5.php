@@ -29,10 +29,11 @@ class MAuthDbMD5 extends MAuth
             $user->getByLogin($userId);
             mtrace("Authenticate userID = $userId");
             if ($user->validatePasswordMD5($challenge, $response)) {
-                $profile = $user->getProfileAtual();
-                $user->getByProfile($profile);
+                if (method_exists($user, 'getProfileAtual')) {
+                    $profile = $user->getProfileAtual();
+                    $user->getByProfile($profile);
+                }
                 $login = new MLogin($user);
-
                 if (Manager::getOptions("dbsession")) {
                     $session = Manager::getModelMAD('session');
                     $session->lastAccess($login);

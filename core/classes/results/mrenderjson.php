@@ -27,40 +27,23 @@ class MRenderJSON extends MResult
 
     public function __construct($content = '')
     {
+        mtrace('Executing MRenderJSON');
         parent::__construct();
         $id = 'json' . uniqid();
-        if ($content == '') {
-            if ($this->ajax->isEmpty()) {
-                $this->ajax->setId($id);
-                $this->ajax->setType('page');
-                //$data = $this->page->generate();
-                $this->ajax->setData($content);
-            } else {
-                $this->ajax->setResponseType('JSON');
-                $this->ajax->setId($id);
-                $this->ajax->setType('json');
-            }
-            $this->content = $this->ajax->returnData();
-        } else {
-            $this->ajax->setResponseType('JSON');
-            $this->ajax->setType('json');
-            $this->ajax->setData($content);
-            $this->content = $this->ajax->returnJSON();
-        }
+        $this->ajax->setResponseType('JSON');
+        $this->ajax->setId($id);
+        $this->ajax->setType('json');
+        $this->ajax->setData($content);
+        $this->content = $this->ajax->returnJSON();
     }
 
     public function apply($request, $response)
     {
         $this->nocache($response);
-        $type = strtoupper($this->ajax->getResponseType());
-        if ($type == 'JSON') {
-            if (Manager::getPage()->fileUpload) {
-                $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
-            } else {
-                $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
-            }
-        } else {
+        if (Manager::getPage()->fileUpload) {
             $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
+        } else {
+            $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
         }
         $response->setOut($this->content);
     }

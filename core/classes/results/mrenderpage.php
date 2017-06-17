@@ -25,6 +25,7 @@ class MRenderPage extends MResult
 
     public function __construct($content = '')
     {
+        mtrace('Executing MRenderPage');
         parent::__construct();
         //if ($content != '') {
         //    $this->page->setContent($content);

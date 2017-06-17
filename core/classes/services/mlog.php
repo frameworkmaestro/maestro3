@@ -136,7 +136,7 @@ class MLog
         $allow = $strict ? ($strict == $this->host) : true;
         $host = $this->getOption('peer') ?: $this->host;
         if ($this->port && $allow) {
-            if (!$this->socket) {
+            if (!is_resource($this->socket)) {
                 $this->socket = fsockopen($host, $this->port);
                 if (!$this->socket) {
                     $this->trace_socket = -1;

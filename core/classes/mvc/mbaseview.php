@@ -129,4 +129,10 @@ class MBaseView
         return $url;
     }
 
+    public function processRedirect($url)
+    {
+        return $url;
+    }
+
+
 }

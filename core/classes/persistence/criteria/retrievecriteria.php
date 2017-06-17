@@ -167,12 +167,23 @@ class RetrieveCriteria extends PersistentCriteria
             }
             $statement->setTables($tables);
         }
-        $joins = $this->getAssociationsJoin();
+
+        $hasJoin = false;
+        $joins = $this->getForcedJoin();
         if (count($joins)) {
+            $hasJoin = true;
             foreach ($joins as $join) {
                 $statement->join[] = $join;
             }
-        } else {
+        }
+        $joins = $this->getAssociationsJoin();
+        if (count($joins)) {
+            $hasJoin = true;
+            foreach ($joins as $join) {
+                $statement->join[] = $join;
+            }
+        }
+        if (!$hasJoin) {
             if (count($this->classes)) {
                 $sqlTables = array();
                 foreach ($this->classes as $class) {

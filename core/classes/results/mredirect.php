@@ -25,12 +25,11 @@ class MRedirect extends MResult
 {
 
     public $view;
-    public $url;
 
-    public function __construct($view, $url)
+    public function __construct($view, $content)
     {
         parent::__construct();
-        $this->url = $url;
+        $this->content = $content;
         $this->view = $view;
     }
 
@@ -38,11 +37,12 @@ class MRedirect extends MResult
     {
         $response->setStatus(MStatusCode::OK);
         if (Manager::isAjaxCall()) {
-            $this->ajax->setResponseType('JSON');
-            $this->ajax->setId($this->page->getName());
+            $id = 'redirect' . uniqid();
+            $this->ajax->setId($id);
             $this->ajax->setType('redirect');
-            $this->ajax->setData($this->url);
-            $this->content = $this->ajax->returnJSON();
+            $this->ajax->setData($this->content);
+            $this->ajax->setResponseType('JSON');
+            $this->content = $this->ajax->returnData();
             $response->setOut($this->content);
         } else {
             $response->setHeader('Location', 'Location:' . $this->url);

@@ -114,7 +114,8 @@ class Platform extends \Doctrine\DBAL\Platforms\MySqlPlatform
 
     public function fetchAll($query)
     {
-        return $query->msql->stmt->fetchAll($query->fetchStyle);
+        $stmt = $query->msql->stmt->getWrappedStatement();
+        return $stmt->fetchAll($query->fetchStyle);
     }
 
     public function fetchObject($query)

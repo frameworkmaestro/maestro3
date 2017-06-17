@@ -277,6 +277,14 @@ class PersistentCriteria extends BaseCriteria
             }
         }
 
+        return $join;
+    }
+
+    public function getForcedJoin()
+    {
+        // Build a join array to sql statement
+        $join = array();
+
         // Forced joins
         if (count($this->joins)) {
             foreach ($this->joins as $forcedJoin) {

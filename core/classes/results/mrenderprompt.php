@@ -33,13 +33,14 @@ class MRenderPrompt extends MRenderJSON
                 //$this->page->setName($control->getId());
                 //$this->page->setContent($control);
                 //$this->ajax->setId($this->page->getName());
-                $this->ajax->setId($prompt->getId());
+            $this->ajax->setId($prompt->getId());
                 $this->ajax->setType('prompt');
                 $this->ajax->setData($prompt->getContent());
             //} else { // renderiza como JSON
             //    $this->ajax->setData($prompt);
             //}
         }
+        $this->ajax->setResponseType('JSON');
         $this->content = $this->ajax->returnData();
     }
 

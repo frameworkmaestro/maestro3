@@ -55,9 +55,6 @@ class MPerms {
     }
 
     public function checkAccess($transaction, $access, $deny = false) {
-        //mdump($transaction);
-        //mdump('--------------------');
-        //mdump($access);
         $module = Manager::getModule();
         $ok = false;
         if (!is_numeric($access)) {
@@ -75,9 +72,6 @@ class MPerms {
                 $msg = _M('Acesso Negado') . "<br><br>\n" . "<center><big><i><font color=red>" . _M('Transação: ') .
                         "{$transaction}</font></i></big></center><br><br>\n" .
                         _M('Informe um login válido para acessar esta página.') . "<br>";
-                //$go = Manager::getCurrentURL();
-                //$error = MPrompt::error($msg, $go, $caption, '');
-                //Manager::prompt($error, $deny);
                 throw new ESecurityException($msg);
             }
         } else {

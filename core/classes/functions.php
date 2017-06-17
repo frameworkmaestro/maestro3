@@ -105,7 +105,7 @@ function mrequest($vars, $from = 'ALL', $order = '')
 function shutdown()
 {
     $error = error_get_last();
-    if ($error) var_dump($error);
+    //if ($error) mdump($error);
     Manager::errorHandler($error['type'], $error['message'], $error['file'], $error['line']);
     if ($error['type'] & (E_ALL & ~E_NOTICE & ~E_STRICT)) {
         if (Manager::isAjaxCall()) {

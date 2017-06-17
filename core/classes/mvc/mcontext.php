@@ -143,18 +143,24 @@ class MContext
      */
     private $url;
 
+    /**
+     * Request Path
+     * @var string
+     */
+    private $path;
+
     public function __construct($request)
     {
         $this->isCore = false;
         if (is_string($request)) {
-            $path = $request;
-            $this->url = $path;
+            $this->path = $request;
+            $this->url = $this->path;
         } else {
             $this->request = $request;
             if ($this->request->querystring != '') {
                 parse_str($this->request->querystring, $this->vars);
             }
-            $path = $this->request->getPathInfo();
+            $this->path = $this->request->getPathInfo();
             $this->url = $this->request->path;
             $this->method = $this->request->getMethod();
             $this->contentType = $this->request->getContentType();
@@ -162,7 +168,11 @@ class MContext
             $this->isAjax = Manager::isAjaxCall();
         }
         $this->isFileUpload = (mrequest('__ISFILEUPLOAD') == 'yes');
-        $pathParts = explode('/', $path);
+    }
+
+    public function defineContext()
+    {
+        $pathParts = explode('/', $this->path);
         $part = null;
         $component = '';
         $app = array_shift($pathParts);
@@ -278,7 +288,9 @@ class MContext
         } elseif ($component) {
             $this->component = $component;
         } else {
-            throw new ENotFoundException(_M("App: [%s], Module: [%s], Controller: [%s] : Not found!", array($this->app, $this->module, $ctlr)));
+            $msg = _M("App: [%s], Module: [%s], Controller: [%s] : Not found!", array($this->app, $this->module, $ctlr));
+            mtrace($msg);
+            throw new ENotFoundException($msg);
         }
         $this->action = ($part ?: ($component == '' ? 'main' : ''));
         $this->actionTokens[0] = $this->controller;
@@ -290,15 +302,15 @@ class MContext
                 $this->actionTokens[$i + 2] = $this->vars[$pathParts[$i]] = $pathParts[$i];
             }
         }
-        $this->id = $this->vars['item'] ?: $this->actionTokens[2];
+        $this->id = $_REQUEST['id'] ?: ($this->vars['item'] ?: $this->actionTokens[2]);
         if ($this->id !== '') {
             $_REQUEST['id'] = $this->id;
         }
         Manager::getInstance()->application = $this->app;
 
         mtrace('Context [[');
-        mtrace('path: ' . $path);
-        mtrace('method: ' . $this->method);
+        mtrace('path: ' . $this->path);
+        mtrace('method: ' . $this->method . ' [' . ($this->isAjax ? 'ajax' : 'browser') . ']');
         mtrace('app: ' . $this->app);
         mtrace('module: ' . $this->module);
         mtrace('handler: ' . $this->getType() . '::' . $this->getTypeName());
@@ -451,11 +463,8 @@ class MContext
 
     public function buildURL($action = '', $parameters = array())
     {
-        //mtrace('buildURL = ' . $action);
-        //mtrace($parameters);
         $app = Manager::getApp();
         $module = Manager::getModule();
-
         if ($action{0} == '@') {
             $url = Manager::getAppURL($app);
             $action = substr($action, 1);
@@ -468,36 +477,28 @@ class MContext
         } else {
             $url = Manager::getAppURL($app);
         }
-//mtrace('url = '. $url);
         $path = '';
-        //mtrace("============== buildURL ============");
-        //mtrace('*action = ' . $action);
-        if ($p = strpos($action, '/')) {
-            $index = substr($action, 0, $p);
-            $action = substr($action, $p + 1);
+        $parts = explode('/', $action);
+        $i = 0;
+        $n = count($parts);
+        if ($parts[$i] == $app) {
+            ++$i;
+            --$n;
+        }
+        if ($n == 3) { //module
+            $path = '/' . $parts[$i] . '/' . $parts[$i + 1] . '/' . $parts[$i + 2];
+        } elseif ($n == 2) {
+            $path = '/' . $parts[$i] . '/' . $parts[$i + 1];
+        } elseif ($n == 1) {
+            $path = '/' . $parts[$i];
         } else {
-            $index = ($module != '') ? $module : $app;
+            throw new EMException(_M('Error building URL. Action = ' . $action));
         }
-        //    mtrace('index = ' . $index);
-        //    mtrace('action = ' . $action);
-        //$action = str_replace('.','/', $action);
-        $path = '/' . $action;
-
-        // mtrace('*index = ' . $index);
-        //    mtrace('app = ' . $app);
-        if ($index != $app) {
-            $path = '/' . $index . $path;
-        }
-        //mtrace('*path = ' . $path);
-
         if (count($parameters)) {
             $query = http_build_query($parameters);
             $path .= ((strpos($path, '?') === false) ? '?' : '') . $query;
         }
-
         $url .= $path;
-        //mtrace('url = ' . $url);
-        //mtrace("============ end getURL ============");
         return $url;
     }
 
