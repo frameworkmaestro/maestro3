@@ -199,7 +199,30 @@ class MContext
             // check for controller/component/service
             $ctlr = $part;
             $controller = $service = $api = $system = '';
-            // first try via autoload
+            // first try via filemap
+            $fileMap = Manager::getAppPath("vendor/filemap.php", "", $this->app);
+            if (file_exists($fileMap)) {
+                $this->fileMap = require($fileMap);
+                $ns = ($this->module ? $this->module . '\\' : '');
+                $try = $ns . 'controllers\\' . $part . 'controller';
+                if ($this->fileMap[$try]) {
+                    $controller = $part;
+                    $part = array_shift($pathParts);
+                } else {
+                    $try = $ns . 'services\\' . $part . 'service';
+                    if ($this->fileMap[$try]) {
+                        $service = $part;
+                        $part = array_shift($pathParts);
+                    } else {
+                        $try = $ns . 'components\\' . $part;
+                        if ($this->fileMap[$try]) {
+                            $component = $part;
+                            $part = array_shift($pathParts);
+                        }
+                    }
+                }
+            }
+            // second try via autoload
             $vendorAutoload = Manager::getAppPath("vendor/autoload_manager.php", "", $this->app);
             if (file_exists($vendorAutoload)) {
                 Manager::loadAutoload($vendorAutoload);
@@ -347,6 +370,11 @@ class MContext
     public function getResultFormat()
     {
         return $this->resultFormat;
+    }
+
+    public function getFileMap()
+    {
+        return $this->fileMap;
     }
 
     public function getContentType()
