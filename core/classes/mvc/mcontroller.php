@@ -378,7 +378,16 @@ class MController
         }
         $view = Manager::getView();
         $view->processPrompt($prompt);
-        $this->setResult(new MRenderPrompt($prompt));
+        if (Manager::isAjaxCall()) {
+            $type = strtoupper(Manager::getAjax()->getResponseType());
+            if ($type != 'JSON') {
+                $this->setResult(new MRenderText($prompt->getContent()));
+            } else {
+                $this->setResult(new MRenderPrompt($prompt));
+            }
+        } else {
+            $this->setResult(new MRenderPage($prompt->getContent()));
+        }
     }
 
     /**
