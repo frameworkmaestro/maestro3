@@ -1644,15 +1644,22 @@ class Manager
             $s = self::$instance->controller->container->get($namespace);
 
         } else {
-            $namespace = self::getContext()->getNameSpace($app, $module, $class, 'services');
-            mtrace('namespace = ' . $namespace);
-            self::$instance->import($namespace);
-            self::$instance->logMessage("[Manager::getService  {$namespace}");
-            if (self::$instance->controllers[$namespace]) {
-                self::$instance->logMessage("[getService from cache]");
-                return self::$instance->controllers[$namespace];
+            if ($fileMap = self::$instance->getContext()->getFileMap()) {
+                $namespace = ($module ? $module . '\\' : '') . "services\\{$service}service";
+                mdump($namespace);
+                require_once($fileMap[$namespace]);
+                $s = new $class;
+            } else {
+                $namespace = self::getContext()->getNameSpace($app, $module, $class, 'services');
+                mtrace('namespace = ' . $namespace);
+                self::$instance->import($namespace);
+                self::$instance->logMessage("[Manager::getService  {$namespace}");
+                if (self::$instance->controllers[$namespace]) {
+                    self::$instance->logMessage("[getService from cache]");
+                    return self::$instance->controllers[$namespace];
+                }
+                $s = new $class();
             }
-            $s = new $class();
         }
         //$s = new $class();
         $s->setApplication($app);

@@ -730,7 +730,6 @@ class MBusinessModel extends PersistentObject
             return;
         }
         $validator = new MDataValidator();
-        mtracestack();
         return $validator->validateModel($this, $exception);
     }
 
