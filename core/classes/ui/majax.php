@@ -54,7 +54,8 @@ class MAjax
     {
         $this->data = '';
         $this->setEncoding($inputEncoding);
-        $this->setResponseType($_REQUEST['ajaxResponseType'] ?: (Manager::getContext()->getResultFormat() ?: 'TXT'));
+        //$this->setResponseType($_REQUEST['ajaxResponseType'] ?: (Manager::getContext()->getResultFormat() ?: 'TXT'));
+        $this->setResponseType(Manager::getContext()->getResultFormat() ?: 'TXT');
     }
 
     public function initialize($inputEncoding = 'UTF-8')

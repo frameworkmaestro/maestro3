@@ -100,9 +100,10 @@ class PersistentCriteria extends BaseCriteria
 
     public function addClass($className, $alias = '', $classMap = NULL)
     {
-        $className = trim(strtolower($className));
+        $className = trim($className);
         $fullClassName = $className;
         if (strrpos($className, '\\') === false) {
+//            $className = strtolower($className);
             $fullClassName = $this->classMap->getNamespace() . '\\' . $className;
         }
         if ((!isset($this->classes[$fullClassName])) || ($alias != '')) {

@@ -40,7 +40,7 @@ class PHPConfigLoader
     {
         //mtracestack();
         if (!isset($this->phpMaps[$className])) {
-            //mdump('before = ' . $className . ' - ' . $mapClassName);
+            mdump('before = ' . $className . ' - ' . $mapClassName);
             if ($mapClassName == '') {
                 $p = strrpos($className, '\\');
                 if ($p === false) {
@@ -48,13 +48,17 @@ class PHPConfigLoader
                 }
                 $q = strrpos($className, '\\persistence');
                 if ($q === false) {
+                    // not DDD: just add Map to classname
                     $mapClassName = substr($className, 0, $p) . "\\map" . substr($className, $p) . 'Map';
                 } else {
-                    //$mapClassName = $className  . 'Map';
+                    // DDD: map == class
                     $mapClassName = $className;
                 }
             }
-            //mdump('after = ' . $className . ' - ' . $mapClassName);
+            if(!class_exists($mapClassName)) {
+                $mapClassName = strtolower($mapClassName);
+            }
+            mdump('after = ' . $className . ' - ' . $mapClassName);
             //mtracestack();
             $this->phpMaps[$className] = $mapClassName::ORMMap();
             //mdump(array_keys($this->phpMaps));
@@ -65,11 +69,11 @@ class PHPConfigLoader
     public function getClassMap($className, $mapClassName = '')
     {
         $p = strrpos($className, '\\persistence');
-        if ($p === false) {
-            $className = strtolower(trim($className));
-        } else {
+        //if ($p === false) {
+        //    $className = strtolower(trim($className));
+        //} else {
             $className = trim($className);
-        }
+        //}
         if ($className{0} == '\\') {
             $className = substr($className, 1);
         }

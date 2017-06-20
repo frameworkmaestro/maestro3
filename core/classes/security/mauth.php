@@ -83,17 +83,19 @@ class MAuth
         $login = $session->getValue('__sessionLogin');
         $loginMiolo = $_SESSION['login']; // Miolo compatibility
         if ($loginMiolo) {
-            if (is_null($login)) { // se ainda não tem login no Maestro...
+            if (!($login instanceof MLogin)) { // se ainda não tem login no Maestro...
                 $user = Manager::getModelMAD('user');
                 $user->getByLogin($loginMiolo->id);
-                $profile = $user->getProfileAtual();
-                $user->getByProfile($profile);
+                if (method_exists($user, 'getProfileAtual')) {
+                    $profile = $user->getProfileAtual();
+                    $user->getByProfile($profile);
+                }
                 $login = new MLogin($user);
                 $this->setLogin($login);
                 Manager::logMessage("[LOGIN] Authenticated {$loginMiolo->idkey} from Miolo");
             }
         }
-        if ($login) {
+        if ($login instanceof MLogin) {
             if ($login->getLogin()) {
                 Manager::logMessage('[LOGIN] Using session login: ' . $login->getLogin());
                 $this->setLogin($login);
@@ -138,7 +140,9 @@ class MAuth
     private function updateSessionLogin()
     {
         Manager::getSession()->setValue('__sessionLogin', $this->login);
-        $this->login->id = !$this->login ?: $this->login->getLogin(); // Miolo compatibility
+        if ($this->login) {
+            $this->login->id = !$this->login ?: $this->login->getLogin(); // Miolo compatibility
+        }
         $_SESSION['login'] = $this->login; // Miolo compatibility
     }
 

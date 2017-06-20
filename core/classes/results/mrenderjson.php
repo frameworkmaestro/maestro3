@@ -19,32 +19,21 @@
 /**
  * MRenderJSON.
  * Retorna objeto JSON com o resultado do processamento.
- * Objeto JSON = {'id':'$pageName', 'type' : 'page', 'data' : '$html'} : conteúdo é HTML
- * Objeto JSON = {'id':'$pageName', 'type' : 'json', 'data' : '$json'} : conteúdo é um objeto JSON
  */
 class MRenderJSON extends MResult
 {
 
-    public function __construct($content = '')
+    public function __construct($json = '')
     {
         mtrace('Executing MRenderJSON');
         parent::__construct();
-        $id = 'json' . uniqid();
-        $this->ajax->setResponseType('JSON');
-        $this->ajax->setId($id);
-        $this->ajax->setType('json');
-        $this->ajax->setData($content);
-        $this->content = $this->ajax->returnJSON();
+        $this->content = $json;
     }
 
     public function apply($request, $response)
     {
         $this->nocache($response);
-        if (Manager::getPage()->fileUpload) {
-            $response->setHeader('Content-type', 'Content-type: text/html; charset=UTF-8');
-        } else {
-            $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
-        }
+        $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
         $response->setOut($this->content);
     }
 

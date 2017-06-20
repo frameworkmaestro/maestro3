@@ -17,36 +17,30 @@
  */
 
 /**
- * MNotFound.
- * Retorna objeto JSON ou emite header(Location).
- * Objeto JSON = {'id':'$pageName', 'type' : 'redirect', 'data' : '$url'}
+ * MRenderJSONText.
+ * Retorna objeto JSON com o resultado do processamento.
+ * Objeto JSON = {'id':'json$Id', 'type' : 'page', 'data' : '$content'} : conteúdo é HTML
  */
-class MRedirect extends MResult
+class MRenderJSONText extends MResult
 {
 
-    public $view;
-
-    public function __construct($view, $content)
+    public function __construct($content = '')
     {
+        mtrace('Executing MRenderJSONText');
         parent::__construct();
-        $this->content = $content;
-        $this->view = $view;
+        $id = 'json' . uniqid();
+        $this->ajax->setResponseType('JSON');
+        $this->ajax->setId($id);
+        $this->ajax->setType('page');
+        $this->ajax->setData($content);
+        $this->content = $this->ajax->returnData();
     }
 
     public function apply($request, $response)
     {
-        $response->setStatus(MStatusCode::OK);
-        if (Manager::isAjaxCall()) {
-            $id = 'redirect' . uniqid();
-            $this->ajax->setId($id);
-            $this->ajax->setType('redirect');
-            $this->ajax->setData($this->content);
-            $this->ajax->setResponseType('JSON');
-            $this->content = $this->ajax->returnData();
-            $response->setOut($this->content);
-        } else {
-            $response->setHeader('Location', 'Location:' . $this->content);
-        }
+        $this->nocache($response);
+        $response->setHeader('Content-type', 'Content-type: application/json; charset=UTF-8');
+        $response->setOut($this->content);
     }
 
 }

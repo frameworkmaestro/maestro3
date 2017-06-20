@@ -503,7 +503,7 @@ class MContext
             $url = Manager::getStaticURL();
             $action = substr($action, 1);
         } else {
-            $url = Manager::getAppURL($app);
+            $url = Manager::getAppURL($app,'', true);
         }
         $path = '';
         $parts = explode('/', $action);
@@ -513,7 +513,9 @@ class MContext
             ++$i;
             --$n;
         }
-        if ($n == 3) { //module
+        if ($n == 4) {
+            $path = '/' . $parts[$i] . '/' . $parts[$i + 1] . '/' . $parts[$i + 2] . '/' . $parts[$i + 3];
+        } elseif ($n == 3) { //module
             $path = '/' . $parts[$i] . '/' . $parts[$i + 1] . '/' . $parts[$i + 2];
         } elseif ($n == 2) {
             $path = '/' . $parts[$i] . '/' . $parts[$i + 1];
