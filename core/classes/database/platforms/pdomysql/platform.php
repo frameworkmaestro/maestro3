@@ -132,9 +132,9 @@ class Platform extends \Doctrine\DBAL\Platforms\MySqlPlatform
             }
         }
         if ($type == 'date') {
-            return $value->format('Y-m-d');
+            return $value ? $value->format('Y-m-d') : null;
         } elseif ($type == 'timestamp') {
-            return $value->format('Y-m-d H:i:s');
+            return $value ? $value->format('Y-m-d H:i:s') : null;
         } elseif (($type == 'decimal') || ($type == 'float')) {
             return str_replace(',', '.', $value);
         } elseif ($type == 'currency') {

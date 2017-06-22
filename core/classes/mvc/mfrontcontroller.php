@@ -131,6 +131,12 @@ class MFrontController
                         $data->{$obj} = (object)[];
                     }
                     $data->{$obj}->{$name} = $value;
+                } elseif (strpos($name, '_') !== false) {
+                    list($obj, $name) = explode('_', $name);
+                    if ($data->{$obj} == '') {
+                        $data->{$obj} = (object)[];
+                    }
+                    $data->{$obj}->{$name} = $value;
                 } else {
                     $data->{$name} = $value;
                 }

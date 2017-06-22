@@ -273,18 +273,15 @@ class MController
         $this->encryptData();
         $content = $this->renderContent($viewName, $parameters);
         if (Manager::isAjaxCall()) {
-            mdump('ajaxCall');
             if (Manager::getContext()->isFileUpload()) {
                 $this->setResult(new MRenderText($content));
             } else {
                 $type = strtoupper(Manager::getAjax()->getResponseType());
-                mdump($type);
                 if ($type == 'JSON') {
                     $json = json_encode($content);
                     $this->setResult(new MRenderJSON($json));
                 } else {
                     $method = Manager::getContext()->getMethod();
-                    mdump($method);
                     if ($method == 'GET') {
                         $this->setResult(new MRenderText($content));
                     } else {
