@@ -232,31 +232,26 @@ class MController
      */
     private function getContent($controller, $view, $parameters = NULL)
     {
-        if ($this->module != '') {
-            $path = Manager::getConf("srcPath.{$this->module}") . '/views/' . $controller . '/' . $view;
-        } else {
-            $path = Manager::getOptions('srcPath') . '/views/' . $controller . '/' . $view;
-        }
-
-        if (is_dir(Manager::getAppPath($path, $this->module))) {
-            $path .= '/' . $view;
-        }
+        $app = $this->getApplication();
+        $module = $this->getModule();
+        $base = Manager::getAppPath('', $module, $app);
+        $path = '/views/' . $controller . '/' . $view;
+        $extensions = ['.xml','.php','.html','.js','.wiki'];
         $content = '';
-        if (file_exists($file = Manager::getAppPath($path . '.php', $this->module, $this->application))) { // try php view
-            mtrace('MController::getContent from ' . $file);
-            $content = $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.xml', $this->module, $this->application))) { // php view not found, try xml view
-            mtrace('MController::getContent from ' . $file);
-            $content = $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.js', $this->module, $this->application))) { // xml view not found, try js view
-            mtrace('MController::getContent from ' . $file);
-            $content = $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.html', $this->module, $this->application))) { // js view not found, try html view
-            mtrace('MController::getContent from ' . $file);
-            $content = $this->renderView($controller, $file, $parameters);
-        } elseif (file_exists($file = Manager::getAppPath($path . '.wiki', $this->module, $this->application))) { // html view not found, try wiki view
-            mtrace('MController::getContent from ' . $file);
-            $content = $this->renderView($controller, $file, $parameters);
+        foreach($extensions as $extension) {
+            $fileName = $base . $path . $extension;
+            if (file_exists($fileName)) {
+                mtrace('MController::getContent ' . $fileName);
+                $content = $this->renderView($controller, $fileName, $parameters);
+                break;
+            } else {
+                $fileName = $base . Manager::getConf("srcPath.{$this->module}") . $path . $extension;
+                if (file_exists($fileName)) {
+                    mtrace('MController::getContent ' . $fileName);
+                    $content = $this->renderView($controller, $fileName, $parameters);
+                    break;
+                }
+            }
         }
         return $content;
     }
