@@ -416,6 +416,23 @@ class MController
     }
 
     /**
+     * Envia um objeto JSON como resposta para o cliente.
+     * Usado quando o cliente faz uma chamada AJAX diretamente e quer tratar o retorno.
+     * @param $status string 'ok' ou 'error'.
+     * @param $message string Mensagem para o cliente.
+     * @param string $code Codigo de erro a ser interpretado pelo cliente.
+     */
+    public function renderResponse($status, $message, $code = '000')
+    {
+        $response = (object)[
+            'status' => $status,
+            'message' => $message,
+            'code' => $code
+        ];
+        $this->setResult(new MRenderJSON(json_encode($response)));
+    }
+
+    /**
      * @param string $viewName
      * @param array $parameters
      */
