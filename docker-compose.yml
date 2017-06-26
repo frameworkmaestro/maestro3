@@ -1,0 +1,18 @@
+version: '3'
+services:
+  php-apache:
+    container_name: maestro3
+    build: "."
+    volumes:
+      - .:/var/www/html/
+    ports:
+      - "0.0.0.0:8888:80"
+  composer:
+    container_name: maestro-composer
+    image: composer/composer
+    volumes:
+      -  .:/maestro3
+    command: install
+    working_dir: /maestro3
+  #  container_name: maestro-mysql
+  #  image: mysql:8
