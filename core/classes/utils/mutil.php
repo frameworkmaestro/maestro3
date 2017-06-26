@@ -717,4 +717,44 @@ class MUtil
 
         return $text;
     }
+
+    public static function isAssoc($input) {
+        if (is_object($input)) return true;
+        if (array() === $input) return false;
+        return array_keys($input) !== range(0, count($input) - 1);
+    }
+
+    public static function php2js($input, $sequential_keys = false, $quotes = false, $beautiful_json = false)
+    {
+        $output = self::isAssoc($input) ? "{" : "[";
+        $count = 0;
+        if (is_object($input)) {
+            $arrayobj = new ArrayObject($input);
+            $n = $arrayobj->count();
+        } else {
+            $n = count($input);
+        }
+        foreach ($input as $key => $value) {
+            if (self::isAssoc($input) || (!self::isAssoc($input) && $sequential_keys == true)) {
+                $output .= ($quotes ? '"' : '') . $key . ($quotes ? '"' : '') . ' : ';
+            }
+            if (is_array($value) || is_object($value)) {
+                $output .= self::php2js($value, $sequential_keys, $quotes, $beautiful_json);
+            } else if (is_bool($value)) {
+                $output .= ($value ? 'true' : 'false');
+            } else if (is_numeric($value)) {
+                $output .= $value;
+            } else {
+                //$output .= ($quotes || $beautiful_json ? '"' : '') . $value . ($quotes || $beautiful_json ? '"' : '');
+                $output .= '"' . $value . '"';
+            }
+            if (++$count < $n) {
+                $output .= ', ';
+            }
+        }
+
+        $output .= self::isAssoc($input) ? "}" : "]";
+
+        return $output;
+    }
 }
