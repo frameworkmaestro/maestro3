@@ -322,7 +322,7 @@ class MContext
         $this->currentToken = 1 + ($this->module ? 1 : 0);
         if ($n = count($pathParts)) {
             for ($i = 0; $i < $n; $i++) {
-                $this->actionTokens[$i + 2] = $this->vars[$pathParts[$i]] = $pathParts[$i];
+                $this->actionTokens[$i + 2] = $this->vars[$i] = $pathParts[$i];
             }
         }
         $this->id = $_REQUEST['id'] ?: ($this->vars['item'] ?: $this->actionTokens[2]);
