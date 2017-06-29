@@ -355,6 +355,13 @@ class MQuery
     {
         $newResult = array();
         if ($rs = $this->getResult()) {
+
+            if (is_string($key)) {
+                $key = ($this->fetchStyle == \FETCH_NUM) ? $this->getColumnNumber(strToUpper($key)) : $key;
+            }
+            if (is_string($value)) {
+                $value = ($this->fetchStyle == \FETCH_NUM) ? $this->getColumnNumber(strToUpper($value)) : $value;
+            }
             foreach ($rs as $row) {
                 $sKey = trim($row[$key]);
                 $sValue = trim($row[$value]);
@@ -418,7 +425,11 @@ class MQuery
             foreach ($rs as $row) {
                 $aNode = array();
                 foreach ($node as $n) {
-                    $aNode[] = $row[$n];
+                    if ($this->fetchStyle == \FETCH_NUM) {
+                        $aNode[] = $row[$n];
+                    } else {
+                        $aNode[$n] = $row[$n];
+                    }
                 }
                 $s = '';
                 foreach ($group as $g) {
