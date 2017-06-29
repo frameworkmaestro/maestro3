@@ -122,7 +122,7 @@ class MFrontController
                 if (($name{0} == '_') || ($name == '_')) {
                     continue;
                 }
-                if (strpos($value, 'json:') === 0) {
+                if (is_string($value) && (strpos($value, 'json:') === 0)) {
                     $value = json_decode(substr($value, 5));
                 }
                 if (strpos($name, '::') !== false) {
