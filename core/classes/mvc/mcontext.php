@@ -188,13 +188,18 @@ class MContext
             }
             //
             $part = array_shift($pathParts);
-            // check for module
-            $namespace = $this->getNamespace($this->app, $part);
-            if ($part && Manager::existsNS($namespace)) {
-                $this->module = $part;
-                $part = array_shift($pathParts);
-            } else {
+            // check for explicit 'api' on url
+            if ($part == 'api') {
                 $this->module = '';
+                $part = array_shift($pathParts);
+            } else { // check for module
+                $namespace = $this->getNamespace($this->app, $part);
+                if ($part && Manager::existsNS($namespace)) {
+                    $this->module = $part;
+                    $part = array_shift($pathParts);
+                } else {
+                    $this->module = '';
+                }
             }
             // check for controller/component/service
             $ctlr = $part;
@@ -210,6 +215,7 @@ class MContext
                     $part = array_shift($pathParts);
                 } else {
                     $try = $ns . 'services\\' . $part . 'service';
+                    mdump($try);
                     if ($this->fileMap[$try]) {
                         $service = $part;
                         $part = array_shift($pathParts);
