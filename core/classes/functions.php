@@ -102,6 +102,27 @@ function mrequest($vars, $from = 'ALL', $order = '')
     }
 }
 
+/**
+ * Check for valid JSON string
+ * @param $x
+ * @return bool
+ */
+function is_json($x) {
+    if (!is_string($x) || trim($x) === "") return false;
+    return $x === 'null' || (
+            // Maybe an empty string, array or object
+            $x === '""' ||
+            $x === '[]' ||
+            $x === '{}' ||
+            // Maybe an encoded JSON string
+            $x[0] === '"' && substr($x, -1) === '"' ||
+            // Maybe a numeric array
+            $x[0] === '[' && substr($x, -1) === ']' ||
+            // Maybe an associative array
+            $x[0] === '{' && substr($x, -1) === '}'
+        ) && json_decode($x) !== null;
+}
+
 function shutdown()
 {
     $error = error_get_last();
