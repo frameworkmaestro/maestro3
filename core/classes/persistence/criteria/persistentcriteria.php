@@ -94,7 +94,8 @@ class PersistentCriteria extends BaseCriteria
 
     public function getMap($className)
     {
-        $className = trim(strtolower($className));
+//        $className = trim(strtolower($className));
+        $className = trim($className);
         return $this->maps[$className];
     }
 
@@ -313,20 +314,26 @@ class PersistentCriteria extends BaseCriteria
                 if ($this->isAlias($name)) {
                     $classMap = $this->getMapFromAlias($name);
                 } else {
-                    $currentClassMap = $classMap;
-                    $association = $this->getAssociation($name, $classMap)
-                        ?: $this->addAssociation($name, 'INNER', $classMap);
-                    if ($association == NULL) {
-                        return $association;
-                    }
-                    $associationMap = $association->getAssociationMap();
-                    // If association map is NULL something wrong with names
-                    if (isset($associationMap)) {
-                        $classMap = $associationMap->getToClassMap();
+                    $existentMap = $this->getMap($name);
+                    if ($existentMap instanceof ClassMap) {
+                        $classMap = $existentMap;
+                        break;
                     } else {
-                        $classMap = $this->getMap($name);
-                        if (!isset($classMap)) {
-                            throw new EPersistenceException($currentClassMap->getName() . ' Invalid association/alias name [' . $name . '] in attribute [' . $attribute . ']');
+                        $currentClassMap = $classMap;
+                        $association = $this->getAssociation($name, $classMap)
+                            ?: $this->addAssociation($name, 'INNER', $classMap);
+                        if ($association == NULL) {
+                            return $association;
+                        }
+                        $associationMap = $association->getAssociationMap();
+                        // If association map is NULL something wrong with names
+                        if (isset($associationMap)) {
+                            $classMap = $associationMap->getToClassMap();
+                        } else {
+                            $classMap = $this->getMap($name);
+                            if (!isset($classMap)) {
+                                throw new EPersistenceException($currentClassMap->getName() . ' Invalid association/alias name [' . $name . '] in attribute [' . $attribute . ']');
+                            }
                         }
                     }
                 }
