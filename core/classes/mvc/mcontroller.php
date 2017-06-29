@@ -132,7 +132,11 @@ class MController
                     if (!Manager::isAjaxCall()) {
                         Manager::$ajax = new MAjax(Manager::getOptions('charset'));
                     }
-                    $this->setResult(new MRenderJSON(json_encode($result)));
+                    if (!is_json($result)) {
+                        $result = json_encode($result);
+                    }
+                    mdump($result);
+                    $this->setResult(new MRenderJSON($result));
                 }
             } catch (Exception $e) {
                 mtrace('Controller::dispatch exception: ' . $e->getMessage());
