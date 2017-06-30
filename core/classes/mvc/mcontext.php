@@ -188,9 +188,12 @@ class MContext
             }
             //
             $part = array_shift($pathParts);
+            $controller = $service = $api = $system = '';
             // check for explicit 'api' on url
             if ($part == 'api') {
                 $this->module = '';
+                $part = array_shift($pathParts);
+                $service = $part;
                 $part = array_shift($pathParts);
             } else { // check for module
                 $namespace = $this->getNamespace($this->app, $part);
@@ -203,50 +206,53 @@ class MContext
             }
             // check for controller/component/service
             $ctlr = $part;
-            $controller = $service = $api = $system = '';
             // first try via filemap
-            $fileMap = Manager::getAppPath("vendor/filemap.php", "", $this->app);
-            if (file_exists($fileMap)) {
-                $this->fileMap = require($fileMap);
-                $ns = ($this->module ? $this->module . '\\' : '');
-                $try = $ns . 'controllers\\' . $part . 'controller';
-                if ($this->fileMap[$try]) {
-                    $controller = $part;
-                    $part = array_shift($pathParts);
-                } else {
-                    $try = $ns . 'services\\' . $part . 'service';
-                    mdump($try);
+            if (($controller == '') && ($component == '') && ($service == '')) {
+                $fileMap = Manager::getAppPath("vendor/filemap.php", "", $this->app);
+                if (file_exists($fileMap)) {
+                    $this->fileMap = require($fileMap);
+                    $ns = ($this->module ? $this->module . '\\' : '');
+                    $try = $ns . 'controllers\\' . $part . 'controller';
                     if ($this->fileMap[$try]) {
-                        $service = $part;
+                        $controller = $part;
                         $part = array_shift($pathParts);
                     } else {
-                        $try = $ns . 'components\\' . $part;
+                        $try = $ns . 'services\\' . $part . 'service';
+                        mdump($try);
                         if ($this->fileMap[$try]) {
-                            $component = $part;
+                            $service = $part;
                             $part = array_shift($pathParts);
+                        } else {
+                            $try = $ns . 'components\\' . $part;
+                            if ($this->fileMap[$try]) {
+                                $component = $part;
+                                $part = array_shift($pathParts);
+                            }
                         }
                     }
                 }
             }
             // second try via autoload
-            $vendorAutoload = Manager::getAppPath("vendor/autoload_manager.php", "", $this->app);
-            if (file_exists($vendorAutoload)) {
-                Manager::loadAutoload($vendorAutoload);
-                $ns = $this->app . '\\' . ($this->module ? $this->module . '\\' : '');
-                $try = $ns . 'controllers\\' . $part . 'controller';
-                if (class_exists($try)) {
-                    $controller = $part;
-                    $part = array_shift($pathParts);
-                } else {
-                    $try = $ns . 'services\\' . $part . 'service';
+            if (($controller == '') && ($component == '') && ($service == '')) {
+                $vendorAutoload = Manager::getAppPath("vendor/autoload_manager.php", "", $this->app);
+                if (file_exists($vendorAutoload)) {
+                    Manager::loadAutoload($vendorAutoload);
+                    $ns = $this->app . '\\' . ($this->module ? $this->module . '\\' : '');
+                    $try = $ns . 'controllers\\' . $part . 'controller';
                     if (class_exists($try)) {
-                        $service = $part;
+                        $controller = $part;
                         $part = array_shift($pathParts);
                     } else {
-                        $try = $ns . 'components\\' . $part;
+                        $try = $ns . 'services\\' . $part . 'service';
                         if (class_exists($try)) {
-                            $component = $part;
+                            $service = $part;
                             $part = array_shift($pathParts);
+                        } else {
+                            $try = $ns . 'components\\' . $part;
+                            if (class_exists($try)) {
+                                $component = $part;
+                                $part = array_shift($pathParts);
+                            }
                         }
                     }
                 }
