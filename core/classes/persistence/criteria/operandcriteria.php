@@ -28,14 +28,10 @@ class OperandCriteria extends PersistentOperand
 
     public function getSql()
     {
-        /*
-          $sql = $this->operand->getSqlStatement();
-          $sql->setDb($this->operand->getManager()->getConnection($this->operand->getClassMap()->getDatabase()));
-          return "(" . $sql->select() . ")";
-         *
-         */
         $this->operand->mergeAliases($this->criteria);
-        return "(" . $this->operand->getSql() . ")";
+        $alias = $this->operand->getAlias();
+        $this->operand->setAlias('');
+        return "(" . $this->operand->getSql() . ") " . ($alias ?: '');
     }
 
 }

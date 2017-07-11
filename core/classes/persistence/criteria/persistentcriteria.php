@@ -423,6 +423,11 @@ class PersistentCriteria extends BaseCriteria
         return $this;
     }
 
+    public function joinCriteria($criteria, $condition, $joinType = 'INNER')
+    {
+        $this->joins[] = array($this->classMap->getName(), $criteria, $condition, $joinType);
+    }
+
     public function getCriteria($op1, $operator = '', $op2 = NULL)
     {
         $operand1 = $this->getOperand($op1);

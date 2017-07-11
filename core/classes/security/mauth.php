@@ -60,7 +60,15 @@ class MAuth
 
     public function getLogin()
     {
-        return $this->login;
+        if ($this->login instanceof MLogin) {
+            return $this->login;
+        } else {
+            $login = Manager::getSession()->getValue('__sessionLogin');
+            if ($login instanceof MLogin) {
+                return $login;
+            }
+        }
+        return null;
     }
 
     public function getIdUser()
@@ -123,8 +131,12 @@ class MAuth
         if ($this->login instanceof MLogin) {
             return ($this->login->getLogin() != NULL);
         } else {
-            return false;
+            $login = Manager::getSession()->getValue('__sessionLogin');
+            if ($login instanceof MLogin) {
+                return ($login->getLogin() != NULL);
+            }
         }
+        return false;
     }
 
     public function logout($forced = '')
