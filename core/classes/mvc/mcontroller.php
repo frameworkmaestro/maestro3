@@ -135,7 +135,7 @@ class MController
                     if (!is_json($result)) {
                         $result = json_encode($result);
                     }
-                    mdump($result);
+                    //mdump($result);
                     $this->setResult(new MRenderJSON($result));
                 }
             } catch (Exception $e) {
