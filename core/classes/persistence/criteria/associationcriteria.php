@@ -35,7 +35,7 @@ class AssociationCriteria
 
     public function setCriteria($criteria)
     {
-        $thos->persistentCriteria = $criteria;
+        $this->persistentCriteria = $criteria;
     }
 
     public function getCriteria()
