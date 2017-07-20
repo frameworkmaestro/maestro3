@@ -73,6 +73,15 @@ return [
         'peer' => '127.0.0.1',
         'strict' => '127.0.0.1',
         'port' => 0,
+        'errorCodes' => [
+            E_ERROR,
+            E_WARNING,
+            E_PARSE,
+            E_RECOVERABLE_ERROR,
+            E_USER_ERROR,
+            E_COMPILE_ERROR,
+            E_CORE_ERROR
+        ],
     ],
     'cache' => [
         'type' => "php", // php, java, apc, memcache
