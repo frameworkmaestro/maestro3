@@ -68,6 +68,7 @@ return [
         'check' => true
     ],
     'logs' => [
+        'path' => Manager::getHome() . '/core/var/log',
         'level' => 2,
         'handler' => "socket",
         'peer' => '127.0.0.1',
