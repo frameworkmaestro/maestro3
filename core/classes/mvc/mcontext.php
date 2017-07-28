@@ -190,7 +190,9 @@ class MContext
             $part = array_shift($pathParts);
             $controller = $service = $api = $system = '';
             // check for explicit 'api' on url
+            $hasApi = false;
             if ($part == 'api') {
+                $hasApi = true;
                 $this->module = '';
                 $part = array_shift($pathParts);
                 $service = $part;
@@ -207,7 +209,7 @@ class MContext
             // check for controller/component/service
             $ctlr = $part;
             // first try via filemap
-            if (($controller == '') && ($component == '') && ($service == '')) {
+            if (($controller == '') && ($component == '') && (($service == '') || $hasApi)) {
                 $fileMap = Manager::getAppPath("vendor/filemap.php", "", $this->app);
                 if (file_exists($fileMap)) {
                     $this->fileMap = require($fileMap);
