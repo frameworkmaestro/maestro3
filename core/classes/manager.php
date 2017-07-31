@@ -1520,8 +1520,8 @@ class Manager
             if (class_exists($model)) {
                 return new $model($data);
             } else {
-                $app = self::getApp();
-                $model = $app . '\\' . $module . '\\models\\' . $name;
+                $namespace = self::$conf['mad']['namespace'];
+                $model = $namespace . '\\models\\' . $name;
                 return new $model($data);
             }
         } else {
