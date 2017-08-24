@@ -757,6 +757,15 @@ class Manager
         return (self::$instance->getOptions('homolog') === true);
     }
 
+    public static function AUDIT() {
+        $audit = self::getConf('audit');
+        return isset($audit) && $audit['enabled'] === true;
+    }
+
+    public static function getAuditors() {
+        return self::AUDIT() ? self::getConf('audit')['auditors'] : [];
+    }
+
     public static function errorHandler($errno, $errstr, $errfile, $errline)
     {
         $codes = self::$instance->getConf('logs.errorCodes');
