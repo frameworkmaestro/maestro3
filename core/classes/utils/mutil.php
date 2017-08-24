@@ -1,16 +1,16 @@
 <?php
-/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
- * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
- * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
+ * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou 
+ * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada 
  * pela Fundação do Software Livre (FSF); na versão 2 da Licença.
- * Este programa é distribuído na esperança que possa ser  útil,
+ * Este programa é distribuído na esperança que possa ser  útil, 
  * mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO a qualquer
- * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL
+ * MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU/GPL 
  * em português para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o título
  * "LICENCA.txt", junto com este programa, se não, acesse o Portal do Software
- * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a
+ * Público Brasileiro no endereço www.softwarepublico.gov.br ou escreva para a 
  * Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
@@ -34,7 +34,7 @@ class MUtil
      */
     public function NVL($value1, $value2)
     {
-        return ($value1 != NULL) ? $value1 : $value2;
+        return ($value1 != null) ? $value1 : $value2;
     }
 
     /**
@@ -50,7 +50,7 @@ class MUtil
      */
     public function ifNull($value1, $value2, $value3)
     {
-        return ($value1 == NULL) ? $value2 : $value3;
+        return ($value1 == null) ? $value2 : $value3;
     }
 
     /**
@@ -58,15 +58,16 @@ class MUtil
      * Complete Description.
      *
      * @param &$value1 (tipo) desc
-     * @param $value2 (tipo) desc
+     * @param $value2  (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
     public function setIfNull(&$value1, $value2)
     {
-        if ($value1 == NULL)
+        if ($value1 == null) {
             $value1 = $value2;
+        }
     }
 
     /**
@@ -74,15 +75,16 @@ class MUtil
      * Complete Description.
      *
      * @param &$value1 (tipo) desc
-     * @param $value2 (tipo) desc
+     * @param $value2  (tipo) desc
      *
      * @returns (tipo) desc
      *
      */
     public function setIfNotNull(&$value1, $value2)
     {
-        if ($value2 != NULL)
+        if ($value2 != null) {
             $value1 = $value2;
+        }
     }
 
     /**
@@ -109,6 +111,7 @@ class MUtil
 
     /**
      * Retorna o valor float da variável, com base no locale atual (definido via setlocale)
+     *
      * @param $value (string) valor a ser convertido
      * @returns (float) value
      *
@@ -117,7 +120,8 @@ class MUtil
     {
         $l = localeConv();
         $sign = (strpos($value, $l['negative_sign'] ?: '-') !== false) ? -1 : 1;
-        $value = strtr($value, $l['positive_sign'] . $l['negative_sign'] . '()', '    ');
+        $value = strtr($value, $l['positive_sign'] . $l['negative_sign'] . '()',
+            '    ');
         $value = str_replace(' ', '', $value);
         $value = str_replace($l['currency_symbol'] ?: '$', '', $value);
         $value = str_replace($l['mon_thousands_sep'] ?: ',', '', $value);
@@ -137,40 +141,177 @@ class MUtil
      */
     public function removeSpaceChars($value)
     {
-        $blanks = array("\r" => '', "\t" => '', "\n" => '', '&nbsp;' => '', ' ' => '');
+        $blanks = array(
+            "\r"     => '',
+            "\t"     => '',
+            "\n"     => '',
+            '&nbsp;' => '',
+            ' '      => ''
+        );
 
         return strtr($value, $blanks);
     }
 
     /**
      * Retira os caracteres especiais.
+     *
      * @param <type> $string
      */
-    public static function RemoveSpecialCharsAndNumbers($string, $whiteList = array())
-    {
-        $stringWithoutSpecialChars = static::RemoveSpecialChars($string, $whiteList);
+    public static function RemoveSpecialCharsAndNumbers(
+        $string,
+        $whiteList = array()
+    ) {
+        $stringWithoutSpecialChars = static::RemoveSpecialChars($string,
+            $whiteList);
         return trim(preg_replace('/\d+/', '', $stringWithoutSpecialChars));
     }
 
     private static function getSpecialCharsExceptAccents()
     {
         return array(
-            '#' => '', '$' => '', '%' => '', '&' => '', '@' => '', '.' => '',
-            '?' => '', '+' => '', '=' => '', '§' => '', '-' => '', '\\' => '',
-            '/' => '', '!' => '', '"' => '', "'" => '', '´' => '', '¿' => ''
+            '#'  => '',
+            '$'  => '',
+            '%'  => '',
+            '&'  => '',
+            '@'  => '',
+            '.'  => '',
+            '?'  => '',
+            '+'  => '',
+            '='  => '',
+            '§'  => '',
+            '-'  => '',
+            '\\' => '',
+            '/'  => '',
+            '!'  => '',
+            '"'  => '',
+            "'"  => '',
+            '´'  => '',
+            '¿'  => ''
         );
     }
 
     private static function getAccentedChars()
     {
-        $arrayStringsSpecialChars = array("À", "Á", "Â", "Ã", "Ä", "Å", "?", "á", "â", "ã", "ä", "å", "Ò", "Ó", "Ô", "Õ", "Ö", "Ø", "ò", "ó", "ô", "õ", "ö", "ø", "È", "É", "Ê", "Ë", "è", "é", "ê", "ë", "Ç", "ç", "Ì", "Í", "Î", "Ï", "ì", "í", "î", "ï", "Ù", "Ú", "Û", "Ü", "ù", "ú", "û", "ü", "ÿ", "Ñ", "ñ");
-        $arrayStringsNormalChars = array("A", "A", "A", "A", "A", "A", "a", "a", "a", "a", "a", "a", "O", "O", "O", "O", "O", "O", "o", "o", "o", "o", "o", "o", "E", "E", "E", "E", "e", "e", "e", "e", "C", "c", "I", "I", "I", "I", "i", "i", "i", "i", "U", "U", "U", "U", "u", "u", "u", "u", "y", "N", "n");
+        $arrayStringsSpecialChars = array(
+            "À",
+            "Á",
+            "Â",
+            "Ã",
+            "Ä",
+            "Å",
+            "?",
+            "á",
+            "â",
+            "ã",
+            "ä",
+            "å",
+            "Ò",
+            "Ó",
+            "Ô",
+            "Õ",
+            "Ö",
+            "Ø",
+            "ò",
+            "ó",
+            "ô",
+            "õ",
+            "ö",
+            "ø",
+            "È",
+            "É",
+            "Ê",
+            "Ë",
+            "è",
+            "é",
+            "ê",
+            "ë",
+            "Ç",
+            "ç",
+            "Ì",
+            "Í",
+            "Î",
+            "Ï",
+            "ì",
+            "í",
+            "î",
+            "ï",
+            "Ù",
+            "Ú",
+            "Û",
+            "Ü",
+            "ù",
+            "ú",
+            "û",
+            "ü",
+            "ÿ",
+            "Ñ",
+            "ñ"
+        );
+        $arrayStringsNormalChars = array(
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "a",
+            "a",
+            "a",
+            "a",
+            "a",
+            "a",
+            "O",
+            "O",
+            "O",
+            "O",
+            "O",
+            "O",
+            "o",
+            "o",
+            "o",
+            "o",
+            "o",
+            "o",
+            "E",
+            "E",
+            "E",
+            "E",
+            "e",
+            "e",
+            "e",
+            "e",
+            "C",
+            "c",
+            "I",
+            "I",
+            "I",
+            "I",
+            "i",
+            "i",
+            "i",
+            "i",
+            "U",
+            "U",
+            "U",
+            "U",
+            "u",
+            "u",
+            "u",
+            "u",
+            "y",
+            "N",
+            "n"
+        );
 
-        return array_combine($arrayStringsSpecialChars, $arrayStringsNormalChars);
+        return array_combine($arrayStringsSpecialChars,
+            $arrayStringsNormalChars);
     }
 
-    private static function replaceSpecialChars($string, $replacementCharMap, $whiteList = array())
-    {
+    private static function replaceSpecialChars(
+        $string,
+        $replacementCharMap,
+        $whiteList = array()
+    ) {
         while (list($character, $replacement) = each($replacementCharMap)) {
             if (!in_array($character, $whiteList)) {
                 $string = str_replace($character, $replacement, $string);
@@ -180,19 +321,25 @@ class MUtil
         return $string;
     }
 
-    public static function RemoveSpecialCharsExceptAccents($string, $whiteList = array())
-    {
-        return self::replaceSpecialChars($string, self::getSpecialCharsExceptAccents(), $whiteList);
+    public static function RemoveSpecialCharsExceptAccents(
+        $string,
+        $whiteList = array()
+    ) {
+        return self::replaceSpecialChars($string,
+            self::getSpecialCharsExceptAccents(), $whiteList);
     }
 
     /**
      * Retira os caracteres especiais.
+     *
      * @param <type> $string
      */
     public static function RemoveSpecialChars($string, $whiteList = array())
     {
-        $specialCharacters = array_merge(self::getSpecialCharsExceptAccents(), self::getAccentedChars());
-        return self::replaceSpecialChars($string, $specialCharacters, $whiteList);
+        $specialCharacters = array_merge(self::getSpecialCharsExceptAccents(),
+            self::getAccentedChars());
+        return self::replaceSpecialChars($string, $specialCharacters,
+            $whiteList);
     }
 
     /**
@@ -215,18 +362,20 @@ class MUtil
                     $aux = explode('.', $file);
 
                     if ($aux[0] != "") {
-                        if (file_exists($destinDir . "/" . $file) &&
-                            filetype($destinDir . "/" . $file) != "dir"
+                        if (file_exists($destinDir . "/" . $file)
+                            && filetype($destinDir . "/" . $file) != "dir"
                         ) {
                             unlink($destinDir . "/" . $file);
                         }
                         if (filetype($sourceDir . "/" . $file) == "dir") {
                             if (!file_exists($destinDir . "/" . $file)) {
                                 mkdir($destinDir . "/" . $file . "/");
-                                self::copyDirectory($sourceDir . "/" . $file, $destinDir . "/" . $file);
+                                self::copyDirectory($sourceDir . "/" . $file,
+                                    $destinDir . "/" . $file);
                             }
                         } else {
-                            copy($sourceDir . "/" . $file, $destinDir . "/" . $file);
+                            copy($sourceDir . "/" . $file,
+                                $destinDir . "/" . $file);
                         }
                     }
                 }
@@ -240,22 +389,22 @@ class MUtil
      * Esta funcao remove recursivamente o diretorio e todo o conteudo existente dentro dele
      *
      * @param $directory (string) Diretorio a ser removido
-     * @param $empty (string)
+     * @param $empty     (string)
      *
      * @returns (string) value
      */
-    public function removeDirectory($directory, $empty = FALSE)
+    public function removeDirectory($directory, $empty = false)
     {
         if (substr($directory, -1) == '/') {
             $directory = substr($directory, 0, -1);
         }
 
         if (!file_exists($directory) || !is_dir($directory)) {
-            return FALSE;
+            return false;
         } elseif (is_readable($directory)) {
             $handle = opendir($directory);
 
-            while (FALSE !== ($item = readdir($handle))) {
+            while (false !== ($item = readdir($handle))) {
                 if ($item != '.' && $item != '..') {
                     $path = $directory . '/' . $item;
 
@@ -269,14 +418,14 @@ class MUtil
 
             closedir($handle);
 
-            if ($empty == FALSE) {
+            if ($empty == false) {
                 if (!rmdir($directory)) {
-                    return FALSE;
+                    return false;
                 }
             }
         }
 
-        return TRUE;
+        return true;
     }
 
     /**
@@ -288,7 +437,7 @@ class MUtil
      */
     static public function getSystemTempDir()
     {
-        $tempFile = tempnam(md5(uniqid(rand(), TRUE)), '');
+        $tempFile = tempnam(md5(uniqid(rand(), true)), '');
         if ($tempFile) {
             $tempDir = realpath(dirname($tempFile));
             unlink($tempFile);
@@ -304,14 +453,16 @@ class MUtil
 
         if (function_exists('memory_get_usage')) {
             return memory_get_usage();
-        } else if (substr(PHP_OS, 0, 3) == 'WIN') {
-            // Windows 2000 workaround
-
-            $output = array();
-            exec('pslist ' . getmypid(), $output);
-            return trim(substr($output[8], 38, 10));
         } else {
-            return '<b style="color: red;">no value</b>';
+            if (substr(PHP_OS, 0, 3) == 'WIN') {
+                // Windows 2000 workaround
+
+                $output = array();
+                exec('pslist ' . getmypid(), $output);
+                return trim(substr($output[8], 38, 10));
+            } else {
+                return '<b style="color: red;">no value</b>';
+            }
         }
     }
 
@@ -350,21 +501,22 @@ class MUtil
     /**
      * Searches the array recursively for a given value and returns the corresponding key if successful.
      *
-     * @param (string) $needle
-     * @param (array) $haystack
+     * @param  (string) $needle
+     * @param  (array) $haystack
+     *
      * @return (mixed) If found, returns the key, othreways FALSE.
      */
     public static function arraySearchRecursive($needle, $haystack)
     {
-        $found = FALSE;
-        $result = FALSE;
+        $found = false;
+        $result = false;
 
         foreach ($haystack as $k => $v) {
             if (is_array($v)) {
                 for ($i = 0; $i < count($v); $i++) {
                     if ($v[$i] === $needle) {
                         $result = $v[0];
-                        $found = TRUE;
+                        $found = true;
                         break;
                     }
                 }
@@ -374,7 +526,7 @@ class MUtil
                 }
             }
 
-            if ($found == TRUE) {
+            if ($found == true) {
                 break;
             }
         }
@@ -384,11 +536,12 @@ class MUtil
 
     /**
      * Função para ordenar um array de array por ordem das colunas passadas em um array
+     *
      * @param array $vetor : array de array que desejo ordernar
-     *                 exemplo: $vetor = array(array('a', 'b', 'c'), array('d', 'e', 'f'),...)
+     *                     exemplo: $vetor = array(array('a', 'b', 'c'), array('d', 'e', 'f'),...)
      * @param array $order : array com ordem das colunas de ordenação
-     *                 exemplo: $vetor = array(1,5,17,2,65,0)
-     * * @return array
+     *                     exemplo: $vetor = array(1,5,17,2,65,0)
+     *                     * @return array
      */
     public static function orderArrayByArray(array $vetor, array $order)
     {
@@ -408,7 +561,7 @@ class MUtil
      * Return an array of (or one, if indicated)  MFile objects from $_FILES
      * $files => $_FILES
      */
-    public static function parseFiles($id, $index = NULL)
+    public static function parseFiles($id, $index = null)
     {
         $array = array();
         if (count($_FILES)) {
@@ -436,19 +589,21 @@ class MUtil
             }
         }
         if (count($array)) {
-            return ($index !== NULL ? $array[$index] : $array);
+            return ($index !== null ? $array[$index] : $array);
         } else {
-            return NULL;
+            return null;
         }
     }
 
-    public static function arrayColumn($array, $key, $insert = NULL)
+    public static function arrayColumn($array, $key, $insert = null)
     {
         if (is_array($key) || !is_array($array)) {
             return $array;
         }
         if (is_null($insert)) {
-            $func = create_function('$e', 'return is_array($e) && array_key_exists("' . $key . '",$e) ? $e["' . $key . '"] : null;');
+            $func = create_function('$e',
+                'return is_array($e) && array_key_exists("' . $key
+                . '",$e) ? $e["' . $key . '"] : null;');
             return array_map($func, $array);
         } else {
             $return = array();
@@ -484,9 +639,10 @@ class MUtil
     /**
      * Adds a record at the beginning of the array.
      *
-     * @param (array) $array
-     * @param (mixed) $chave
-     * @param (mixed) $valor
+     * @param  (array) $array
+     * @param  (mixed) $chave
+     * @param  (mixed) $valor
+     *
      * @return (array) $array
      */
     public static function arrayInsert($array, $chave = null, $valor = null)
@@ -508,7 +664,8 @@ class MUtil
     {
         foreach ($arr2 as $key => $value) {
             if (array_key_exists($key, $arr1) && is_array($value)) {
-                $arr1[$key] = MUtil::arrayMergeOverwrite($arr1[$key], $arr2[$key]);
+                $arr1[$key] = MUtil::arrayMergeOverwrite($arr1[$key],
+                    $arr2[$key]);
             } else {
                 $arr1[$key] = $value;
             }
@@ -538,7 +695,8 @@ class MUtil
         $mult = $amount * $factor;
         $mult = $cf->toDecimal("$mult");
 
-        return ((strtolower($direction) == 'down') ? floor($mult) : ceil($mult)) / $factor;
+        return ((strtolower($direction) == 'down') ? floor($mult) : ceil($mult))
+            / $factor;
     }
 
     public static function roundDown($amount, $precision)
@@ -559,7 +717,9 @@ class MUtil
 
     /**
      * Função para verificar se todos os atributos de um objeto são nulos
+     *
      * @param type $object
+     *
      * @return true se o objeto tiver todos atributos nulos | false se, pelo menos, um atributo do objeto não for nulo
      */
     public static function isObjectNull($object)
@@ -577,7 +737,9 @@ class MUtil
 
     /**
      * Verifica se um endereço de e-mail é válido
+     *
      * @param string $email
+     *
      * @return boolean
      */
     public static function isEmailValido($email)
@@ -589,8 +751,10 @@ class MUtil
     /**
      * Recursive function to get an associative array of class properties by property name => ReflectionProperty() object
      * including inherited ones from extended classes
+     *
      * @param string $className Class name
-     * @param string $types Any combination of <b>public, private, protected, static</b>
+     * @param string $types     Any combination of <b>public, private, protected, static</b>
+     *
      * @return array
      */
     public static function getClassProperties($className, $types = 'public')
@@ -600,16 +764,28 @@ class MUtil
         $props_arr = array();
         foreach ($props as $prop) {
             $f = $prop->getName();
-            if ($prop->isPublic() and (stripos($types, 'public') === FALSE)) continue;
-            if ($prop->isPrivate() and (stripos($types, 'private') === FALSE)) continue;
-            if ($prop->isProtected() and (stripos($types, 'protected') === FALSE)) continue;
-            if ($prop->isStatic() and (stripos($types, 'static') === FALSE)) continue;
+            if ($prop->isPublic() and (stripos($types, 'public') === false)) {
+                continue;
+            }
+            if ($prop->isPrivate() and (stripos($types, 'private') === false)) {
+                continue;
+            }
+            if ($prop->isProtected() and (stripos($types, 'protected')
+                    === false)) {
+                continue;
+            }
+            if ($prop->isStatic() and (stripos($types, 'static') === false)) {
+                continue;
+            }
             $props_arr[$f] = $prop;
         }
         if ($parentClass = $ref->getParentClass()) {
-            $parent_props_arr = MUtil::getClassProperties($parentClass->getName(), $types);//RECURSION
-            if (count($parent_props_arr) > 0)
+            $parent_props_arr
+                = MUtil::getClassProperties($parentClass->getName(),
+                $types);//RECURSION
+            if (count($parent_props_arr) > 0) {
                 $props_arr = array_merge($parent_props_arr, $props_arr);
+            }
         }
         return $props_arr;
     }
@@ -626,7 +802,9 @@ class MUtil
 
     /**
      * Gera uma cadeia de bytes de forma randômica e a converte para uma string em formato hexadecimal.
+     *
      * @param Integer $length Tamanho em bytes da cadeia a ser gerada.
+     *
      * @return String Cadeia de bytes convertida para string em formato hexadecimal.
      * @link http://php.net/manual/en/function.openssl-random-pseudo-bytes.php
      */
@@ -640,26 +818,38 @@ class MUtil
 
     public static function getClientIP()
     {
-        if (getenv('HTTP_CLIENT_IP'))
+        if (getenv('HTTP_CLIENT_IP')) {
             $ip = getenv('HTTP_CLIENT_IP');
-        else if (getenv('HTTP_X_FORWARDED_FOR'))
-            $ip = getenv('HTTP_X_FORWARDED_FOR');
-        else if (getenv('HTTP_X_FORWARDED'))
-            $ip = getenv('HTTP_X_FORWARDED');
-        else if (getenv('HTTP_FORWARDED_FOR'))
-            $ip = getenv('HTTP_FORWARDED_FOR');
-        else if (getenv('HTTP_FORWARDED'))
-            $ip = getenv('HTTP_FORWARDED');
-        else if (getenv('REMOTE_ADDR'))
-            $ip = getenv('REMOTE_ADDR');
-        else
-            $ip = 'UNKNOWN';
+        } else {
+            if (getenv('HTTP_X_FORWARDED_FOR')) {
+                $ip = getenv('HTTP_X_FORWARDED_FOR');
+            } else {
+                if (getenv('HTTP_X_FORWARDED')) {
+                    $ip = getenv('HTTP_X_FORWARDED');
+                } else {
+                    if (getenv('HTTP_FORWARDED_FOR')) {
+                        $ip = getenv('HTTP_FORWARDED_FOR');
+                    } else {
+                        if (getenv('HTTP_FORWARDED')) {
+                            $ip = getenv('HTTP_FORWARDED');
+                        } else {
+                            if (getenv('REMOTE_ADDR')) {
+                                $ip = getenv('REMOTE_ADDR');
+                            } else {
+                                $ip = 'UNKNOWN';
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return $ip;
     }
 
     /**
      * Pega a hora corrente em milisegundos.
+     *
      * @return float Hora corrente em milisegundos.
      */
     public static function getCurrentTimeInMilliseconds()
@@ -669,7 +859,9 @@ class MUtil
 
     /**
      * Gera valores booleanos de acordo com a probabilidade informada.
+     *
      * @param float $trueChance Probabilidade de gerar um true;
+     *
      * @return bool
      * @throws Exception
      */
@@ -686,6 +878,7 @@ class MUtil
     /**
      *
      * @param $value
+     *
      * @return null|string
      */
     public static function zeroOrOneToSorN($value)
@@ -696,7 +889,7 @@ class MUtil
             case 1:
                 return 'S';
             default:
-                return NULL;
+                return null;
         }
     }
 
@@ -718,43 +911,38 @@ class MUtil
         return $text;
     }
 
-    public static function isAssoc($input) {
-        if (is_object($input)) return true;
-        if (array() === $input) return false;
-        return array_keys($input) !== range(0, count($input) - 1);
-    }
-
-    public static function php2js($input, $sequential_keys = false, $quotes = false, $beautiful_json = false)
+    /**
+     * Verifica se o array está vazio.
+     *
+     * @param $arrayToCheck array a ser verificada.
+     *
+     * @return bool Resultado da verificação.
+     */
+    public static function isEmptyArray($arrayToCheck)
     {
-        $output = self::isAssoc($input) ? "{" : "[";
-        $count = 0;
-        if (is_object($input)) {
-            $arrayobj = new ArrayObject($input);
-            $n = $arrayobj->count();
-        } else {
-            $n = count($input);
-        }
-        foreach ($input as $key => $value) {
-            if (self::isAssoc($input) || (!self::isAssoc($input) && $sequential_keys == true)) {
-                $output .= ($quotes ? '"' : '') . $key . ($quotes ? '"' : '') . ' : ';
-            }
-            if (is_array($value) || is_object($value)) {
-                $output .= self::php2js($value, $sequential_keys, $quotes, $beautiful_json);
-            } else if (is_bool($value)) {
-                $output .= ($value ? 'true' : 'false');
-            } else if (is_numeric($value)) {
-                $output .= $value;
-            } else {
-                //$output .= ($quotes || $beautiful_json ? '"' : '') . $value . ($quotes || $beautiful_json ? '"' : '');
-                $output .= '"' . $value . '"';
-            }
-            if (++$count < $n) {
-                $output .= ', ';
-            }
+        if (!$arrayToCheck) {
+            return true;
         }
 
-        $output .= self::isAssoc($input) ? "}" : "]";
+        if (!is_array($arrayToCheck)) {
+            return true;
+        }
 
-        return $output;
+        if (count($arrayToCheck) == 0) {
+            return true;
+        }
+        return false;
     }
 }
+
+class MDummy
+{
+
+}
+
+class MDataObject
+{
+
+}
+
+?>
