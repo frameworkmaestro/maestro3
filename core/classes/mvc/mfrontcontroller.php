@@ -117,6 +117,7 @@ class MFrontController
         // se for o $_REQUEST, converte para objeto
         $valid = (is_object($value)) || (is_array($value) && count($value));
         if ($valid) {
+            mdump($value);
             foreach ($value as $name => $value) {
 
                 if (($name{0} == '_') || ($name == '_')) {
@@ -132,7 +133,10 @@ class MFrontController
                     }
                     $data->{$obj}->{$name} = $value;
                 } elseif (strpos($name, '_') !== false) {
-                    list($obj, $name) = explode('_', $name);
+                    list($obj, $name, $extra) = explode('_', $name);
+                    if ($name == '') {
+                        $name = $extra;
+                    }
                     if ($data->{$obj} == '') {
                         $data->{$obj} = (object)[];
                     }
