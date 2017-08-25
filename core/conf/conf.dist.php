@@ -73,7 +73,7 @@ return [
         'handler' => "socket",
         'peer' => '127.0.0.1',
         'strict' => '127.0.0.1',
-        'port' => 0,
+        'port' => 9999,
         'errorCodes' => [
             E_ERROR,
             E_WARNING,
