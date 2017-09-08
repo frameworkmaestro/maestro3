@@ -58,7 +58,7 @@ class MUtil
      * Complete Description.
      *
      * @param &$value1 (tipo) desc
-     * @param $value2  (tipo) desc
+     * @param $value2 (tipo) desc
      *
      * @returns (tipo) desc
      *
@@ -75,7 +75,7 @@ class MUtil
      * Complete Description.
      *
      * @param &$value1 (tipo) desc
-     * @param $value2  (tipo) desc
+     * @param $value2 (tipo) desc
      *
      * @returns (tipo) desc
      *
@@ -142,11 +142,11 @@ class MUtil
     public function removeSpaceChars($value)
     {
         $blanks = array(
-            "\r"     => '',
-            "\t"     => '',
-            "\n"     => '',
+            "\r" => '',
+            "\t" => '',
+            "\n" => '',
             '&nbsp;' => '',
-            ' '      => ''
+            ' ' => ''
         );
 
         return strtr($value, $blanks);
@@ -160,7 +160,8 @@ class MUtil
     public static function RemoveSpecialCharsAndNumbers(
         $string,
         $whiteList = array()
-    ) {
+    )
+    {
         $stringWithoutSpecialChars = static::RemoveSpecialChars($string,
             $whiteList);
         return trim(preg_replace('/\d+/', '', $stringWithoutSpecialChars));
@@ -169,24 +170,24 @@ class MUtil
     private static function getSpecialCharsExceptAccents()
     {
         return array(
-            '#'  => '',
-            '$'  => '',
-            '%'  => '',
-            '&'  => '',
-            '@'  => '',
-            '.'  => '',
-            '?'  => '',
-            '+'  => '',
-            '='  => '',
-            '§'  => '',
-            '-'  => '',
+            '#' => '',
+            '$' => '',
+            '%' => '',
+            '&' => '',
+            '@' => '',
+            '.' => '',
+            '?' => '',
+            '+' => '',
+            '=' => '',
+            '§' => '',
+            '-' => '',
             '\\' => '',
-            '/'  => '',
-            '!'  => '',
-            '"'  => '',
-            "'"  => '',
-            '´'  => '',
-            '¿'  => ''
+            '/' => '',
+            '!' => '',
+            '"' => '',
+            "'" => '',
+            '´' => '',
+            '¿' => ''
         );
     }
 
@@ -311,7 +312,8 @@ class MUtil
         $string,
         $replacementCharMap,
         $whiteList = array()
-    ) {
+    )
+    {
         while (list($character, $replacement) = each($replacementCharMap)) {
             if (!in_array($character, $whiteList)) {
                 $string = str_replace($character, $replacement, $string);
@@ -324,7 +326,8 @@ class MUtil
     public static function RemoveSpecialCharsExceptAccents(
         $string,
         $whiteList = array()
-    ) {
+    )
+    {
         return self::replaceSpecialChars($string,
             self::getSpecialCharsExceptAccents(), $whiteList);
     }
@@ -389,7 +392,7 @@ class MUtil
      * Esta funcao remove recursivamente o diretorio e todo o conteudo existente dentro dele
      *
      * @param $directory (string) Diretorio a ser removido
-     * @param $empty     (string)
+     * @param $empty (string)
      *
      * @returns (string) value
      */
@@ -753,7 +756,7 @@ class MUtil
      * including inherited ones from extended classes
      *
      * @param string $className Class name
-     * @param string $types     Any combination of <b>public, private, protected, static</b>
+     * @param string $types Any combination of <b>public, private, protected, static</b>
      *
      * @return array
      */
@@ -933,6 +936,46 @@ class MUtil
         }
         return false;
     }
+
+    public static function isAssoc($input)
+    {
+        if (is_object($input)) return true;
+        if (array() === $input) return false;
+        return array_keys($input) !== range(0, count($input) - 1);
+    }
+
+    public static function php2js($input, $sequential_keys = false, $quotes = false, $beautiful_json = false)
+    {
+        $output = self::isAssoc($input) ? "{" : "[";
+        $count = 0;
+        if (is_object($input)) {
+            $arrayobj = new ArrayObject($input);
+            $n = $arrayobj->count();
+        } else {
+            $n = count($input);
+        }
+        foreach ($input as $key => $value) {
+            if (self::isAssoc($input) || (!self::isAssoc($input) && $sequential_keys == true)) {
+                $output .= ($quotes ? '"' : '') . $key . ($quotes ? '"' : '') . ' : ';
+            }
+            if (is_array($value) || is_object($value)) {
+                $output .= self::php2js($value, $sequential_keys, $quotes, $beautiful_json);
+            } else if (is_bool($value)) {
+                $output .= ($value ? 'true' : 'false');
+            } else if (is_numeric($value)) {
+                $output .= $value;
+            } else {
+                //$output .= ($quotes || $beautiful_json ? '"' : '') . $value . ($quotes || $beautiful_json ? '"' : '');
+                $output .= '"' . $value . '"';
+            }
+            if (++$count < $n) {
+                $output .= ', ';
+            }
+        }
+        $output .= self::isAssoc($input) ? "}" : "]";
+        return $output;
+    }
+
 }
 
 class MDummy
