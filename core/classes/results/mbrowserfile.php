@@ -32,6 +32,7 @@ class MBrowserFile extends MResult
             $this->ajax->setType('file');
             $this->ajax->setData($file->getURL());
         }
+        $this->ajax->setResponseType('JSON');
         $this->content = $this->ajax->returnData();
     }
 

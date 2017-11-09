@@ -447,9 +447,12 @@ class MFrontController
         if (file_exists($actionsFile)) {
             Manager::loadActions($actionsFile);
         } else {
-            $actionsFile = Manager::getAppPath('conf/' . Manager::getConf('ui.actions'));
-            if (file_exists($actionsFile)) {
-                Manager::loadActions($actionsFile);
+            $actions = Manager::getConf('ui.actions');
+            if ($actions != '') {
+                $actionsFile = Manager::getAppPath('conf/' . $actions);
+                if (file_exists($actionsFile)) {
+                    Manager::loadActions($actionsFile);
+                }
             }
         }
     }

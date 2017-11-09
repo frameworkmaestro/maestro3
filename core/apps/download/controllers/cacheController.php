@@ -18,6 +18,8 @@
 
 class CacheController extends MController
 {
+    public function init() {
+    }
 
     public function inline()
     {
