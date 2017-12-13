@@ -52,6 +52,9 @@ class MLog
         return array_key_exists($option, $conf) ? $conf[$option] : null;
     }
 
+    public function setLevel($level) {
+        $this->level = $level;
+    }
 
     public function setLog($logName)
     {
