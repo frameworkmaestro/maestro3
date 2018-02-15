@@ -67,13 +67,13 @@ class MLogin
         $this->weakPass = false;
     }
 
-    public function getUser() {
-        if ($this->idUser) {
-            $user = Manager::getModelMAD('user');
-            $user->getById($this->idUser);
-            return $user;
-        }
-        return NULL;
+    public function setProfile($user, $profile)
+    {
+        $this->profile = $profile;
+        $this->name = $user->getName();
+        $this->idUser = $user->getId();
+        $this->setGroups($user->getArrayGroups($profile));
+        $this->setRights($user->getRights($profile));
     }
 
     public function getLogin()
@@ -169,6 +169,32 @@ class MLogin
     {
         $group = 'ADMIN' . strtoupper($module);
         return array_key_exists($group, $this->groups);
+    }
+
+    public function getUser()
+    {
+        $cacheHit = isset($this->user)
+            && is_a($this->user,'PersistentObject')
+            && $this->user->getId() == $this->idUser;
+
+        if (!$cacheHit) {
+            $this->user = \Manager::getModelMAD('user', $this->idUser);
+        }
+
+        return $this->user;
+    }
+
+    /**
+     * Método usado para informar o que deve ser serializado.
+     * A propriedade user é ignorada para evitar problemas com a serialização antes do carregamento da classe.
+     * @return array
+     */
+    public function __sleep()
+    {
+        $vars = get_object_vars($this);
+        unset($vars['user']);
+
+        return array_keys($vars);
     }
 
 }

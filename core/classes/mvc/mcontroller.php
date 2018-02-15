@@ -107,46 +107,82 @@ class MController
                 throw new ERunTimeException(_M("App: [{$this->application}], Module: [{$this->module}], Controller: [{$this->name}] : action [{$action}] not found!"));
             }
         } else {
-            try {
-                $this->action = $action;
-                if ($this->isPost()) {
-                    $actionPost = $action . 'Post';
-                    if (method_exists($this, $actionPost)) {
-                        $action = $actionPost;
-                    }
-                }
-                mtrace('executing action = ' . $action);
-                $method = new \ReflectionMethod(get_class($this), $action);
-                $params = $method->getParameters();
-                $values = array();
-                foreach ($params as $param) {
-                    $value = $this->data->{$param->getName()};
-                    if (!$value && $param->isDefaultValueAvailable()) {
-                        $value = $param->getDefaultValue();
-                    }
-                    $values[] = $value;
-                }
-                $result = call_user_func_array([$this, $action], $values);
-
-                if (!$this->getResult()) {
-                    if (!Manager::isAjaxCall()) {
-                        Manager::$ajax = new MAjax(Manager::getOptions('charset'));
-                    }
-                    if (!is_json($result)) {
-                        $result = json_encode($result);
-                    }
-                    //mdump($result);
-                    $this->setResult(new MRenderJSON($result));
-                }
-            } catch (Exception $e) {
-                mtrace('Controller::dispatch exception: ' . $e->getMessage());
-                if (\Manager::PROD()) {
-                    $this->renderPrompt('error', $e->getMessage());
-                } else {
-                    $this->renderPrompt('error', "[<b>" . $this->name . '/' . $action . "</b>]" . $e->getMessage());
+            $this->action = $action;
+            if ($this->isPost()) {
+                $actionPost = $action . 'Post';
+                if (method_exists($this, $actionPost)) {
+                    $action = $actionPost;
                 }
             }
+            $this->callAction($action);
         }
+    }
+
+    private function callAction($action)
+    {
+        mtrace('executing = ' . $action);
+        try {
+            $method = new \ReflectionMethod(get_class($this), $action);
+            $params = $method->getParameters();
+            $values = array();
+            foreach ($params as $param) {
+                $value = $this->data->{$param->getName()};
+                if (!$value && $param->isDefaultValueAvailable()) {
+                    $value = $param->getDefaultValue();
+                }
+                $values[] = $value;
+            }
+            $result = call_user_func_array([$this, $action], $values);
+
+            if (!$this->getResult()) {
+                if (!Manager::isAjaxCall()) {
+                    Manager::$ajax = new MAjax(Manager::getOptions('charset'));
+                }
+                if (!is_json($result)) {
+                    $result = json_encode($result);
+                }
+                //mdump($result);
+                $this->setResult(new MRenderJSON($result));
+            }
+        } catch (\EModelException $e) {
+            $this->renderDefaultAlert($e->getMessage());
+        } catch (\EControllerException $e) {
+            $this->renderDefaultAlert($e->getMessage());
+        } catch (\ESecurityException $e) {
+            $this->renderAccessError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->renderUnexpectedError($e, $action);
+        }
+    }
+
+    private function renderDefaultAlert($msg)
+    {
+        mdump('Controller::dispatch exception: ' . $msg);
+        $this->renderPrompt('alert', $msg);
+    }
+
+    private function renderAccessError($msg)
+    {
+        mdump('Controller::dispatch exception: ' . $msg);
+        $this->renderPrompt('error', $msg, 'main/main');
+    }
+
+    private function renderUnexpectedError(\Exception $e, $action)
+    {
+        if (\Manager::PROD()) {
+            $this->renderPrompt('error', 'Ocorreu um erro inesperado!', 'main/main');
+        } else {
+            $this->renderPrompt('error', "[<b>" . $this->name . '/' . $action . "</b>]" . $e->getMessage());
+        }
+
+        $msg = "{$e->getFile()}({$e->getLine()}): {$e->getMessage()}";
+
+        if (Manager::getLogin()) {
+            $msg .= ' idUser = ' . Manager::getLogin()->getIdUser() . ', profile = ' . Manager::getLogin()->getProfile();
+        }
+
+        mdump('Controller::dispatch exception: ' . $e->getMessage());
+        \Manager::logError($msg);
     }
 
     /**
@@ -240,9 +276,9 @@ class MController
         $module = $this->getModule();
         $base = Manager::getAppPath('', $module, $app);
         $path = '/views/' . $controller . '/' . $view;
-        $extensions = ['.xml','.php','.html','.js','.wiki'];
+        $extensions = ['.xml', '.php', '.html', '.js', '.wiki'];
         $content = '';
-        foreach($extensions as $extension) {
+        foreach ($extensions as $extension) {
             $fileName = $base . $path . $extension;
             if (file_exists($fileName)) {
                 mtrace('MController::getContent ' . $fileName);

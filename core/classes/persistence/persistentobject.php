@@ -168,39 +168,35 @@ class PersistentObject
         $this->manager->handleLOBAttribute($this, $attribute, $value, $operation);
     }
 
-    public function getPKName($index = 0)
-    {
-        return $this->getClassMap()->getKeyAttributeName($index);
-    }
-
-    public function getOIDName()
-    {
+    public function getOIDName() {
         return $this->getPKName();
     }
 
-    public function getPKValue($index = 0)
-    {
+    public function getOIDValue() {
+        return $this->getPKValue();
+    }
+
+    public function getId() {
+        return $this->getPKValue();
+    }
+
+    public function getPKValue($index = 0) {
+
         $pk = $this->getPKName($index);
         return $this->get($pk);
     }
 
-    public function getOIDValue()
-    {
-        return $this->getPKValue();
+    public function getPKName($index = 0) {
+        $index = $index ?: 0;
+
+        return $this->getClassMap()->getKeyAttributeName($index);
     }
 
-    public function getId()
-    {
-        return $this->getPKValue();
-    }
-
-    public function getDatabaseName()
-    {
+    public function getDatabaseName() {
         return $this->getClassMap()->getDatabaseName();
     }
 
-    public function getColumnName($attributeName)
-    {
+    public function getColumnName($attributeName) {
         return $this->getClassMap()->getAttributeMap($attributeName)->getColumnName();
     }
 

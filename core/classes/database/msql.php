@@ -112,7 +112,11 @@ class MSQL
         $this->setOrderBy($orderBy);
         $this->setForUpdate($forUpdate);
         $this->join = null;
-        $this->parameters = array();
+        $this->columns = [];
+        $this->tables = [];
+        $this->orderBy = [];
+        $this->groupBy = [];
+        $this->parameters = [];
         $this->range = null;
         $this->db = null;
         $this->stmt = null;
@@ -135,6 +139,7 @@ class MSQL
             if (!$can) {
                 if ($c == ',') {
                     $tok = trim($tok);
+                    mdump('tok='. $tok);
                     $array[$tok] = $tok;
                     $tok = '';
                 } else {
@@ -421,7 +426,7 @@ class MSQL
 
             $sqlText = 'SELECT ' . ($this->distinct ? 'DISTINCT ' : '') . implode($this->columns, ',');
 
-            if ($this->tables != '') {
+            if (count($this->tables)) {
                 $sqlText .= ' FROM   ' . implode($this->tables, ',');
             }
 
@@ -429,7 +434,7 @@ class MSQL
                 $sqlText .= ' WHERE ' . $this->where;
             }
 
-            if ($this->groupBy != '') {
+            if (count($this->groupBy)) {
                 $sqlText .= ' GROUP BY ' . implode($this->groupBy, ',');
             }
 
@@ -437,7 +442,7 @@ class MSQL
                 $sqlText .= ' HAVING ' . $this->having;
             }
 
-            if ($this->orderBy != '') {
+            if (count($this->orderBy)) {
                 $sqlText .= ' ORDER BY ' . implode($this->orderBy, ',');
             }
         }

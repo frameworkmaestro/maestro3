@@ -1,5 +1,5 @@
 <?php
-/* Copyright [2011, 2013, 2017] da Universidade Federal de Juiz de Fora
+/* Copyright [2011, 2012, 2013] da Universidade Federal de Juiz de Fora
  * Este arquivo é parte do programa Framework Maestro.
  * O Framework Maestro é um software livre; você pode redistribuí-lo e/ou
  * modificá-lo dentro dos termos da Licença Pública Geral GNU como publicada
@@ -31,14 +31,14 @@ class MDatabase implements \IDataBase
         'sqlite3' => 'Doctrine\DBAL\Driver\SQLite3\Driver',
     );
     private static $_platformMap = array(
-        'pdo_mysql' => '\database\platforms\pdomysql\platform',
-        'pdo_sqlite' => '\database\platforms\pdosqlite\platform',
-        'pdo_pgsql' => '\database\platforms\pdopgsql\platform',
-        'oci8' => 'database\platforms\oci8\platform',
-        'oracle8' => 'database\platforms\oci8\platform',
-        'pdo_sqlsrv' => '\database\platforms\pdosqlsrv\platform',
-        'sqlsrv' => '\database\platforms\sqlsrv\platform',
-        'sqlite3' => '\database\platforms\sqlite3\platform',
+        'pdo_mysql' => '\database\platforms\PDOMySql\platform',
+        'pdo_sqlite' => '\database\platforms\PDOSqlite\platform',
+        'pdo_pgsql' => '\database\platforms\PDOPgSql\platform',
+        'oci8' => '\database\platforms\OCI8\platform',
+        'oracle8' => '\database\platforms\OCI8\platform',
+        'pdo_sqlsrv' => '\database\platforms\PDOSqlsrv\platform',
+        'sqlsrv' => '\database\platforms\SQLSrv\platform',
+        'sqlite3' => '\database\platforms\SQLite3\platform',
     );
     private $config;       // identifies db configuration in conf.php
     private $params;
@@ -48,7 +48,7 @@ class MDatabase implements \IDataBase
     private $platform;     // platform of current driver
     private $transaction;
     private $name;
-    private $ormLogger = NULL;
+    private $ormLogger = null;
     private $lastInsertId = 0;
 
     public function __construct($name = 'default')
@@ -93,6 +93,7 @@ class MDatabase implements \IDataBase
         $configuration = new DBAL\Configuration();
         $logger = new MSQLLogger($this);
         $configuration->setSQLLogger($logger);
+
         return DBAL\DriverManager::getConnection($this->config, $configuration);
     }
 
@@ -108,6 +109,7 @@ class MDatabase implements \IDataBase
         foreach ($k as $token) {
             $conf = $conf[$token];
         }
+
         return $conf;
     }
 
@@ -139,36 +141,28 @@ class MDatabase implements \IDataBase
     public function beginTransaction()
     {
         $this->connection->beginTransaction();
+
         return $this->connection;
     }
 
-    public function getSQL($columns = '', $tables = '', $where = '', $orderBy = '', $groupBy = '', $having = '', $forUpdate = false)
-    {
+    public function getSQL(
+        $columns = '',
+        $tables = '',
+        $where = '',
+        $orderBy = '',
+        $groupBy = '',
+        $having = '',
+        $forUpdate = false
+    ) {
         $sql = new MSQL($columns, $tables, $where, $orderBy, $groupBy, $having, $forUpdate);
         $sql->setDb($this);
+
         return $sql;
     }
 
-    public function execute(MSQL $sql, $parameters = NULL)
-    {
-        if ($this->connection->isTransactionActive()) {
-            try {
-                $sql->setParameters($parameters);
-                $this->affectedRows = $sql->execute();
-                $this->lastInsertId = $this->connection->lastInsertId();
-            } catch (\Exception $e) {
-                $code = $sql->stmt->errorCode();
-                $info = $sql->stmt->errorInfo();
-                throw \EDBException::execute($info[2], $code);
-            }
-        } else {
-            throw \EDBException::transaction('Não é possível executar comandos fora de uma transação ativa.');
-        }
-    }
-
     public function executeBatch(/* array of MSQL */
-        $sqlArray)
-    {
+        $sqlArray
+    ) {
         if (!is_array($sqlArray)) {
             $sqlArray = array($sqlArray);
         }
@@ -200,6 +194,22 @@ class MDatabase implements \IDataBase
         $this->execute($msql, $parameters);
     }
 
+    public function execute(MSQL $sql, $parameters = null)
+    {
+        if ($this->connection->isTransactionActive()) {
+            try {
+                $sql->setParameters($parameters);
+                $this->affectedRows = $sql->execute();
+            } catch (\Exception $e) {
+                $code = $sql->stmt->errorCode();
+                $info = $sql->stmt->errorInfo();
+                throw \EDBException::execute($info['message'], $code);
+            }
+        } else {
+            throw \EDBException::transaction('Não é possível executar comandos fora de uma transação ativa.');
+        }
+    }
+
     public function count(MQuery $query)
     {
         return $query->count();
@@ -212,6 +222,7 @@ class MDatabase implements \IDataBase
         } catch (\Exception $e) {
             throw \EDBException::execute('DB::getNewId: ' . trim($e->getMessage()));
         }
+
         return $value;
     }
 
@@ -224,6 +235,7 @@ class MDatabase implements \IDataBase
     {
         try {
             $query = $this->getQuery($sql);
+
             return $query->fetchAll();
         } catch (\Exception $e) {
             throw \EDBException::query($e->getMessage());
@@ -244,6 +256,7 @@ class MDatabase implements \IDataBase
                 $msql->setRange($page, $rows);
             }
             $query->setSQL($msql);
+
             return $query->fetchAll();
         } catch (\Exception $e) {
             throw \EDBException::query($e->getMessage());
@@ -263,6 +276,7 @@ class MDatabase implements \IDataBase
             $msql = new MSQL();
             $msql->setCommand($command);
             $query->setSQL($msql);
+
             return $query;
         } catch (\Exception $e) {
             throw \EDBException::query($e->getMessage());
@@ -275,6 +289,7 @@ class MDatabase implements \IDataBase
             $query = new MQuery();
             $query->setDb($this);
             $query->setSQL($sql);
+
             return $query;
         } catch (\Exception $e) {
             throw \EDBException::query($e->getMessage());
@@ -286,6 +301,7 @@ class MDatabase implements \IDataBase
         try {
             $sql = new MSql("*", $tableName);
             $query = $this->getQuery($sql);
+
             return $query;
         } catch (\Exception $e) {
             throw \EDBException::query($e->getMessage());

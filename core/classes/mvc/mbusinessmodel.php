@@ -30,6 +30,7 @@ use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 class MBusinessModel extends PersistentObject
+    implements JsonSerializable, Serializable
 {
 
     /**
@@ -334,9 +335,8 @@ class MBusinessModel extends PersistentObject
         return $this;
     }
 
-    public function save()
-    {
-        if (!$this->isPersistent() || $this->wasChanged()) {
+    public function save($force = false) {
+        if (!$this->isPersistent() || $this->wasChanged() || $force == true) {
             parent::save();
             $this->setOriginalData();
             return true;
@@ -589,13 +589,13 @@ class MBusinessModel extends PersistentObject
         return $this->_originalData ?: new \stdClass();
     }
 
-    protected function getOriginalAttributeValue($attribute)
-    {
+    protected function getOriginalAttributeValue($attribute) {
         foreach ($this->getDiffData() as $attributeDiff) {
             if ($attributeDiff['key'] == $attribute) {
                 return $attributeDiff['original'];
             }
         }
+
         throw new EModelException("The attribute {$attribute} was not changed!");
     }
 
@@ -742,6 +742,21 @@ class MBusinessModel extends PersistentObject
     public function setOriginalData()
     {
         $this->_originalData = $this->getData();
+    }
+
+    function jsonSerialize()
+    {
+        return $this->getData();
+    }
+
+    public function serialize()
+    {
+        return serialize($this->getData());
+    }
+
+    public function unserialize($serialized)
+    {
+        $this->setData(unserialize($serialized));
     }
 
 }

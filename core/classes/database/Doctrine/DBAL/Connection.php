@@ -1305,4 +1305,21 @@ class Connection implements DriverConnection
     {
         return new Query\QueryBuilder($this);
     }
+
+    public function ping()
+    {
+        $this->connect();
+
+        if ($this->_conn instanceof PingableConnection) {
+            return $this->_conn->ping();
+        }
+
+        try {
+            $this->query($this->getDatabasePlatform()->getDummySelectSQL());
+
+            return true;
+        } catch (DBALException $e) {
+            return false;
+        }
+    }
 }

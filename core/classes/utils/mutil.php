@@ -914,6 +914,22 @@ class MUtil
         return $text;
     }
 
+    public static function abbreviateAllWords($input, $limit)
+    {
+        $words = explode(' ', $input);
+        $output = '';
+
+        foreach ($words as $word) {
+            if (mb_strlen($word) > $limit) {
+                $word = mb_substr($word, 0, $limit) . '.';
+            }
+
+            $output .= $word . ' ';
+        }
+
+        return trim($output);
+    }
+
     /**
      * Verifica se o array está vazio.
      *

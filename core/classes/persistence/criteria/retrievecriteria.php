@@ -457,7 +457,7 @@ class RetrieveCriteria extends PersistentCriteria
 
     public function getParameters()
     {
-        return $this->parameters;
+        return $this->parameters ?: [];
     }
 
     public function setOperation($operation, $criteria)
@@ -468,16 +468,19 @@ class RetrieveCriteria extends PersistentCriteria
     public function union($criteria)
     {
         $this->setOperation('UNION', $criteria);
+        return $this;
     }
 
     public function intersect($criteria)
     {
         $this->setOperation('INTERSECT', $criteria);
+        return $this;
     }
 
     public function minus($criteria)
     {
         $this->setOperation('MINUS', $criteria);
+        return $this;
     }
 
     public function ignoreAccentuation()
