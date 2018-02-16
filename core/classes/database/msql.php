@@ -111,15 +111,6 @@ class MSQL
         $this->setHaving($having);
         $this->setOrderBy($orderBy);
         $this->setForUpdate($forUpdate);
-        $this->join = null;
-        $this->columns = [];
-        $this->tables = [];
-        $this->orderBy = [];
-        $this->groupBy = [];
-        $this->parameters = [];
-        $this->range = null;
-        $this->db = null;
-        $this->stmt = null;
     }
 
     private function _getTokens($string, &$array)
@@ -139,7 +130,6 @@ class MSQL
             if (!$can) {
                 if ($c == ',') {
                     $tok = trim($tok);
-                    mdump('tok='. $tok);
                     $array[$tok] = $tok;
                     $tok = '';
                 } else {
@@ -482,15 +472,16 @@ class MSQL
 
     public function clear()
     {
-        $this->columns = '';
-        $this->tables = '';
-        $this->where = '';
-        $this->groupBy = '';
-        $this->having = '';
-        $this->orderBy = '';
-        $this->parameters = null;
+        $this->join = null;
+        $this->columns = [];
+        $this->tables = [];
+        $this->orderBy = [];
+        $this->groupBy = [];
+        $this->parameters = [];
         $this->command = '';
-        $this->stmt = NULL;
+        $this->range = null;
+        $this->db = null;
+        $this->stmt = null;
     }
 
     public function setParameters()
