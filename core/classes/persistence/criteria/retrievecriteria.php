@@ -430,7 +430,7 @@ class RetrieveCriteria extends PersistentCriteria
      * @param string $value Valor do parametro
      * @return $this
      */
-    public function addParameter($name, $value)
+    public function addParameter($name, $value = '')
     {
         if (null === $this->parameters) {
             $this->parameters = [];

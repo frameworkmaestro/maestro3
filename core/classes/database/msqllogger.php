@@ -30,13 +30,15 @@ class MSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
     public function startQuery($sql, array $params = null, array $types = null)
     {
         $log = '';
-        if (count($params)) {
-            $log = '[';
-            $i = 0;
-            foreach ($params as $param) {
-                $log .= ($i++ ? ',' : '') . "(" . \gettype($param) . ") " . substr($param, 0, 100);
+        if (is_array($params)) {
+            if (count($params)) {
+                $log = '[';
+                $i = 0;
+                foreach ($params as $param) {
+                    $log .= ($i++ ? ',' : '') . "(" . \gettype($param) . ") " . substr($param, 0, 100);
+                }
+                $log .= ']';
             }
-            $log .= ']';
         }
         \Manager::getLog()->logSQL($sql . $log, $this->db);
     }

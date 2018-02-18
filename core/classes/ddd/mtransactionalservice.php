@@ -28,7 +28,7 @@ abstract class MTransactionalService extends \MBaseService
         $this->databaseName = $databaseName;
     }
 
-    public function getDatabase()
+    public function getDatabase($name = '')
     {
         if (is_null($this->database)) {
             $this->database = Manager::getDatabase($this->databaseName);

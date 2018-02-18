@@ -507,7 +507,7 @@ class MJSON
 
                 $vars = get_object_vars($var);
 
-                $properties = array_map(array(self, 'name_value'), array_keys($vars), array_values($vars));
+                $properties = array_map(array(__CLASS__, 'name_value'), array_keys($vars), array_values($vars));
 
                 foreach ($properties as $property) {
                     if (MJSON::isError($property)) {
