@@ -35,7 +35,7 @@ class MBaseRepository
     //    return $this->modelFactory->build($className, $data);
     //}
 
-    public function getById($className, $id)
+    public function getByClassId($className, $id)
     {
         mdump($className);
         $model = $this->modelFactory->build($className);

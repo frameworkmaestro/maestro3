@@ -55,6 +55,33 @@ class MFrontController
         return self::$instance;
     }
 
+    /**
+     * Configura o FrontController para execução offline
+     * @param $context string com o path do contexto
+     */
+    public function setupContext($context, $data = NULL)
+    {
+        // inicializa o contexto
+        $this->context = new MContext($context);
+        $this->context->setupContext();
+        Manager::getInstance()->baseURL = $this->request->getBaseURL(false);
+        $app = $this->context->getApp();
+        Manager::getInstance()->app = $app;
+        $appPath = $this->context->isCore() ? Manager::getInstance()->coreAppsPath : Manager::getInstance()->appsPath;
+        Manager::getInstance()->appPath = $appPath . '/' . $app;
+        // inicializa a sessão (por app)
+        Manager::setSession(new MSession($app));
+        Manager::getSession()->init(mrequest('sid'));
+        // trata dados
+        $this->removeInputSlashes();
+        $this->setData($data ?: $_REQUEST);
+        mtrace('DTO Data:');
+        mtrace($this->getData());
+        $this->loadExtensions();
+        $this->init();
+        $this->prepare();
+    }
+
     public function handlerRequest($data = NULL)
     {
         try {

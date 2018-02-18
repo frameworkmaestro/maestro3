@@ -356,6 +356,45 @@ class MContext
         mtrace(']]');
     }
 
+    /**
+     * Define o contexto para execução offline
+     */
+    public function setupContext()
+    {
+        $pathParts = explode('/', $this->path);
+        $part = null;
+        $app = array_shift($pathParts);
+        if ($app != '') {
+            if ($app == 'core') {
+                $this->isCore = true;
+                $this->app = $app = array_shift($pathParts);
+            } else {
+                $this->app = $app;
+                // load app conf
+                $configFile = Manager::getAbsolutePath("apps/{$this->app}/conf/conf.php");
+                Manager::loadConf($configFile);
+            }
+            //
+            $part = array_shift($pathParts);
+            $namespace = $this->getNamespace($this->app, $part);
+            if ($part && Manager::existsNS($namespace)) {
+                $this->module = $part;
+            } else {
+                $this->module = '';
+            }
+        } else {
+            $this->app = Manager::getOptions('startup');
+        }
+        Manager::getInstance()->application = $this->app;
+
+        mtrace('Setup Context [[');
+        mtrace('path: ' . $this->path);
+        mtrace('method: ' . $this->method . ' [' . ($this->isAjax ? 'ajax' : 'browser') . ']');
+        mtrace('app: ' . $this->app);
+        mtrace('module: ' . $this->module);
+        mtrace(']]');
+    }
+
     public function isCore()
     {
         return $this->isCore;
@@ -461,8 +500,10 @@ class MContext
         $ns = $this->isCore ? 'core::' : '';
         $ns .= 'apps::' . $app . '::';
         $ns .= (Manager::getOptions('srcPath') ? substr(Manager::getOptions('srcPath'), 1) . '::' : '');
-        $ns .= ($module ? 'modules::' . $module . '::' : '');
-        $ns .= (Manager::getConf("srcPath.{$module}") ? substr(Manager::getConf("srcPath.{$module}"), 1) . '::' : '');
+        if ($module != '') {
+            $ns .= 'modules::' . $module . '::';
+            $ns .= (Manager::getConf("srcPath.{$module}") ? substr(Manager::getConf("srcPath.{$module}"), 1) . '::' : '');
+        }
         $ns .= $type . '::' . $class;
         return $ns;
     }

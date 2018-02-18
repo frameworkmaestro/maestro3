@@ -37,6 +37,7 @@ desktop.ini
 ############
 vendor
 build
+composer.lock
 
 # Subversion #
 ##############

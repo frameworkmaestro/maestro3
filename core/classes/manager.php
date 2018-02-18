@@ -551,6 +551,15 @@ class Manager
     }
 
     /**
+     * Configura o framework para execução offline
+     */
+    public static function setupContext($context = '', $data = NULL)
+    {
+        self::$instance->initialize();
+        self::$instance->controller->setupContext($context, $data);
+    }
+
+    /**
      * Processa a requisição feita via browser. Executado pelo FrontPage (index.php).
      */
     public static function processRequest($return = false)
@@ -895,7 +904,6 @@ class Manager
     {
         $k = explode('.', $key);
         $conf = self::$conf;
-
         foreach ($k as $token) {
             if (!array_key_exists($token, $conf)) {
                 return null;
