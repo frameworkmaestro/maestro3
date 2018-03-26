@@ -31,14 +31,14 @@ class MDatabase implements \IDataBase
         'sqlite3' => 'Doctrine\DBAL\Driver\SQLite3\Driver',
     );
     private static $_platformMap = array(
-        'pdo_mysql' => '\database\platforms\PDOMySql\platform',
-        'pdo_sqlite' => '\database\platforms\PDOSqlite\platform',
-        'pdo_pgsql' => '\database\platforms\PDOPgSql\platform',
-        'oci8' => '\database\platforms\OCI8\platform',
-        'oracle8' => '\database\platforms\OCI8\platform',
-        'pdo_sqlsrv' => '\database\platforms\PDOSqlsrv\platform',
-        'sqlsrv' => '\database\platforms\SQLSrv\platform',
-        'sqlite3' => '\database\platforms\SQLite3\platform',
+        'pdo_mysql' => '\database\platforms\pdomysql\platform',
+        'pdo_sqlite' => '\database\platforms\pdosqlite\platform',
+        'pdo_pgsql' => '\database\platforms\pdopgsql\platform',
+        'oci8' => '\database\platforms\oci8\platform',
+        'oracle8' => '\database\platforms\oci8\platform',
+        'pdo_sqlsrv' => '\database\platforms\pdosqlsrv\platform',
+        'sqlsrv' => '\database\platforms\sqlsrv\platform',
+        'sqlite3' => '\database\platforms\sqlite3\platform',
     );
     private $config;       // identifies db configuration in conf.php
     private $params;
