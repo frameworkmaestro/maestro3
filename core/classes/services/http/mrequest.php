@@ -138,51 +138,37 @@ class MRequest
     public function __construct()
     {
         $this->host = $_SERVER['SERVER_NAME'];
-        $this->path = $this->getPathInfo();
-        mtrace('MRequest path = ' . $this->path);
-        $this->querystring = $this->getQueryString();
-        $this->method = $this->getRequestType();
-        $this->domain = $this->getServerName();
-        $this->remoteAddress = $this->getUserHostAddress();
-        $this->processContentType();
-        $this->port = $this->getPort();
-        $this->secure = $this->getIsSecureConnection();
-        $this->headers = $_SERVER;
-        $this->cookies = isset($_COOKIES) ? $_COOKIES : '';
-        $dispatch = Manager::getOptions('dispatch');
-        /*
-          $p = strpos($this->path,$dispatch);
-          if ($p !== false) {
-          $this->path = str_replace($dispatch, '', $this->path);
-          }
-          $this->baseUrl = Manager::getConf('url.base');
-          $p = ($this->path && $this->baseUrl) ? strpos($this->path,$this->baseUrl) : false;
-          if (($this->baseUrl != '') && ($p !== false)) {
-          $this->path = str_replace($this->baseUrl, '', $this->path);
-          }
-         *
-         */
-        $this->baseUrl = $this->getBaseUrl();
-        $this->date = Manager::getSysTime();
-        $this->isNew = true;
-        $this->user = '';
-        $this->password = '';
-        $this->isLoopback = ($this->remoteAddress == '127.0.0.1');
-        $this->params = $_REQUEST;
-        $this->url = $this->getUrl();
-        $this->dispatch = $this->getBase() . $dispatch;
-
-        $this->resolveFormat();
-
-        $auth = isset($_SERVER['AUTH_TYPE']) ? $_SERVER['AUTH_TYPE'] : '';
-        if (($auth != '') && (substr($auth, 0, 6) == "Basic ")) {
-            $this->user = $_SERVER['PHP_AUTH_USER'];
-            $this->password = $_SERVER['PHP_AUTH_PW'];
+        if ($this->host != '') {
+            $this->path = $this->getPathInfo();
+            mtrace('MRequest path = ' . $this->path);
+            $this->querystring = $this->getQueryString();
+            $this->method = $this->getRequestType();
+            $this->domain = $this->getServerName();
+            $this->remoteAddress = $this->getUserHostAddress();
+            $this->processContentType();
+            $this->port = $this->getPort();
+            $this->secure = $this->getIsSecureConnection();
+            $this->headers = $_SERVER;
+            $this->cookies = isset($_COOKIES) ? $_COOKIES : '';
+            $dispatch = Manager::getOptions('dispatch');
+            $this->baseUrl = $this->getBaseUrl();
+            $this->date = Manager::getSysTime();
+            $this->isNew = true;
+            $this->user = '';
+            $this->password = '';
+            $this->isLoopback = ($this->remoteAddress == '127.0.0.1');
+            $this->params = $_REQUEST;
+            $this->url = $this->getUrl();
+            $this->dispatch = $this->getBase() . $dispatch;
+            $this->resolveFormat();
+            $auth = isset($_SERVER['AUTH_TYPE']) ? $_SERVER['AUTH_TYPE'] : '';
+            if (($auth != '') && (substr($auth, 0, 6) == "Basic ")) {
+                $this->user = $_SERVER['PHP_AUTH_USER'];
+                $this->password = $_SERVER['PHP_AUTH_PW'];
+            }
+        } else {
+            mtrace('MRequest: no server, maybe running offfile');
         }
-        //mtrace('MRequest path = ' . $this->path);
-        //mtrace('MRequest base = ' . $this->getBase());
-        //mtrace('MRequest baseURL = ' . $this->getBaseURL());
-        //mtrace('MRequest url = ' . $this->url);
     }
 
     /**
@@ -522,7 +508,7 @@ class MRequest
             else if (isset($_SERVER['DOCUMENT_ROOT']) && strpos($_SERVER['SCRIPT_FILENAME'], $_SERVER['DOCUMENT_ROOT']) === 0)
                 $this->_scriptUrl = str_replace('\\', '/', str_replace($_SERVER['DOCUMENT_ROOT'], '', $_SERVER['SCRIPT_FILENAME']));
             else
-                throw new CException(Yii::t('yii', 'CHttpRequest is unable to determine the entry script URL.'));
+                throw new Exception('MRequest is unable to determine the entry script URL.');
         }
         return $this->_scriptUrl;
     }
@@ -565,7 +551,7 @@ class MRequest
             else if (strpos($_SERVER['PHP_SELF'], $scriptUrl) === 0)
                 $pathInfo = substr($_SERVER['PHP_SELF'], strlen($scriptUrl));
             else
-                throw new CException(Yii::t('yii', 'CHttpRequest is unable to determine the path info of the request.'));
+                throw new Exception('MRequest is unable to determine the path info of the request.');
 
             $this->_pathInfo = trim($pathInfo, '/');
         }
@@ -605,7 +591,7 @@ class MRequest
                 if (!empty($_SERVER['QUERY_STRING']))
                     $this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
             } else
-                throw new CException(Yii::t('CHttpRequest is unable to determine the request URI.'));
+                throw new Exception('MRequest is unable to determine the request URI.');
         }
         return $this->_requestUri;
     }
