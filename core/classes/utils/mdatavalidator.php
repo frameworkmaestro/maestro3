@@ -99,7 +99,7 @@ class MDataValidator
             // now, validate constraints
             $config = $object->config();
             $validators = $config['validators'][$name];
-            if (count($validators)) {
+            if (is_array($validators)) {
                 foreach ($validators as $index => $args) {
                     if (is_numeric($index)) {
                         $validator = $args;
