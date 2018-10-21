@@ -213,7 +213,7 @@ class MRequest
             return;
         }
 
-        if (strpos($accept, "text/plain") != false) {
+        if (strpos($accept, "text/plain") !== false) {
             $this->format = "txt";
             return;
         }
@@ -227,6 +227,9 @@ class MRequest
             $this->format = "html";
             return;
         }
+
+        $this->format = "html";
+        return;
     }
 
     public function getFormat() {

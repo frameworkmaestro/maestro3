@@ -138,11 +138,17 @@ class MController
                 if (!Manager::isAjaxCall()) {
                     Manager::$ajax = new MAjax(Manager::getOptions('charset'));
                 }
-                if (!is_json($result)) {
-                    $result = json_encode($result);
+                $format = Manager::getContext()->getResultFormat();
+                if ($format == 'JSON') {
+                    if (!is_json($result)) {
+                        $result = json_encode($result);
+                    }
+                    $this->setResult(new MRenderJSON($result));
+                } elseif ($format == 'TXT') {
+                    $this->setResult(new MRenderText($result));
+                } else {
+                    $this->setResult(new MRenderText($result));
                 }
-                //mdump($result);
-                $this->setResult(new MRenderJSON($result));
             }
         } catch (\EModelException $e) {
             $this->renderDefaultAlert($e->getMessage());
