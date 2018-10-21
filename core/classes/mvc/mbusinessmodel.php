@@ -399,14 +399,18 @@ class MBusinessModel extends PersistentObject
         if ($source instanceof BaseCriteria) {
             $criteria = $source;
             $result->total = $criteria->asQuery()->count();
-            if ($data->page > 0) {
-                $criteria->range($data->page, $data->rows);
-            }
+            //if ($data->page > 0) {
+            //    $criteria->range($data->page, $data->rows);
+            //}
             $source = $criteria->asQuery();
         }
         if ($source instanceof database\mquery) {
+            $result->total = $source->count();
+            if ($data->page > 0) {
+                $source->setRange($data->page, $data->rows);
+            }
             $result->rows = $source->asObjectArray();
-        } elseif (is_array($source)) {
+		} elseif (is_array($source)) {
             $rows = array();
             foreach ($source as $row) {
                 $r = new \StdClass();
