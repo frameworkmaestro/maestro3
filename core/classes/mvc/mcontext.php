@@ -219,16 +219,21 @@ class MContext
                         $controller = $part;
                         $part = array_shift($pathParts);
                     } else {
-                        $try = $ns . 'services\\' . $part . 'service';
-                        mdump($try);
+                        $try = $ns . 'services\\' . $service . 'service';
                         if ($this->fileMap[$try]) {
-                            $service = $part;
-                            $part = array_shift($pathParts);
+                            // using api $service and $part already defined
                         } else {
-                            $try = $ns . 'components\\' . $part;
+                            $try = $ns . 'services\\' . $part . 'service';
+                            mdump($try);
                             if ($this->fileMap[$try]) {
-                                $component = $part;
+                                $service = $part;
                                 $part = array_shift($pathParts);
+                            } else {
+                                $try = $ns . 'components\\' . $part;
+                                if ($this->fileMap[$try]) {
+                                    $component = $part;
+                                    $part = array_shift($pathParts);
+                                }
                             }
                         }
                     }
